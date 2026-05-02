@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 import 'package:bitwise_academy/core/constants/app_colors.dart';
 import 'package:bitwise_academy/core/constants/app_spacing.dart';
@@ -17,8 +19,42 @@ import 'package:bitwise_academy/features/store/data/models/skin_model.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/router/app_router.dart';
 
-class AvatarStorePage extends StatelessWidget {
+class AvatarStorePage extends StatefulWidget {
   const AvatarStorePage({super.key});
+
+  @override
+  State<AvatarStorePage> createState() => _AvatarStorePageState();
+}
+
+class _AvatarStorePageState extends State<AvatarStorePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Rule #2: Register interceptor in initState
+    BackButtonInterceptor.add(_myInterceptor, context: context);
+  }
+
+  @override
+  void dispose() {
+    // Rule #2: Remove interceptor in dispose
+    BackButtonInterceptor.remove(_myInterceptor);
+    super.dispose();
+  }
+
+  /// Rule #4: Prioritize internal routing pop checks.
+  bool _myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    _handleBackNavigation();
+    return true; // Block default OS action
+  }
+
+  void _handleBackNavigation() {
+    if (GoRouter.of(context).canPop()) {
+      GoRouter.of(context).pop();
+    } else {
+      // Fallback to dashboard if no history is available
+      context.go(RoutePaths.dashboard);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +64,8 @@ class AvatarStorePage extends StatelessWidget {
         backgroundColor: AppColors.surface,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
-          onPressed: () => context.go(RoutePaths.dashboard),
+          // Ensure on-screen button follows the same logic
+          onPressed: _handleBackNavigation,
         ),
         title: Text(
           'AVATAR STORE',
@@ -202,13 +239,11 @@ class AvatarStorePage extends StatelessWidget {
                                           }
                                           if (isUnlocked) {
                                             _handleEquip(
-                                              context,
                                               user.uid,
                                               skin,
                                             );
                                           } else {
                                             _handlePurchase(
-                                              context,
                                               user.uid,
                                               skin,
                                             );
@@ -240,54 +275,58 @@ class AvatarStorePage extends StatelessWidget {
   }
 
   Future<void> _handlePurchase(
-    BuildContext context,
     String uid,
     SkinModel skin,
   ) async {
     final storeCubit = context.read<StoreCubit>();
+    final authBloc = context.read<AuthBloc>();
+    final messenger = ScaffoldMessenger.of(context);
+
     final result = await storeCubit.purchaseSkin(
       uid: uid,
       skinId: skin.id,
       price: skin.price,
     );
 
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     switch (result) {
       case Success(:final data):
-        context.read<AuthBloc>().add(AuthUserUpdated(user: data));
-        ScaffoldMessenger.of(context).showSnackBar(
+        authBloc.add(AuthUserUpdated(user: data));
+        messenger.showSnackBar(
           const SnackBar(content: Text('Skin purchased successfully!')),
         );
       case Failure(:final exception):
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(content: Text('Purchase failed: ${exception.message}')),
         );
     }
   }
 
   Future<void> _handleEquip(
-    BuildContext context,
     String uid,
     SkinModel skin,
   ) async {
     final storeCubit = context.read<StoreCubit>();
+    final authBloc = context.read<AuthBloc>();
+    final messenger = ScaffoldMessenger.of(context);
+
     final result = await storeCubit.equipSkin(
       uid: uid,
       imageUrl: skin.imageUrl,
     );
 
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     switch (result) {
       case Success():
-        final authState = context.read<AuthBloc>().state;
+        final authState = authBloc.state;
         if (authState is AuthAuthenticated) {
           final updatedUser = authState.user.copyWith(avatarUrl: skin.imageUrl);
-          context.read<AuthBloc>().add(AuthUserUpdated(user: updatedUser));
+          authBloc.add(AuthUserUpdated(user: updatedUser));
         }
       case Failure(:final exception):
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(content: Text('Equip failed: ${exception.message}')),
         );
     }
