@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +14,6 @@ import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/widgets/hp_bar.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_card.dart';
-import 'package:tap2exit/tap2exit.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bitwise_academy/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
@@ -39,6 +40,13 @@ class _UserDashboardPageState extends State<UserDashboardPage>
   late final AnimationController _floatController;
   late final Animation<double> _floatAnimation;
 
+  /// Stateful timer for the 2000ms exit window.
+  /// Cancelled in [dispose] to guarantee async safety.
+  Timer? _exitTimer;
+
+  /// True while the first back-press has been received and the timer is live.
+  bool _exitPending = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,25 +61,56 @@ class _UserDashboardPageState extends State<UserDashboardPage>
 
   @override
   void dispose() {
+    // Cancel the exit timer to prevent setState-after-dispose crashes.
+    _exitTimer?.cancel();
     _floatController.dispose();
     super.dispose();
   }
 
+  /// Handles back-press events strictly on the Start Destination.
+  ///
+  /// - First press: shows a Snackbar and starts a 2000ms [Timer].
+  /// - Second press within the window: exits the app gracefully.
+  /// - The timer resets [_exitPending] on expiry, so a slow double-tap
+  ///   never triggers an unintended exit.
+  void _handleBackPress(BuildContext context) {
+    if (_exitPending) {
+      _exitTimer?.cancel();
+      SystemNavigator.pop();
+    } else {
+      setState(() => _exitPending = true);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Press back again to exit',
+              style: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
+            ),
+            backgroundColor: AppColors.surfaceContainerLow,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(milliseconds: 2000),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+          ),
+        );
+      _exitTimer = Timer(const Duration(milliseconds: 2000), () {
+        if (mounted) setState(() => _exitPending = false);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Tap2Exit replaces PopScope to correctly handle Android predictive
-    // back gestures on the Start Destination without being ignored by go_router.
-    return Tap2Exit(
-      message: 'Press back again to exit',
-      duration: const Duration(milliseconds: 2000),
-      useToast: false,
-      snackBarStyle: Tap2ExitSnackBarStyle(
-        textStyle: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
-        backgroundColor: AppColors.surfaceContainerLow,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(milliseconds: 2000),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      ),
+    // PopScope is restricted to this Start Destination ('/') only.
+    // canPop: false intercepts the back gesture per SKILL.md spec;
+    // onPopInvokedWithResult uses the modern (non-deprecated) API.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) {
+        if (!didPop) _handleBackPress(context);
+      },
       child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (BuildContext context, DashboardState dashState) {
           if (dashState is DashboardLoading || dashState is DashboardInitial) {
