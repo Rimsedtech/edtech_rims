@@ -51,8 +51,9 @@ void main() {
             password: 'password123',
           ),
         ).thenAnswer((_) async => mockUserCredential);
-        when(() => mockFirebaseUser.sendEmailVerification())
-            .thenAnswer((_) async => {});
+        when(
+          () => mockFirebaseUser.sendEmailVerification(),
+        ).thenAnswer((_) async => {});
 
         final result = await repository.createAccountWithEmail(
           email: tEmail,
@@ -112,10 +113,7 @@ void main() {
           .doc(tUid)
           .collection('private')
           .doc('secrets')
-          .set({
-        'email': tEmail,
-        'recoveryKey': 'some-hash',
-      });
+          .set({'email': tEmail, 'recoveryKey': 'some-hash'});
 
       when(() => mockFirebaseUser.uid).thenReturn(tUid);
       when(() => mockUserCredential.user).thenReturn(mockFirebaseUser);
