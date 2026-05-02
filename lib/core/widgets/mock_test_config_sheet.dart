@@ -138,7 +138,7 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
         final List<String> difficulties = List<String>.from(
           (data['difficultyTiers'] as List<dynamic>?) ?? [],
         );
-        final Map<String, dynamic> subjectGroupsMap = 
+        final Map<String, dynamic> subjectGroupsMap =
             data['subjectGroups'] as Map<String, dynamic>? ?? {};
 
         // Filter out empty options
@@ -222,13 +222,17 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
                   _buildPixelDropdown<String>(
                     value: _selectedGroup,
                     hint: 'Select group...',
-                    items: _selectedSubject != null 
-                        ? List<String>.from(subjectGroupsMap[_selectedSubject!] ?? [])
+                    items: _selectedSubject != null
+                        ? List<String>.from(
+                            subjectGroupsMap[_selectedSubject!]
+                                    as Iterable<dynamic>? ??
+                                [],
+                          )
                         : [],
                     labelBuilder: (s) => s.toUpperCase(),
-                  onChanged: _selectedSubject != null 
-    ? (v) => setState(() => _selectedGroup = v) 
-    : (v) {}, // 👈 CHANGE 'null' to an empty function
+                    onChanged: _selectedSubject != null
+                        ? (v) => setState(() => _selectedGroup = v)
+                        : (v) {}, // 👈 CHANGE 'null' to an empty function
                   ),
                   const SizedBox(height: AppSpacing.lg),
 

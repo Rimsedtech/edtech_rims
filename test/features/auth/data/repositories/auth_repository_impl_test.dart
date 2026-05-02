@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:bitwise_academy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:bitwise_academy/features/auth/domain/repositories/auth_repository.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 
 class MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
@@ -35,7 +36,7 @@ void main() {
   });
 
   const String tUid = 'test-uid';
-  const String tEmail = 'test@example.com';
+  const String tEmail = 'test@gmail.com';
   const String tDisplayName = 'Test User';
 
   group('AuthRepositoryImpl', () {
@@ -50,6 +51,8 @@ void main() {
             password: 'password123',
           ),
         ).thenAnswer((_) async => mockUserCredential);
+        when(() => mockFirebaseUser.sendEmailVerification())
+            .thenAnswer((_) async => {});
 
         final result = await repository.createAccountWithEmail(
           email: tEmail,
@@ -66,28 +69,35 @@ void main() {
         ).called(1);
 
         // Verify result is success
-        expect(result, isA<Success<UserEntity>>());
-        final UserEntity user = (result as Success<UserEntity>).data;
+        expect(result, isA<Success<AuthResult>>());
+        final UserEntity user = (result as Success<AuthResult>).data.user;
 
         expect(user.uid, tUid);
         expect(user.email, tEmail);
         expect(user.displayName, tDisplayName);
         expect(user.role, UserRole.student);
 
-        // Verify Firestore document was created
+        // Verify Firestore documents were created
         final doc = await fakeFirestore.collection('users').doc(tUid).get();
         expect(doc.exists, isTrue);
-        expect(doc.data()!['email'], tEmail);
         expect(doc.data()!['displayName'], tDisplayName);
         expect(doc.data()!['role'], 'student');
+
+        final privateDoc = await fakeFirestore
+            .collection('users')
+            .doc(tUid)
+            .collection('private')
+            .doc('secrets')
+            .get();
+        expect(privateDoc.exists, isTrue);
+        expect(privateDoc.data()!['email'], tEmail);
       },
     );
 
     test('signInWithEmail returns user and updates lastLoginAt', () async {
-      // 1. Pre-populate Firestore with a user profile
+      // 1. Pre-populate Firestore with a user profile (Public & Private)
       await fakeFirestore.collection('users').doc(tUid).set({
         'uid': tUid,
-        'email': tEmail,
         'displayName': tDisplayName,
         'role': 'admin',
         'xp': 100,
@@ -95,6 +105,16 @@ void main() {
         'streakDays': 5,
         'createdAt': Timestamp.fromDate(DateTime(2025)),
         'lastLoginAt': Timestamp.fromDate(DateTime(2025)),
+      });
+
+      await fakeFirestore
+          .collection('users')
+          .doc(tUid)
+          .collection('private')
+          .doc('secrets')
+          .set({
+        'email': tEmail,
+        'recoveryKey': 'some-hash',
       });
 
       when(() => mockFirebaseUser.uid).thenReturn(tUid);
@@ -111,8 +131,8 @@ void main() {
         password: 'password123',
       );
 
-      expect(result, isA<Success<UserEntity>>());
-      final UserEntity user = (result as Success<UserEntity>).data;
+      expect(result, isA<Success<AuthResult>>());
+      final UserEntity user = (result as Success<AuthResult>).data.user;
 
       expect(user.uid, tUid);
       expect(user.email, tEmail);

@@ -245,6 +245,7 @@ DateTime _parseDate(dynamic value) {
   }
   return DateTime.now().toUtc();
 }
+
 String _getContentType(String fileName) {
   final ext = p.extension(fileName).toLowerCase();
   switch (ext) {

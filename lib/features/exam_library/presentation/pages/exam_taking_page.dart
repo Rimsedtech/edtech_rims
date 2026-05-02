@@ -221,7 +221,9 @@ class _ExamTakingPageState extends State<ExamTakingPage>
                                     currentQuestion.diagramUrl!.isNotEmpty) ...[
                                   Center(
                                     child: Container(
-                                      constraints: const BoxConstraints(maxHeight: 250),
+                                      constraints: const BoxConstraints(
+                                        maxHeight: 250,
+                                      ),
                                       margin: const EdgeInsets.only(
                                         bottom: AppSpacing.lg,
                                       ),

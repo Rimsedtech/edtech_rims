@@ -222,7 +222,9 @@ void main() async {
     print('    Subjects: $allSubjects');
     print('    Groups: $allGroups');
     print('    SubjectGroups: $subjectGroupsRaw');
-    print('    Difficulty Tiers: [\'easy\', \'medium\', \'hard\', \'ultra_hard\']');
+    print(
+      '    Difficulty Tiers: [\'easy\', \'medium\', \'hard\', \'ultra_hard\']',
+    );
   }
 
   // ── Summary ──────────────────────────────────────────────────────────────────

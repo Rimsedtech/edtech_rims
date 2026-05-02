@@ -11,6 +11,6 @@ void main() async {
   // This is a guess on how to use the library based on common Dart patterns
   // and the pub.dev documentation for google_cloud_storage.
   // Note: google_cloud_storage usually requires a JSON credential.
-  
+
   // Actually, I'll check the library definition first.
 }

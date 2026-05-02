@@ -215,7 +215,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         child: Text(
                           user.displayName.toUpperCase(),
                           style: AppTypography.headlineXs.copyWith(
-                            color: isCurrentUser ? Colors.white : AppColors.onSurface,
+                            color: isCurrentUser
+                                ? Colors.white
+                                : AppColors.onSurface,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -223,7 +225,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       if (isCurrentUser) ...[
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.amber,
                             border: Border.all(color: Colors.black, width: 2),
@@ -242,7 +247,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   Text(
                     '${user.totalExamsTaken} EXAMS TAKEN',
                     style: AppTypography.labelSm.copyWith(
-                      color: isCurrentUser ? Colors.white : AppColors.onSurfaceVariant,
+                      color: isCurrentUser
+                          ? Colors.white
+                          : AppColors.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -260,7 +267,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 Text(
                   'ANSWERS',
                   style: AppTypography.labelSm.copyWith(
-                    color: isCurrentUser ? Colors.white : AppColors.onSurfaceVariant,
+                    color: isCurrentUser
+                        ? Colors.white
+                        : AppColors.onSurfaceVariant,
                     fontSize: 8,
                   ),
                 ),

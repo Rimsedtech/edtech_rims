@@ -29,7 +29,7 @@ void main() {
 
   final tUser = UserEntity(
     uid: '123',
-    email: 'test@example.com',
+    email: 'test@gmail.com',
     displayName: 'Test User',
     role: UserRole.student,
     xp: 0,
@@ -92,7 +92,7 @@ void main() {
       build: () {
         when(
           () => mockAuthRepository.signInWithEmail(
-            email: 'test@example.com',
+            email: 'test@gmail.com',
             password: 'password123',
           ),
         ).thenAnswer((_) async => Success(AuthResult(user: tUser)));
@@ -100,7 +100,7 @@ void main() {
       },
       act: (bloc) => bloc.add(
         const AuthSignInWithEmailRequested(
-          email: 'test@example.com',
+          email: 'test@gmail.com',
           password: 'password123',
         ),
       ),
@@ -112,7 +112,7 @@ void main() {
       build: () {
         when(
           () => mockAuthRepository.signInWithEmail(
-            email: 'test@example.com',
+            email: 'test@gmail.com',
             password: 'password123',
           ),
         ).thenAnswer(
@@ -123,7 +123,7 @@ void main() {
       },
       act: (bloc) => bloc.add(
         const AuthSignInWithEmailRequested(
-          email: 'test@example.com',
+          email: 'test@gmail.com',
           password: 'password123',
         ),
       ),
