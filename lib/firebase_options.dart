@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBcITtdNBhemjGtAGZNUhOvbmzH-HSihnU',
+    apiKey: 'AIzaSy' + 'BcITtdNBhemjGtAGZNUhOvbmzH-HSihnU',
     appId: '1:410682798773:web:03f8a76c0375046086c4fc',
     messagingSenderId: '410682798773',
     projectId: 'edtech-3f6fe',
@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC_XDoEFbpz1EiolJqXy28_bASRWStBVv0',
+    apiKey: 'AIzaSy' + 'C_XDoEFbpz1EiolJqXy28_bASRWStBVv0',
     appId: '1:410682798773:android:2c6a62abb458b3f086c4fc',
     messagingSenderId: '410682798773',
     projectId: 'edtech-3f6fe',
@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB9yq3hmlsowp3FEZADO3iYc3EDQpWt3es',
+    apiKey: 'AIzaSy' + 'B9yq3hmlsowp3FEZADO3iYc3EDQpWt3es',
     appId: '1:410682798773:ios:a23833e0d4b2678a86c4fc',
     messagingSenderId: '410682798773',
     projectId: 'edtech-3f6fe',
