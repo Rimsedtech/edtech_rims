@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/widgets/hp_bar.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_card.dart';
+import 'package:tap2exit/tap2exit.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bitwise_academy/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
@@ -39,10 +39,6 @@ class _UserDashboardPageState extends State<UserDashboardPage>
   late final AnimationController _floatController;
   late final Animation<double> _floatAnimation;
 
-  /// Tracks the timestamp of the most recent back-press for the
-  /// Double-Tap-to-Exit safeguard. Null until the first back press.
-  DateTime? _lastBackPress;
-
   @override
   void initState() {
     super.initState();
@@ -61,44 +57,21 @@ class _UserDashboardPageState extends State<UserDashboardPage>
     super.dispose();
   }
 
-  /// Handles back-press events on the Start Destination.
-  ///
-  /// First press within a 2000 ms window shows a Snackbar prompt;
-  /// a second press within that window exits the app gracefully.
-  /// No [Timer] is allocated, so there is no async teardown needed.
-  void _handleBackPress(BuildContext context) {
-    final now = DateTime.now();
-    if (_lastBackPress == null ||
-        now.difference(_lastBackPress!) > const Duration(milliseconds: 2000)) {
-      _lastBackPress = now;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Press back again to exit',
-            style: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
-          ),
-          backgroundColor: AppColors.surfaceContainerLow,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(milliseconds: 2000),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        ),
-      );
-    } else {
-      // Second tap within threshold — exit gracefully.
-      SystemNavigator.pop();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // PopScope is restricted to this Start Destination ('/') only.
-    // canPop: false intercepts the back gesture without permanently
-    // blocking predictive back animations on Android 13+.
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, _) {
-        if (!didPop) _handleBackPress(context);
-      },
+    // Tap2Exit replaces PopScope to correctly handle Android predictive
+    // back gestures on the Start Destination without being ignored by go_router.
+    return Tap2Exit(
+      message: 'Press back again to exit',
+      duration: const Duration(milliseconds: 2000),
+      useToast: false,
+      snackBarStyle: Tap2ExitSnackBarStyle(
+        textStyle: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
+        backgroundColor: AppColors.surfaceContainerLow,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(milliseconds: 2000),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      ),
       child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (BuildContext context, DashboardState dashState) {
           if (dashState is DashboardLoading || dashState is DashboardInitial) {
