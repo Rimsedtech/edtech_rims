@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Arcade Ed - Choose Your Challenge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=VT323&amp;family=Space+Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#8e0f1e",
+                        "on-tertiary-fixed": "#410006",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "primary-container": "#3a4460",
+                        "on-primary-container": "#a7b1d3",
+                        "primary-fixed-dim": "#bcc6e8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#9ad853",
+                        "on-primary-fixed-variant": "#3c4662",
+                        "inverse-surface": "#303032",
+                        "on-secondary-fixed-variant": "#2d5000",
+                        "tertiary-container": "#8b0c1c",
+                        "inverse-primary": "#bcc6e8",
+                        "tertiary": "#64000f",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-bright": "#fbf8fb",
+                        "on-background": "#1b1b1d",
+                        "surface-dim": "#dcd9dc",
+                        "surface-container": "#f0edf0",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-variant": "#e4e2e4",
+                        "secondary": "#3e6a00",
+                        "secondary-container": "#b2f26a",
+                        "outline-variant": "#c6c6ce",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fb",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2ff",
+                        "on-tertiary-container": "#ff9491",
+                        "on-primary-fixed": "#101b34",
+                        "outline": "#76777e",
+                        "on-secondary-fixed": "#0f2000",
+                        "surface-tint": "#545e7b",
+                        "on-error-container": "#93000a",
+                        "primary": "#242e48",
+                        "secondary-fixed": "#b5f56c",
+                        "on-secondary-container": "#416e00",
+                        "surface": "#fbf8fb",
+                        "surface-container-high": "#eae7ea",
+                        "tertiary-fixed-dim": "#ffb3b0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pixel-border {
+            box-shadow: 
+                0 -4px 0 0 #1b1b1d,
+                0 4px 0 0 #1b1b1d,
+                -4px 0 0 0 #1b1b1d,
+                4px 0 0 0 #1b1b1d;
+        }
+        .pixel-border-heavy {
+            box-shadow: 
+                0 -6px 0 0 #1b1b1d,
+                0 6px 0 0 #1b1b1d,
+                -6px 0 0 0 #1b1b1d,
+                6px 0 0 0 #1b1b1d;
+        }
+        .retro-grid {
+            background-image: linear-gradient(to right, rgba(58, 68, 96, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(58, 68, 96, 0.1) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-['VT323'] selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#fbf8fb] dark:bg-[#1b1b1d] text-[#3a4460] dark:text-[#e4e2e4] rounded-none border-b-4 border-[#3a4460] shadow-[4px_4px_0px_0px_rgba(27,27,29,0.06)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-2xl">sports_esports</span>
+<span class="font-['Press_Start_2P'] uppercase tracking-tighter text-sm">ARCADE_ED</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-primary-container text-on-primary-container px-3 py-1 font-['VT323'] text-lg border-2 border-primary">
+                1500 XP
+            </div>
+<span class="material-symbols-outlined hover:bg-[#f6f3f5] transition-all p-2 cursor-pointer active:translate-y-1">account_circle</span>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-4 md:px-8 max-w-6xl mx-auto relative min-h-screen retro-grid">
+<!-- Hero Header -->
+<header class="mb-12 text-center">
+<h1 class="font-['Press_Start_2P'] text-2xl md:text-4xl text-primary mb-4 tracking-tight leading-relaxed">
+                CHOOSE YOUR CHALLENGE
+            </h1>
+<div class="inline-block bg-secondary-container text-on-secondary-container px-4 py-2 border-b-4 border-secondary font-bold text-xl">
+                SELECT DIFFICULTY TO BEGIN
+            </div>
+</header>
+<!-- Difficulty Selection Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+<!-- Easy Card -->
+<div class="group relative bg-surface-container-lowest p-6 pixel-border transition-all hover:-translate-y-2 cursor-pointer border-4 border-transparent hover:border-secondary">
+<div class="absolute -top-4 -right-4 bg-secondary text-white px-3 py-1 font-['Press_Start_2P'] text-[10px] z-10">LVL 1</div>
+<div class="aspect-square w-full mb-6 bg-surface-container flex items-center justify-center relative overflow-hidden">
+<img alt="Green Slime" class="w-32 h-32 image-rendering-pixelated" data-alt="8-bit green slime monster with a friendly expression, pixel art style, vibrant green color, vibrant forest background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJPdyVMM58Ih1DLtlVRztucAvzjm01ZHX-dgam2YYZRb7y35pkfTt5zDmA3D3Mgq0bo71xhdizvy1AR_zRhCOOSDvupoze-hqkSDeGoEU7CqS2YbOoBIHdCsvZniV8Qc9OVB9KluoncnCD6ee1JudZSREEXsX6aTH0RfTHYMqhX_Kyl3M3_ePZLe5yjEYmnA8PFqPEhHr6c5OmnHceryktmRptDfisBFss5TaZLxQrHXavg9s0SX4PFBgC5jv709TEf9GJMHUFvjy8"/>
+</div>
+<h3 class="font-['Press_Start_2P'] text-lg mb-2 text-secondary">EASY</h3>
+<p class="text-xl text-on-surface-variant leading-tight">
+                    Green Slime Forest. 10 Questions. Focused on core concepts and basic logic.
+                </p>
+<div class="mt-6 flex justify-between items-end">
+<div class="text-sm opacity-60">REWARD: 100 XP</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+<!-- Medium Card (Active State Simulation) -->
+<div class="group relative bg-surface-container-lowest p-6 pixel-border-heavy ring-4 ring-on-secondary-fixed transition-all -translate-y-2 cursor-pointer">
+<div class="absolute -top-4 -right-4 bg-on-tertiary-container text-white px-3 py-1 font-['Press_Start_2P'] text-[10px] z-10">LVL 5</div>
+<div class="aspect-square w-full mb-6 bg-primary-container flex items-center justify-center relative overflow-hidden">
+<img alt="Orange Goblin" class="w-32 h-32 image-rendering-pixelated scale-110" data-alt="8-bit orange goblin warrior with a wooden club, pixel art style, mischievous expression, dark cave background with glowing mushrooms" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSHAt5q2RPPGFmWgL8czjg_udFT4_KD_cpiQ5rLoR3e4yvp3O62BOyyQD6saCqPTqpMbVU0-nnBYkyzCm2ZhxOdwH1CgFG3yN9lifXRaw4s8EjYeVseIhLBJ6lxR-QmtgKsSdQSTSvRmJ-AsrJeRMvZIjTiAOc5R3XACUrwKmFnYmb4zogYnJISDR1jKvy-ZqLxyViAkduvFuQIexlv5wQ35EM0-bD_P8-3GoZ05CUasm7ivEyhwMfY1Oek2OnlwDusSwj95172Mxv"/>
+</div>
+<h3 class="font-['Press_Start_2P'] text-lg mb-2 text-primary">MEDIUM</h3>
+<p class="text-xl text-on-surface-variant leading-tight">
+                    Orange Goblin Caves. 25 Questions. Intermediate application of theories.
+                </p>
+<div class="mt-6 flex justify-between items-end">
+<div class="text-sm font-bold text-primary">REWARD: 500 XP</div>
+<span class="material-symbols-outlined text-primary" data-weight="fill">radio_button_checked</span>
+</div>
+</div>
+<!-- Hard Card -->
+<div class="group relative bg-surface-container-lowest p-6 pixel-border transition-all hover:-translate-y-2 cursor-pointer border-4 border-transparent hover:border-tertiary">
+<div class="absolute -top-4 -right-4 bg-tertiary text-white px-3 py-1 font-['Press_Start_2P'] text-[10px] z-10">MAX</div>
+<div class="aspect-square w-full mb-6 bg-tertiary-container/10 flex items-center justify-center relative overflow-hidden">
+<img alt="Red Dragon" class="w-32 h-32 image-rendering-pixelated grayscale group-hover:grayscale-0 transition-all" data-alt="8-bit red dragon breathing fire, pixel art style, dramatic wings, dark volcanic landscape with lava rivers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwpcsA_zM4VcoLdBQlDb48jtG7IUD8rjK0nqGIrahT3L8WfTNB7obhaIQ8ZYX2MECfIupDpZto4rTltBm5RthnWu9rkahGQYYLZ8kGVt0JtYaFvhZHWUJN2oQeao4CIJzZlQ1mpSkyLAgSk1oSwiFYu-3TcpQj89z7liuNnNFVONMOAmmswRktGaf9YPW940LXdnpawFnwyePBPCptwyj_hLH6cVUP0jscC62uof8T1ynnvFS4GJiljGTWbYWRtiRUFV5IR5VPZkEP"/>
+</div>
+<h3 class="font-['Press_Start_2P'] text-lg mb-2 text-tertiary">HARD</h3>
+<p class="text-xl text-on-surface-variant leading-tight">
+                    Red Dragon Peak. 50 Questions. Complex problem solving and critical analysis.
+                </p>
+<div class="mt-6 flex justify-between items-end">
+<div class="text-sm opacity-60">REWARD: 2000 XP</div>
+<span class="material-symbols-outlined text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">warning</span>
+</div>
+</div>
+</div>
+<!-- Configuration Options -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+<div class="bg-surface-container p-8 pixel-border">
+<h4 class="font-['Press_Start_2P'] text-sm mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">timer</span> TEST SETTINGS
+                </h4>
+<div class="space-y-6">
+<div class="flex justify-between items-center border-b-2 border-outline-variant pb-2">
+<label class="text-2xl uppercase">Time Limit</label>
+<select class="bg-surface border-2 border-primary font-['VT323'] text-xl focus:ring-0 rounded-none px-4 py-1">
+<option>15 MINUTES</option>
+<option selected="">30 MINUTES</option>
+<option>UNTIL DEATH</option>
+</select>
+</div>
+<div class="flex justify-between items-center border-b-2 border-outline-variant pb-2">
+<label class="text-2xl uppercase">Permadeath Mode</label>
+<div class="w-12 h-6 bg-outline relative flex items-center px-1 cursor-pointer">
+<div class="w-4 h-4 bg-surface shadow-[2px_2px_0_0_black]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high p-8 pixel-border flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-6xl text-primary mb-4">history_edu</span>
+<p class="text-2xl uppercase max-w-xs">Your last battle lasted 12 minutes against the Slime King.</p>
+<button class="mt-4 text-primary font-bold hover:underline">VIEW REPLAY</button>
+</div>
+</div>
+<!-- Battle Start Button Section -->
+<div class="flex flex-col items-center gap-4">
+<button class="bg-secondary text-on-secondary px-12 py-6 font-['Press_Start_2P'] text-2xl shadow-[0_8px_0_0_#2d5000] active:shadow-none active:translate-y-2 transition-all hover:bg-secondary-fixed hover:text-on-secondary-fixed group">
+<span class="flex items-center gap-4">
+                    BATTLE START
+                    <span class="material-symbols-outlined text-3xl group-hover:translate-x-2 transition-transform">swords</span>
+</span>
+</button>
+<p class="text-on-surface-variant text-lg">READY YOUR GEAR, ACADEMIC HERO.</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#3a4460] dark:bg-[#1b1b1d] rounded-none border-t-4 border-[#1b1b1d]">
+<a class="flex flex-col items-center justify-center text-[#e4e2e4] p-2 hover:bg-[#242e48] transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest">QUESTS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e4e2e4] p-2 hover:bg-[#242e48] transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest">SHOP</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e4e2e4] p-2 hover:bg-[#242e48] transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest">HERO</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#3e6a00] text-[#b5f56c] p-2 scale-105 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest">CONFIG</span>
+</a>
+</nav>
+<!-- Decorative Corner Accents -->
+<div class="fixed top-20 left-4 w-4 h-4 bg-primary hidden md:block"></div>
+<div class="fixed top-20 right-4 w-4 h-4 bg-primary hidden md:block"></div>
+<div class="fixed bottom-24 left-4 w-4 h-4 bg-secondary hidden md:block"></div>
+<div class="fixed bottom-24 right-4 w-4 h-4 bg-secondary hidden md:block"></div>
+</body></html>

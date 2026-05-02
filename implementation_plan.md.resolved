@@ -1,0 +1,52 @@
+# 🎯 Goal: Phase 10 - UI/UX Polish & Micro-Interactions
+
+The goal of this phase is to elevate the overall feel of the RIMS app by adding animations, micro-interactions, and refining the user experience of the Dashboard and Exam interfaces without altering their existing layouts. Finally, we will perform end-to-end testing to squash any lingering bugs.
+
+---
+
+## 📋 Open Questions
+> [!NOTE]
+> Please review these questions and let me know if you have specific preferences!
+- For the **Exam Timer**, when time is running out (< 1 minute), would you prefer a pulsing red animation or just a simple color change?
+- Do you want page transitions (like sliding left/right) when navigating from the Dashboard to the Exam Library, or keep the default instant transitions?
+
+---
+
+## 🛠️ Proposed Implementation Phases
+
+### Phase 1: Animations & Micro-Interactions (Global Polish)
+We will add satisfying, responsive feedback to the core widgets used throughout the app.
+- **`HpBar`**: Upgrade to use `AnimatedContainer` or `TweenAnimationBuilder` so the progress bars smoothly fill up when the dashboard loads or when XP changes, rather than instantly snapping.
+- **`PixelButton` & `PixelCard`**: Implement a subtle "pressed" or hover scale down effect (using `GestureDetector` and `AnimatedScale`) to make interactions feel more tactile and responsive.
+- **`user_dashboard_page.dart`**: Wrap the main sections (Hero, Stats, Quests) in an entry animation (e.g., staggered fade-in and slide-up) so the dashboard feels dynamic when opened.
+
+### Phase 2: Refine User Dashboard (Non-Destructive Polish)
+We will keep your layout exactly as it is, but improve the rendering and data flow.
+- **Avatar/Mascot**: Add a subtle floating animation (up and down) to the avatar/mascot image so the character feels "alive" on the dashboard.
+- **Stats Formatting**: Ensure numbers like XP and Average Score animate/count up to their target values instead of appearing instantly.
+- **Visual Hierarchy**: Refine shadows and contrast on the `PixelCard` and quest items to make them pop more cleanly against the background.
+
+### Phase 3: Exam Taking Experience
+We will make the process of answering questions feel much smoother and more engaging.
+- **Question Transitions**: Wrap the question content area in an `AnimatedSwitcher`. When the user clicks "NEXT" or "PREV", the old question will slide/fade out and the new one will slide/fade in, preventing jarring visual jumps.
+- **Option Selection**: Upgrade the `_buildOption` widget to use an `AnimatedContainer`. When an answer is selected, the border and background color change will transition smoothly over 200ms instead of instantly.
+- **Low Time Warning**: Add a pulsating animation to the timer in the App Bar when the user has less than 60 seconds remaining.
+
+### Phase 4: End-to-End Testing & Bug Squashing
+- Run the full flow: Login -> Dashboard -> Select Exam -> Take Exam -> View Results.
+- Check edge cases: What happens if an exam has no questions? What if the timer hits zero while reading a question?
+- Clean up any UI overflow issues on smaller screen sizes.
+
+---
+
+## ✅ Verification Plan
+
+### Manual Verification
+- Launch the app and verify the dashboard loads with staggered slide-up animations.
+- Check that tapping buttons produces a visual "press" effect.
+- Start a mock exam and verify that selecting options smoothly animates, and clicking "Next" slides the new question into view.
+- Let the timer run low and verify the pulsating warning effect.
+
+> [!IMPORTANT]
+> **User Review Required:**
+> Does this roadmap accurately cover what you'd like to tackle next? If this looks good to you, simply approve and I will begin executing Phase 1 (Animations & Micro-interactions)!

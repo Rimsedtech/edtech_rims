@@ -1,0 +1,2 @@
+./scripts/start_emulators.sh
+dart run upload_to_firestore.dart to run everytime .md file for exam is made

@@ -1,0 +1,90 @@
+{
+  "exams": [
+    {
+      "title": "Quadratic Equations — Mid-Term Test",
+      "description": "Assessment covering factoring, quadratic formula, and graphing of quadratic functions.",
+      "subject": "Mathematics",
+      "group": "Grade 10",
+      "difficultyTier": "medium",
+      "durationMinutes": 25,
+      "createdBy": "admin",
+      "status": "published",
+      "xpReward": 150,
+      "questionCount": 5,
+      "createdAt": "2026-04-24T17:02:03.772751Z",
+      "updatedAt": "2026-04-24T17:02:03.772751Z",
+      "questions": [
+        {
+          "questionText": "What are the roots of the equation $x^2 - 5x + 6 = 0$?",
+          "questionType": "mcq",
+          "options": [
+            "$x = 1$ and $x = 6$",
+            "$x = 2$ and $x = 3$",
+            "$x = -2$ and $x = -3$",
+            "$x = 0$ and $x = 5$"
+          ],
+          "correctAnswer": "$x = 2$ and $x = 3$",
+          "explanation": "Factor the equation as $(x-2)(x-3) = 0$. Setting each factor to zero: $x - 2 = 0 \\Rightarrow x = 2$ and $x - 3 = 0 \\Rightarrow x = 3$.",
+          "points": 2,
+          "order": 1
+        },
+        {
+          "questionText": "The discriminant of a quadratic equation $ax^2 + bx + c = 0$ is given by:",
+          "questionType": "mcq",
+          "options": [
+            "$\\frac{-b}{2a}$",
+            "$\\frac{b^2}{4ac}$",
+            "$b^2 - 4ac$",
+            "$\\sqrt{b^2 - 4ac}$"
+          ],
+          "correctAnswer": "$b^2 - 4ac$",
+          "explanation": "The discriminant formula is $\\Delta = b^2 - 4ac$. It determines the nature and number of roots of a quadratic equation. The other options are parts of the quadratic formula but not the discriminant itself.",
+          "points": 1,
+          "order": 2
+        },
+        {
+          "questionText": "If $\\Delta < 0$ for a quadratic equation, the equation has:",
+          "questionType": "mcq",
+          "options": [
+            "Two distinct real roots",
+            "One repeated real root",
+            "No real roots (two complex roots)",
+            "Infinitely many roots"
+          ],
+          "correctAnswer": "No real roots (two complex roots)",
+          "explanation": "When $\\Delta < 0$, the expression under the square root in the quadratic formula is negative, meaning there are no real solutions. The roots are complex conjugates: $x = \\frac{-b \\pm i\\sqrt{|\\Delta|}}{2a}$.",
+          "points": 1,
+          "order": 3
+        },
+        {
+          "questionText": "The vertex of the parabola $y = 2(x - 3)^2 + 5$ is at:",
+          "questionType": "mcq",
+          "options": [
+            "$(2, 5)$",
+            "$(-3, 5)$",
+            "$(3, 5)$",
+            "$(3, -5)$"
+          ],
+          "correctAnswer": "$(3, 5)$",
+          "explanation": "The vertex form of a parabola is $y = a(x - h)^2 + k$, where $(h, k)$ is the vertex. Here $h = 3$ and $k = 5$, so the vertex is $(3, 5)$.",
+          "points": 2,
+          "order": 4
+        },
+        {
+          "questionText": "The sum of the roots of $3x^2 + 12x - 7 = 0$ is:",
+          "questionType": "mcq",
+          "options": [
+            "$\\frac{12}{3}$",
+            "$-4$",
+            "$\\frac{-7}{3}$",
+            "$4$"
+          ],
+          "correctAnswer": "$-4$",
+          "explanation": "By Vieta's formulas, the sum of roots $= \\frac{-b}{a} = \\frac{-12}{3} = -4$. The product of roots would be $\\frac{c}{a} = \\frac{-7}{3}$.",
+          "points": 2,
+          "order": 5
+        }
+      ]
+    }
+  ]
+}

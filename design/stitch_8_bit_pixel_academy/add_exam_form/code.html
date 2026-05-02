@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCADE_ED - Add Exam</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=VT323&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pixel-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(27,27,29,1);
+        }
+        .pixel-shadow-sm {
+            box-shadow: 2px 2px 0px 0px rgba(27,27,29,1);
+        }
+        .pixel-inset {
+            box-shadow: inset 4px 4px 0px 0px rgba(220, 217, 220, 0.5);
+        }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#8e0f1e",
+                        "on-tertiary-fixed": "#410006",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "primary-container": "#3a4460",
+                        "on-primary-container": "#a7b1d3",
+                        "primary-fixed-dim": "#bcc6e8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#9ad853",
+                        "on-primary-fixed-variant": "#3c4662",
+                        "inverse-surface": "#303032",
+                        "on-secondary-fixed-variant": "#2d5000",
+                        "tertiary-container": "#8b0c1c",
+                        "inverse-primary": "#bcc6e8",
+                        "tertiary": "#64000f",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-bright": "#fbf8fb",
+                        "on-background": "#1b1b1d",
+                        "surface-dim": "#dcd9dc",
+                        "surface-container": "#f0edf0",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-variant": "#e4e2e4",
+                        "secondary": "#3e6a00",
+                        "secondary-container": "#b2f26a",
+                        "outline-variant": "#c6c6ce",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fb",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2ff",
+                        "on-tertiary-container": "#ff9491",
+                        "on-primary-fixed": "#101b34",
+                        "outline": "#76777e",
+                        "on-secondary-fixed": "#0f2000",
+                        "surface-tint": "#545e7b",
+                        "on-error-container": "#93000a",
+                        "primary": "#242e48",
+                        "secondary-fixed": "#b5f56c",
+                        "on-secondary-container": "#416e00",
+                        "surface": "#fbf8fb",
+                        "surface-container-high": "#eae7ea",
+                        "tertiary-fixed-dim": "#ffb3b0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "0px"
+                    },
+                    "fontFamily": {
+                        "headline": ["'Press Start 2P'", "cursive"],
+                        "body": ["'VT323'", "monospace"],
+                        "admin": ["'Space Grotesk'", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#fbf8fb] dark:bg-[#1b1b1d] border-b-4 border-[#3a4460] shadow-[4px_4px_0px_0px_rgba(27,27,29,0.06)]">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#3a4460] dark:text-[#e4e2e4]" data-icon="close">close</span>
+<span class="text-[#3a4460] dark:text-white font-['Press_Start_2P'] text-lg uppercase tracking-tighter">ARCADE_ED</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-secondary-container px-3 py-1 border-2 border-primary text-primary font-admin font-bold text-xs">
+                1500 XP
+            </div>
+</div>
+</header>
+<main class="pt-24 pb-12 px-6 max-w-4xl mx-auto">
+<!-- Breadcrumb / Task Title -->
+<div class="mb-8">
+<h1 class="font-headline text-2xl md:text-3xl text-primary mb-2 uppercase tracking-tighter">New Quest Protocol</h1>
+<p class="font-body text-xl text-on-surface-variant opacity-80">Initialize a new evaluation module for the HERO cohort.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Form -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Main Form Card -->
+<section class="bg-surface-container-lowest p-8 pixel-inset border-2 border-surface-dim">
+<form class="space-y-6">
+<!-- Exam Title -->
+<div>
+<label class="block font-headline text-[10px] text-primary mb-3 uppercase tracking-wider">Exam Title</label>
+<input class="w-full bg-surface-container border-2 border-primary focus:ring-0 focus:border-secondary font-body text-2xl px-4 py-3 placeholder:opacity-30" placeholder="e.g. Quantum Mechanics Final" type="text"/>
+</div>
+<!-- Description -->
+<div>
+<label class="block font-headline text-[10px] text-primary mb-3 uppercase tracking-wider">Description</label>
+<textarea class="w-full bg-surface-container border-2 border-primary focus:ring-0 focus:border-secondary font-body text-xl px-4 py-3 placeholder:opacity-30" placeholder="Brief the heroes on their objective..." rows="4"></textarea>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Category -->
+<div>
+<label class="block font-headline text-[10px] text-primary mb-3 uppercase tracking-wider">Subject Category</label>
+<select class="w-full bg-surface-container border-2 border-primary focus:ring-0 focus:border-secondary font-body text-xl px-4 py-3">
+<option>Math</option>
+<option>Physics</option>
+<option>Chem</option>
+</select>
+</div>
+<!-- Duration -->
+<div>
+<label class="block font-headline text-[10px] text-primary mb-3 uppercase tracking-wider">Duration (Min)</label>
+<div class="flex items-center">
+<input class="w-full bg-surface-container border-2 border-primary border-r-0 focus:ring-0 focus:border-secondary font-body text-xl px-4 py-3" type="number" value="60"/>
+<span class="bg-primary text-on-primary px-4 py-3 font-body text-xl h-full border-2 border-primary">MINS</span>
+</div>
+</div>
+</div>
+<!-- Difficulty Selector -->
+<div>
+<label class="block font-headline text-[10px] text-primary mb-4 uppercase tracking-wider">Difficulty Tier</label>
+<div class="grid grid-cols-3 gap-4">
+<button class="group flex flex-col items-center justify-center p-4 border-2 border-primary hover:bg-secondary-fixed transition-colors active:translate-y-1 pixel-shadow-sm" type="button">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface" data-icon="catching_pokemon">capture</span>
+<span class="font-headline text-[8px] uppercase">Easy</span>
+</button>
+<button class="group flex flex-col items-center justify-center p-4 border-2 border-secondary bg-secondary-fixed pixel-shadow-sm" type="button">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-secondary-container" data-icon="pest_control">pest_control</span>
+<span class="font-headline text-[8px] uppercase">Medium</span>
+</button>
+<button class="group flex flex-col items-center justify-center p-4 border-2 border-primary hover:bg-tertiary-fixed transition-colors active:translate-y-1 pixel-shadow-sm" type="button">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface" data-icon="legendary_component">component_exchange</span>
+<span class="font-headline text-[8px] uppercase">Hard</span>
+</button>
+</div>
+</div>
+</form>
+</section>
+</div>
+<!-- Right Column: Meta & Actions -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Preview / Image Section -->
+<div class="bg-surface-container-high p-4 border-2 border-primary">
+<div class="relative aspect-video mb-4 overflow-hidden border-2 border-primary">
+<img class="w-full h-full object-cover grayscale brightness-75" data-alt="retro pixel art office setup with old computers and neon grid lines floating in dark space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmfnL-_Wa7zQrmhnWU8R-VPy98HE6kXcdtuH_kLsaEs4iVjGuPdJuEKRDWtRdjmDi1mpLA9z5enGCtzBzjlor4VQ1ZZNL8EB9i5SX7a9g4nAnz1vpJkTuuOs9H4G_e2ZcQ56kvhnuhmr7HHvJu0m8XjR6X1_EeP81g_cvaw7IGiPMr2dDO8qMpwyya-6zSW-bbLiJWsgPDfJSHRPXLeXyju-GQus9qnG8R9e8KF7qsJdiBJyRm139nxWrFz4YPv91J1-FOmhBLwmz1"/>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+<div class="absolute bottom-2 left-2 bg-primary text-on-primary px-2 py-1 font-admin text-[10px] font-bold">PREVIEW_V1.0</div>
+</div>
+<p class="font-admin text-sm leading-relaxed text-on-surface-variant">
+                        Quests are visible to all level 5+ heroes immediately upon publication. Ensure all module constraints are verified.
+                    </p>
+</div>
+<!-- Admin Checks -->
+<div class="bg-surface-container-low p-6 border-2 border-outline-variant">
+<h3 class="font-headline text-[10px] text-primary mb-4 uppercase">Verification Checks</h3>
+<ul class="space-y-3 font-admin text-sm">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_box" data-weight="fill">check_box</span>
+<span>Title Integrity Verified</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_box" data-weight="fill">check_box</span>
+<span>Subject Logic Mapped</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+<span class="text-on-surface-variant">Resource Assets Loaded</span>
+</li>
+</ul>
+</div>
+<!-- Action Button -->
+<button class="w-full py-6 bg-secondary text-on-secondary font-headline text-sm border-b-4 border-r-4 border-on-secondary-container hover:bg-secondary-fixed hover:text-on-secondary-container transition-all active:translate-x-1 active:translate-y-1 active:border-0 pixel-shadow">
+                    PUBLISH QUEST
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<footer class="mt-auto py-12 px-6 opacity-30 pointer-events-none select-none">
+<div class="max-w-4xl mx-auto flex justify-between items-end border-t-2 border-surface-dim pt-4">
+<div class="font-admin text-xs uppercase tracking-[0.2em]">
+                System_Ref: ARCADE-ADMIN-0092
+            </div>
+<div class="flex gap-4">
+<div class="w-8 h-8 bg-surface-container-highest"></div>
+<div class="w-8 h-8 bg-surface-container-high"></div>
+<div class="w-8 h-8 bg-surface-container"></div>
+</div>
+</div>
+</footer>
+</body></html>

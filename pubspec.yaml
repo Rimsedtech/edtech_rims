@@ -1,0 +1,70 @@
+name: bitwise_academy
+description: "RIMS — Root Institute of Mathematics Learning Centre"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^9.0.0
+  equatable: ^2.0.5
+
+  # Dependency Injection
+  get_it: ^8.0.0
+  injectable: ^2.5.0
+
+  # Routing
+  go_router: ^14.0.0
+
+  # Firebase (versions will resolve to latest compatible)
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  cloud_firestore: ^5.0.0
+  firebase_storage: ^12.0.0
+
+  # Authentication
+  google_sign_in: ^6.2.0
+
+  # UI & Typography
+  google_fonts: ^6.0.0
+  cached_network_image: ^3.4.0
+
+  # Serialization
+  json_annotation: ^4.9.0
+
+  # Logging
+  logger: ^2.5.0
+  image_picker: ^1.2.1
+  sign_in_with_apple: ^7.0.1
+  crypto: ^3.0.7
+  flutter_math_fork: ^0.7.4
+  flutter_animate: ^4.5.2
+  confetti: ^0.8.0
+  firebase_crashlytics: ^4.3.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Code Generation
+  build_runner: ^2.4.0
+  json_serializable: ^6.9.0
+  injectable_generator: ^2.7.0
+
+  # Testing
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.0
+  fake_cloud_firestore: ^3.1.0
+  firebase_auth_mocks: ^0.14.2
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - logo/

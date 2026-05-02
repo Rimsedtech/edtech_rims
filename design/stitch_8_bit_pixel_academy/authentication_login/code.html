@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BITWISE ACADEMY - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=VT323&amp;family=Space+Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#8e0f1e",
+                    "on-tertiary-fixed": "#410006",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdad8",
+                    "primary-container": "#3a4460",
+                    "on-primary-container": "#a7b1d3",
+                    "primary-fixed-dim": "#bcc6e8",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#9ad853",
+                    "on-primary-fixed-variant": "#3c4662",
+                    "inverse-surface": "#303032",
+                    "on-secondary-fixed-variant": "#2d5000",
+                    "tertiary-container": "#8b0c1c",
+                    "inverse-primary": "#bcc6e8",
+                    "tertiary": "#64000f",
+                    "on-surface": "#1b1b1d",
+                    "surface-container-highest": "#e4e2e4",
+                    "surface-bright": "#fbf8fb",
+                    "on-background": "#1b1b1d",
+                    "surface-dim": "#dcd9dc",
+                    "surface-container": "#f0edf0",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-variant": "#e4e2e4",
+                    "secondary": "#3e6a00",
+                    "secondary-container": "#b2f26a",
+                    "outline-variant": "#c6c6ce",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "background": "#fbf8fb",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#45464d",
+                    "primary-fixed": "#dae2ff",
+                    "on-tertiary-container": "#ff9491",
+                    "on-primary-fixed": "#101b34",
+                    "outline": "#76777e",
+                    "on-secondary-fixed": "#0f2000",
+                    "surface-tint": "#545e7b",
+                    "on-error-container": "#93000a",
+                    "primary": "#242e48",
+                    "secondary-fixed": "#b5f56c",
+                    "on-secondary-container": "#416e00",
+                    "surface": "#fbf8fb",
+                    "surface-container-high": "#eae7ea",
+                    "tertiary-fixed-dim": "#ffb3b0",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f6f3f5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "0px"
+            },
+            "fontFamily": {
+                    "headline": ["'Press Start 2P'", "cursive"],
+                    "body": ["'VT323'", "monospace"],
+                    "label": ["'Space Grotesk'", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .pixel-grid {
+            background-image: linear-gradient(to right, rgba(58, 68, 96, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(58, 68, 96, 0.1) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .pixel-border-outer {
+            box-shadow: 0 4px 0 0 #1b1b1d, 0 -4px 0 0 #1b1b1d, 4px 0 0 0 #1b1b1d, -4px 0 0 0 #1b1b1d;
+        }
+        .pixel-border-inner {
+            box-shadow: inset 4px 4px 0px #ffffff, inset -4px -4px 0px #dcd9dc;
+        }
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #b5f56c;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen font-body flex items-center justify-center relative overflow-hidden">
+<!-- Starry Sky Background -->
+<div class="fixed inset-0 bg-primary z-0">
+<div class="absolute inset-0 pixel-grid opacity-30"></div>
+<!-- Decorative Static Stars -->
+<div class="star top-[10%] left-[15%]"></div>
+<div class="star top-[25%] left-[80%]"></div>
+<div class="star top-[60%] left-[5%] opacity-40"></div>
+<div class="star top-[85%] left-[90%]"></div>
+<div class="star top-[45%] left-[50%] opacity-20"></div>
+<div class="star top-[70%] left-[30%]"></div>
+<div class="star top-[15%] left-[45%] opacity-60"></div>
+</div>
+<!-- Auth Container -->
+<main class="relative z-10 w-full max-w-lg px-4">
+<!-- Brand Title Section -->
+<div class="text-center mb-12">
+<h1 class="font-headline text-2xl md:text-3xl text-secondary-fixed leading-relaxed tracking-tighter drop-shadow-[4px_4px_0px_#242e48]">
+                BITWISE ACADEMY
+            </h1>
+<p class="font-body text-xl text-on-primary-container mt-4 uppercase tracking-[0.2em]">
+                Character Authentication Required
+            </p>
+</div>
+<!-- Login Card -->
+<div class="bg-surface-container-low p-8 pixel-border-outer relative">
+<!-- Decorative Corners -->
+<div class="absolute -top-1 -left-1 w-4 h-4 bg-secondary"></div>
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-secondary"></div>
+<div class="absolute -bottom-1 -left-1 w-4 h-4 bg-secondary"></div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-secondary"></div>
+<div class="space-y-8">
+<!-- Header -->
+<div class="flex items-center space-x-4 border-b-4 border-surface-dim pb-4">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="account_box" style="font-variation-settings: 'FILL' 1;">account_box</span>
+<div>
+<h2 class="font-headline text-sm text-primary uppercase">Player Profile</h2>
+<span class="text-on-surface-variant text-lg">lv. 01 initiate</span>
+</div>
+</div>
+<!-- Form -->
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="block text-primary uppercase font-bold tracking-wider text-sm pl-1">Email_Address</label>
+<div class="relative">
+<input class="w-full bg-white border-4 border-primary p-4 focus:ring-0 focus:border-secondary outline-none font-body text-2xl placeholder:text-surface-dim" placeholder="ENTER_EMAIL_HERE" type="email"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary opacity-30">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-primary uppercase font-bold tracking-wider text-sm pl-1">Secret_Key</label>
+<div class="relative">
+<input class="w-full bg-white border-4 border-primary p-4 focus:ring-0 focus:border-secondary outline-none font-body text-2xl placeholder:text-surface-dim" placeholder="********" type="password"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary opacity-30">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-4 space-y-4">
+<button class="w-full bg-secondary text-on-secondary py-4 font-headline text-sm tracking-widest border-b-8 border-r-8 border-on-secondary-fixed-variant active:border-b-0 active:border-r-0 active:translate-y-1 active:translate-x-1 transition-all" type="submit">
+                            START GAME
+                        </button>
+<div class="flex items-center gap-4 py-2">
+<div class="h-1 bg-surface-dim flex-1"></div>
+<span class="uppercase text-on-surface-variant px-2">OR CONNECT VIA</span>
+<div class="h-1 bg-surface-dim flex-1"></div>
+</div>
+<button class="w-full bg-primary text-secondary-fixed py-4 font-headline text-sm tracking-widest border-b-8 border-r-8 border-[#101b34] flex items-center justify-center gap-3 hover:bg-[#2e3b5e] transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="globe">globe</span>
+                            LOGIN WITH GOOGLE
+                        </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Footer Links -->
+<div class="mt-8 grid grid-cols-2 gap-4">
+<a class="bg-surface-container-highest p-4 text-center border-4 border-primary font-body text-xl hover:bg-secondary-container hover:text-on-secondary-container transition-colors group" href="#">
+<span class="block uppercase opacity-60 text-sm mb-1 group-hover:opacity-100">New Player?</span>
+                CREATE ACCOUNT
+            </a>
+<a class="bg-surface-container-highest p-4 text-center border-4 border-primary font-body text-xl hover:bg-secondary-container hover:text-on-secondary-container transition-colors group" href="#">
+<span class="block uppercase opacity-60 text-sm mb-1 group-hover:opacity-100">Lost Key?</span>
+                RECOVER DATA
+            </a>
+</div>
+<!-- CRT Overlay effect (Decorative only) -->
+<div class="pointer-events-none fixed inset-0 z-50 opacity-[0.03] overflow-hidden">
+<div class="absolute inset-0 bg-repeat bg-[length:100%_4px]" style="background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));"></div>
+</div>
+</main>
+<!-- Side Decoration: Hero Image -->
+<div class="hidden lg:block fixed left-12 bottom-12 z-20 w-48 h-48 pixel-border-outer bg-surface-container-lowest p-2">
+<img class="w-full h-full object-cover" data-alt="8-bit pixel art of a fantasy knight character with shining armor and a green scarf standing in a heroic pose" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJrEy5ZLWPTBV_5Ydug9fFb_zACe1u98t_Q4mCMx-ltsFtlfNnwtywqw4gTz19tY5cVjbm4aifYUMYlJ04a1sWoX0E7HN9exSJLT_BWrZz2r0XG0T0mVntUu9HvyN5uMGXTw5sbgeiApPTBmU-1VSpr_q4Cjyim630TZhzZhcwQjlMvQzeLq2sksHQ2hz2PORSBAhwGJfq-g3FLeP9GPccZ_LcC4YYJ_AzKN3YdW-Rrw-o3bSlrWJcxgX8cR9A2tLt_n3z332l2kuV"/>
+<div class="absolute -top-4 -right-4 bg-tertiary-container text-white px-2 py-1 font-headline text-[10px]">
+            PLAYER 1
+        </div>
+</div>
+<!-- Side Decoration: Quest Log -->
+<div class="hidden lg:block fixed right-12 top-12 z-20 w-64">
+<div class="bg-primary-container p-4 border-4 border-on-primary-container text-on-primary-container">
+<h3 class="font-headline text-[10px] mb-4 border-b border-on-primary-container/30 pb-2">ACTIVE_QUESTS</h3>
+<ul class="space-y-4 font-body text-lg">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary-fixed" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+<span>Link your neural interface to start learning.</span>
+</li>
+<li class="flex items-start gap-2 opacity-50">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span>Unlock Master algorithms (Level 10)</span>
+</li>
+</ul>
+</div>
+</div>
+</body></html>

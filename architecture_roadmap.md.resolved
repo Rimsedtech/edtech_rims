@@ -1,0 +1,56 @@
+# 🗺️ RIMS Architecture Roadmap & Offline Strategy
+
+> **Note to Future Developer / AI Agent:** This document captures the architectural decisions made regarding offline persistence, local caching, and database technology for the RIMS platform. Use this as a guide when continuing development.
+
+---
+
+## 1. The Core Backend: Firebase vs. Supabase
+**Decision:** We are sticking with **Firebase** (Firestore, Auth, Storage).
+**Rationale:** The application is heavily invested in Firebase infrastructure, and its out-of-the-box offline persistence perfectly solves the complex "offline write" requirements we have. Migrating to Supabase would require a massive rewrite of NoSQL repositories to SQL and building custom local-sync engines.
+
+---
+
+## 2. Offline Writes & User State (Currently Implemented)
+**Goal:** If a user completes an exam or their stats change (XP, Coins) while offline, and they abruptly close the app, the state must not be lost. It must sync later when they come online.
+
+**Solution: Firestore Native Offline Persistence**
+We are relying entirely on Firestore's native SQLite local cache to solve this.
+
+*   **How it works:** When you execute a write (e.g., `_firestore.collection('users').doc(id).update({'xp': newXp})`), Firestore immediately updates the local cache (updating the UI instantly) and queues the write.
+*   **Abrupt Closures:** If the app is force-closed, the pending queue is saved locally to the device.
+*   **Reconnection:** The next time the app opens and detects internet, Firestore automatically pushes all pending queued writes to the server in the background. No manual sync logic needed!
+*   **Implementation:** This has been explicitly hardcoded and enabled in `lib/main.dart` via:
+    ```dart
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+    ```
+
+---
+
+## 3. Future Local Caching Strategy: Isar Database
+**Goal:** To save on Firebase read costs and allow instant offline searching/filtering of the Exam Library.
+
+**Decision:** We will use **Isar** (not Hive) for complex local caching in future updates.
+
+**Why Isar over Hive?**
+*   **Hive** is a simple key-value store. It is great for tiny settings (like dark mode), but terrible if you need to query "Show me all HARD difficulty Mathematics exams."
+*   **Isar** is a full NoSQL local database that supports complex queries, indexing, and relationships, making it perfect for mirroring our Firestore `exams` and `questions` collections.
+
+### 📝 Implementation Plan for Next Session (Isar)
+When you are ready to implement local caching for the Exam Library to save on read costs, follow this plan:
+
+1.  **Add Dependencies:** Add `isar`, `isar_flutter_libs`, and `build_runner` to `pubspec.yaml`.
+2.  **Create Isar Collections:** Create Isar models that mirror the `ExamModel` and `QuestionModel` from Firestore.
+    *   *Tip: Use `@Collection()` and map the Firestore string ID to Isar's required integer `Id` (e.g., using `fastHash`).*
+3.  **Sync Logic (Read-Only):**
+    *   Create a background service that triggers on app launch or a "Sync Exams" button.
+    *   Fetch all active exams from Firestore.
+    *   Write/Update them into the local Isar database.
+4.  **Update Repositories:** Modify `ExamRepository` so that `fetchPublishedExams()` reads entirely from the local Isar database instead of querying Firestore directly.
+
+> [!TIP]
+> **Separation of Concerns:** 
+> - Let **Firestore** handle all the complex writing/syncing of user specific data (Attempts, Stats, Quests).
+> - Let **Isar** handle the heavy, read-only caching of the static Exam Library.

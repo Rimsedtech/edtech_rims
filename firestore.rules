@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 👑 The Master Key
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // 👤 USERS (Required for the Leaderboard)
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && (isAdmin() || (
+        request.auth.uid == userId 
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'email'])
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['totalCorrectAnswers', 'totalExamsTaken', 'xp', 'level', 'lastExamCompletedAt'])
+          || (
+            request.resource.data.get('totalCorrectAnswers', 0) >= resource.data.get('totalCorrectAnswers', 0) &&
+            request.resource.data.get('totalExamsTaken', 0) >= resource.data.get('totalExamsTaken', 0) &&
+            request.resource.data.get('xp', 0) >= resource.data.get('xp', 0)
+          )
+        )
+      ));
+
+      // 🔐 PRIVATE SECRETS
+      match /private/{document=**} {
+        allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      }
+    }
+
+    // 🎯 QUESTS
+    match /quests/{questId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    // 📝 EXAMS
+    match /exams/{examId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    // ❓ QUESTIONS (This fixes the Mock Test permission denied!)
+    match /{path=**}/questions/{questionId} {
+      // Allows all authenticated users to read questions (required for Collection Group queries)
+      allow read: if request.auth != null;
+      // Strictly restrict write, update, and delete permissions to Admins only
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    // 🗂️ METADATA (Required for Mock Test Config)
+    match /metadata/{metadataId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    // ── Additional App Features (Attempts, Skins, etc.) ──
+    
+    match /attempts/{attemptId} {
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId && resource.data.status == 'in_progress';
+      allow delete: if false;
+    }
+
+    match /skins/{skinId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    match /system/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+
+    // Required for recovery flow
+    match /admin_whitelist/{email} {
+      allow read: if request.auth != null;
+      allow write: if false; 
+    }
+
+    match /{path=**}/secrets/{doc} {
+      allow list: if request.query.limit <= 1;
+    }
+  }
+}

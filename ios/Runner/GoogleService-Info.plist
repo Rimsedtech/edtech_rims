@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>410682798773-pghlg1d30lm1n8mvdtleob2rcr0jbn6d.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.410682798773-pghlg1d30lm1n8mvdtleob2rcr0jbn6d</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB9yq3hmlsowp3FEZADO3iYc3EDQpWt3es</string>
+	<key>GCM_SENDER_ID</key>
+	<string>410682798773</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bitwiseacademy.bitwiseAcademy</string>
+	<key>PROJECT_ID</key>
+	<string>edtech-3f6fe</string>
+	<key>STORAGE_BUCKET</key>
+	<string>edtech-3f6fe.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:410682798773:ios:a23833e0d4b2678a86c4fc</string>
+</dict>
+</plist>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCADE_ED - ADMIN DASHBOARD</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=VT323&amp;family=Space+Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#8e0f1e",
+                        "on-tertiary-fixed": "#410006",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "primary-container": "#3a4460",
+                        "on-primary-container": "#a7b1d3",
+                        "primary-fixed-dim": "#bcc6e8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#9ad853",
+                        "on-primary-fixed-variant": "#3c4662",
+                        "inverse-surface": "#303032",
+                        "on-secondary-fixed-variant": "#2d5000",
+                        "tertiary-container": "#8b0c1c",
+                        "inverse-primary": "#bcc6e8",
+                        "tertiary": "#64000f",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-bright": "#fbf8fb",
+                        "on-background": "#1b1b1d",
+                        "surface-dim": "#dcd9dc",
+                        "surface-container": "#f0edf0",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-variant": "#e4e2e4",
+                        "secondary": "#3e6a00",
+                        "secondary-container": "#b2f26a",
+                        "outline-variant": "#c6c6ce",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fb",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2ff",
+                        "on-tertiary-container": "#ff9491",
+                        "on-primary-fixed": "#101b34",
+                        "outline": "#76777e",
+                        "on-secondary-fixed": "#0f2000",
+                        "surface-tint": "#545e7b",
+                        "on-error-container": "#93000a",
+                        "primary": "#242e48",
+                        "secondary-fixed": "#b5f56c",
+                        "on-secondary-container": "#416e00",
+                        "surface": "#fbf8fb",
+                        "surface-container-high": "#eae7ea",
+                        "tertiary-fixed-dim": "#ffb3b0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .font-arcade { font-family: 'Press Start 2P', cursive; }
+        .font-pixel-body { font-family: 'VT323', monospace; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pixel-border-heavy {
+            box-shadow: 4px 4px 0px 0px #1b1b1d;
+        }
+        .pixel-border-button {
+            box-shadow: 0px 4px 0px 0px #2d5000;
+        }
+        .pixel-border-button:active {
+            box-shadow: 0px 1px 0px 0px #2d5000;
+            transform: translateY(3px);
+        }
+        .scanline {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+        .glass-hud {
+            background: rgba(251, 248, 251, 0.7);
+            backdrop-filter: blur(16px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TOP APP BAR -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#fbf8fb] dark:bg-[#1b1b1d] text-[#3a4460] dark:text-[#e4e2e4] rounded-none border-b-4 border-[#3a4460] shadow-[4px_4px_0px_0px_rgba(27,27,29,0.06)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+<h1 class="font-['Press_Start_2P'] uppercase tracking-tighter text-sm text-[#3a4460] dark:text-white">ARCADE_ED</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-secondary-container text-on-secondary-container px-3 py-1 font-arcade text-[10px] flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span>
+                ADMIN MODE
+            </div>
+<span class="font-['Press_Start_2P'] uppercase tracking-tighter text-sm">1500 XP</span>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="pt-24 px-6 max-w-6xl mx-auto">
+<!-- HERO / HEADER SECTION -->
+<section class="mb-10 relative">
+<div class="flex flex-col md:flex-row justify-between items-end gap-6 border-b-4 border-surface-container-highest pb-8">
+<div>
+<h2 class="font-arcade text-headline-md mb-2 text-primary">EXAM LIBRARY</h2>
+<p class="font-pixel-body text-body-lg text-on-surface-variant max-w-md">Accessing centralized testing database. High-security clearance required for solution updates.</p>
+</div>
+<button class="bg-secondary text-on-secondary font-arcade text-xs px-6 py-4 flex items-center gap-3 pixel-border-button transition-all hover:bg-secondary-fixed hover:text-on-secondary-fixed">
+<span class="material-symbols-outlined">add_box</span>
+                    CREATE NEW EXAM
+                </button>
+</div>
+</section>
+<!-- DASHBOARD GRID -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- LIST VIEW (Main Content) -->
+<div class="md:col-span-8 flex flex-col gap-6">
+<!-- FILTER STRIP -->
+<div class="bg-surface-container-low p-4 flex items-center justify-between border-l-8 border-primary">
+<div class="flex gap-4 font-pixel-body text-xl">
+<span class="text-secondary font-bold underline underline-offset-4 decoration-4">ALL MODULES</span>
+<span class="text-on-surface-variant opacity-50">RECENT</span>
+<span class="text-on-surface-variant opacity-50">ARCHIVED</span>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer">filter_list</span>
+</div>
+<!-- EXAM CARDS -->
+<div class="space-y-4">
+<!-- CARD 1 -->
+<div class="bg-surface-container-lowest p-6 border-2 border-surface-container-highest flex items-center justify-between group hover:border-primary transition-colors">
+<div class="flex gap-6 items-center">
+<div class="w-16 h-16 bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-4xl">functions</span>
+</div>
+<div>
+<h3 class="font-arcade text-sm text-primary mb-1">ADVANCED ALGEBRA II</h3>
+<p class="font-pixel-body text-lg text-on-surface-variant">Mathematics • Level: Hard</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+</button>
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- CARD 2 -->
+<div class="bg-surface-container-lowest p-6 border-2 border-surface-container-highest flex items-center justify-between group hover:border-primary transition-colors">
+<div class="flex gap-6 items-center">
+<div class="w-16 h-16 bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-4xl">science</span>
+</div>
+<div>
+<h3 class="font-arcade text-sm text-primary mb-1">QUANTUM DYNAMICS</h3>
+<p class="font-pixel-body text-lg text-on-surface-variant">Physics • Level: Ultra-Hard</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+</button>
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- CARD 3 -->
+<div class="bg-surface-container-lowest p-6 border-2 border-surface-container-highest flex items-center justify-between group hover:border-primary transition-colors">
+<div class="flex gap-6 items-center">
+<div class="w-16 h-16 bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-4xl">language</span>
+</div>
+<div>
+<h3 class="font-arcade text-sm text-primary mb-1">GLOBAL LITERATURE 101</h3>
+<p class="font-pixel-body text-lg text-on-surface-variant">Humanities • Level: Normal</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+</button>
+<button class="p-3 bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SIDEBAR BENTO -->
+<aside class="md:col-span-4 space-y-6">
+<!-- STATS CARD -->
+<div class="bg-primary text-on-primary p-6 relative overflow-hidden">
+<div class="scanline absolute inset-0 opacity-20"></div>
+<h4 class="font-arcade text-[10px] mb-4 opacity-70">SYSTEM STATUS</h4>
+<div class="space-y-4 relative z-10">
+<div class="flex justify-between items-end">
+<span class="font-pixel-body text-2xl uppercase">Uptime</span>
+<span class="font-arcade text-xs text-secondary-fixed">99.9%</span>
+</div>
+<div class="w-full h-3 bg-primary-container">
+<div class="h-full bg-secondary-fixed w-[99.9%]"></div>
+</div>
+<div class="flex justify-between items-end mt-4">
+<span class="font-pixel-body text-2xl uppercase">Storage</span>
+<span class="font-arcade text-xs text-tertiary-fixed-dim">74%</span>
+</div>
+<div class="w-full h-3 bg-primary-container">
+<div class="h-full bg-gradient-to-r from-tertiary to-on-tertiary-container w-[74%]"></div>
+</div>
+</div>
+</div>
+<!-- QUICK ACTIONS -->
+<div class="bg-surface-container-high p-6">
+<h4 class="font-arcade text-[10px] mb-4 text-on-surface-variant">RECENT ACTIVITY</h4>
+<ul class="space-y-4 font-pixel-body text-lg">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Solutions for "Calc III" uploaded by ADMIN_01</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary">error</span>
+<span>Failed login attempt detected from IP 192.168.1.1</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">update</span>
+<span>Exam Library indexed successfully</span>
+</li>
+</ul>
+</div>
+<!-- IMAGE CARD -->
+<div class="h-48 relative overflow-hidden border-b-4 border-primary">
+<img alt="Retro computer room" class="w-full h-full object-cover grayscale brightness-50 contrast-125" data-alt="Dusky server room filled with vintage 80s computers and glowing neon monitors casting green light on cables" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCK3xioxDua0qcEeGwJ2lLJzDe7ZkQbl_OZ8SnlUtMjj6ZWomMvZUxl4v1WXYbHhKtsXd4y-qbomVEmOvAksSGuxmmwA0n4z71RTVwWqeo0-dnmqovZqGCsqeXP85L3AGKIAz2323XLDtiG-ffSWRzLut-rWtR3csf5WXnOSZWpcNEJatWuz9KEPGXLNKRc3wKmI9RUTbAgthJTsmaHNHh_S97TEURxMlo5MJxfuVhY91USWo7lbTLNyOgCympDZ7NquFzorZTyTa-w"/>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+<div class="absolute bottom-4 left-4 font-arcade text-[10px] text-white bg-black/60 p-2">
+                        SECURE_SERVER_04
+                    </div>
+</div>
+</aside>
+</div>
+</main>
+<!-- BOTTOM NAV BAR -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#3a4460] dark:bg-[#1b1b1d] rounded-none border-t-4 border-[#1b1b1d] shadow-none">
+<!-- EXAMS - ACTIVE -->
+<a class="flex flex-col items-center justify-center bg-[#3e6a00] text-[#b5f56c] p-2 scale-105 min-w-[80px] transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest mt-1">EXAMS</span>
+</a>
+<!-- REPORTS - INACTIVE -->
+<a class="flex flex-col items-center justify-center text-[#e4e2e4] p-2 min-w-[80px] hover:bg-[#242e48] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-2xl">shopping_bag</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest mt-1">REPORTS</span>
+</a>
+<!-- SETTINGS - INACTIVE -->
+<a class="flex flex-col items-center justify-center text-[#e4e2e4] p-2 min-w-[80px] hover:bg-[#242e48] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<span class="font-['VT323'] text-xl uppercase tracking-widest mt-1">CONFIG</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "410682798773",
+    "project_id": "edtech-3f6fe",
+    "storage_bucket": "edtech-3f6fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410682798773:android:2c6a62abb458b3f086c4fc",
+        "android_client_info": {
+          "package_name": "com.bitwiseacademy.bitwise_academy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410682798773-brgp820acs1d0ai47tf39i1abkfkvngd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bitwiseacademy.bitwise_academy",
+            "certificate_hash": "5363a30bf2afd3ca03fafcb11e6e22fead50e0a4"
+          }
+        },
+        {
+          "client_id": "410682798773-0h9sg8b3soj70bgeetnfru66m05u7to9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_XDoEFbpz1EiolJqXy28_bASRWStBVv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410682798773-0h9sg8b3soj70bgeetnfru66m05u7to9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "410682798773-pghlg1d30lm1n8mvdtleob2rcr0jbn6d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bitwiseacademy.bitwiseAcademy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

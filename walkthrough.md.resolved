@@ -1,0 +1,159 @@
+# Bitwise Academy — Firebase Architecture Map
+
+## Knowledge Graph Summary
+
+I created **40 entities** and **88 relations** in graph memory, covering every layer of the app's Firebase integration.
+
+---
+
+## Firebase Services Used
+
+| Service | Purpose | Emulator Port |
+|---|---|---|
+| **Firebase Auth** | Email/Password, Google, Apple sign-in | 9099 |
+| **Cloud Firestore** | All app data (users, exams, attempts, quests, skins) | 8080 |
+| **Firebase Storage** | Skin images, exam file attachments | 9199 |
+
+---
+
+## Firestore Collections Mapped
+
+```mermaid
+graph TD
+    subgraph Firestore
+        U["users/{uid}"]
+        AW["admin_whitelist/{email}"]
+        E["exams/{examId}"]
+        Q["exams/{examId}/questions/{qId}"]
+        AT["attempts/{attemptId}"]
+        QU["quests/{questId}"]
+        S["skins/{skinId}"]
+    end
+
+    subgraph Storage
+        SS["skins/{filename}"]
+        EA["exam_assets/{examId}/{file}"]
+    end
+
+    E --> Q
+    S -.->|imageUrl| SS
+    E -.->|attachmentUrl| EA
+```
+
+| Collection | Key Fields | Accessed By |
+|---|---|---|
+| `users/{uid}` | uid, email, displayName, role, xp, level, coins, streakDays, avatarUrl, unlockedAvatars[], createdAt, lastLoginAt | AuthRepositoryImpl, UserRepository |
+| `admin_whitelist/{email}` | *(existence check only)* | AuthRepositoryImpl |
+| `exams/{examId}` | title, description, subject, difficultyTier, status, xpReward, questionCount | ExamRepository |
+| `exams/{examId}/questions/{qId}` | questionText, questionType, options[], correctAnswer, explanation, points, order | ExamRepository |
+| `attempts/{attemptId}` | userId, examId, score, totalPoints, xpEarned, status, answers{} | AttemptRepository |
+| `quests/{questId}` | title, description, type, targetValue, xpReward, iconName, isActive | QuestRepository |
+| `skins/{skinId}` | name, price, imageUrl, createdAt | StoreRepository |
+
+---
+
+## Data Flow Architecture
+
+```mermaid
+graph LR
+    subgraph UI["UI Screens"]
+        LP[LoginPage]
+        RP[RegisterPage]
+        UD[UserDashboard]
+        EL[ExamListPage]
+        ET[ExamTakingPage]
+        QP[QuestPage]
+        AS[AvatarStorePage]
+        AD[AdminDashboard]
+        CE[CreateExamPage]
+        EM[ExamMgmtPage]
+        CQ[CreateQuestionsPage]
+        US[UploadSkinPage]
+    end
+
+    subgraph State["BLoCs / Cubits"]
+        AB[AuthBloc]
+        EB[ExamBloc]
+        ATB[AttemptBloc]
+        QB[QuestBloc]
+        ASC[AdminStatsCubit]
+    end
+
+    subgraph Data["Repositories"]
+        AR[AuthRepositoryImpl]
+        UR[UserRepository]
+        ER[ExamRepository]
+        ATR[AttemptRepository]
+        QR[QuestRepository]
+        SR[StoreRepository]
+    end
+
+    subgraph Firebase["Firebase"]
+        FA[FirebaseAuth]
+        FF[Firestore]
+        FS[Storage]
+    end
+
+    LP & RP --> AB --> AR --> FA & FF
+    UD --> AB
+    EL --> EB --> ER --> FF & FS
+    ET --> ATB --> ATR & ER
+    QP --> QB --> QR --> FF
+    AS -->|direct call| SR & UR
+    AD --> ASC --> ER & UR
+    CE & EM & CQ --> ER
+    US --> SR --> FF & FS
+```
+
+---
+
+## Authentication Flows
+
+### Email Sign-Up Flow
+1. `LoginPage` → dispatches `AuthCreateAccountRequested` → **AuthBloc**
+2. **AuthBloc** → calls `createAccountWithEmail()` → **AuthRepositoryImpl**
+3. **AuthRepositoryImpl** → calls `createAccountWithEmail()` → **AuthRemoteDataSource** → **FirebaseAuth**
+4. Checks `admin_whitelist/{email}` document existence → determines role
+5. Writes user profile to `users/{uid}` with role, xp=0, level=1, coins=0
+6. Returns `UserEntity` → **AuthBloc** emits `AuthAuthenticated`
+7. **AppRouter** detects auth state change → redirects to dashboard
+
+### Google/Apple Sign-In Flow
+1. OAuth flow via GoogleSignIn / SignInWithApple SDK
+2. Firebase `signInWithCredential()` with OAuth token
+3. Check if `users/{uid}` doc exists:
+   - **New user**: Create profile (check admin_whitelist for role)
+   - **Existing user**: Update `lastLoginAt` only
+
+---
+
+## Missing Links Identified
+
+> [!WARNING]
+> ### 1. No StoreBloc/StoreCubit
+> `AvatarStorePage` calls `StoreRepository` and `UserRepository` directly, bypassing the BLoC pattern used by every other feature. This breaks separation of concerns and makes the store harder to test.
+
+> [!WARNING]
+> ### 2. No DashboardBloc/DashboardCubit
+> `UserDashboardPage` appears to rely on `AuthBloc`'s state for user data rather than having its own state management for fetching stats, recent attempts, or quest progress.
+
+> [!WARNING]
+> ### 3. Quest Completion → XP Pipeline Not Wired
+> `QuestBloc` depends only on `QuestRepository`. There is no connection to `UserRepository.awardXp()`, meaning quest completion doesn't appear to automatically award XP or trigger level-ups. This pipeline would need to be manually orchestrated.
+
+> [!IMPORTANT]
+> ### 4. No Real-Time Listeners
+> All Firestore reads use one-shot `.get()` calls. No `snapshots()` streams are used anywhere. This means:
+> - UI won't auto-update if an admin changes data while a student is viewing it
+> - Multi-device sync won't work without manual refresh
+> - The AvatarStorePage already has a "Retry/Refresh" workaround for this
+
+---
+
+## Summary Stats
+
+- **40 graph entities** created (app, 3 Firebase services, 6 repositories, 5 BLoCs, 6 data models, 12 UI screens, 7 Firestore collections, 2 Storage paths, + DI and Router)
+- **88 relations** mapped (dependency chains, data flows, routing, read/write patterns)
+- **3 Firebase services** integrated: Auth, Firestore, Storage
+- **7 Firestore collections** + 1 sub-collection documented
+- **4 architectural gaps** identified
