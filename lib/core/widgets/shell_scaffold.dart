@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 import 'package:bitwise_academy/core/constants/app_colors.dart';
 import 'package:bitwise_academy/core/constants/app_spacing.dart';
@@ -16,10 +17,10 @@ import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 /// consistent with the Neo-Arcade Editorial design system.
 ///
 /// Implements cross-tab chronological history using `_tabHistory`
-/// to retrace tabs when the back button is pressed. The `PopScope` handles
-/// deep link back navigation first, then tab history, and finally triggers
-/// a 2000ms "Double-Tap-to-Exit" safeguard when the user has returned
-/// to the root tab.
+/// to retrace tabs when the back button is pressed. Uses
+/// [BackButtonInterceptor] to bypass the known go_router Android
+/// PopScope bug, handling deep link pops, tab rewinds, and the
+/// 2000ms "Double-Tap-to-Exit" safeguard seamlessly.
 class ShellScaffold extends StatefulWidget {
   final Widget child;
 
@@ -40,9 +41,39 @@ class _ShellScaffoldState extends State<ShellScaffold> {
   bool _exitPending = false;
 
   @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(_myInterceptor, context: context);
+  }
+
+  @override
   void dispose() {
+    BackButtonInterceptor.remove(_myInterceptor);
     _exitTimer?.cancel();
     super.dispose();
+  }
+
+  /// Custom hardware back interceptor.
+  /// Bypasses the Flutter element tree to fix go_router bugs.
+  bool _myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    // Check 1: Internal Navigator (e.g., deep links within a tab)
+    if (GoRouter.of(context).canPop()) {
+      GoRouter.of(context).pop();
+      return true;
+    }
+
+    // Check 2: Custom Tab History
+    if (_tabHistory.length > 1) {
+      setState(() {
+        _tabHistory.removeLast();
+      });
+      context.go(_tabHistory.last);
+      return true;
+    }
+
+    // Check 3: Root Tab -> Exit Safeguard
+    _handleFinalBackPress();
+    return true; // Always return true to block default OS exit
   }
 
   void _handleFinalBackPress() {
@@ -126,84 +157,57 @@ class _ShellScaffoldState extends State<ShellScaffold> {
         ),
     ];
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, _) {
-        if (didPop) return;
-
-        // Check 1: Internal Navigator (e.g., deep links within a tab)
-        if (GoRouter.of(context).canPop()) {
-          GoRouter.of(context).pop();
-          return;
-        }
-
-        // Check 2: Custom Tab History
-        if (_tabHistory.length > 1) {
-          setState(() {
-            _tabHistory.removeLast();
-          });
-          context.go(_tabHistory.last);
-          return;
-        }
-
-        // Check 3: Root Tab -> Exit Safeguard
-        _handleFinalBackPress();
-      },
-      child: Scaffold(
-        body: widget.child,
-        bottomNavigationBar: Container(
-          height: AppSpacing.bottomNavHeight,
-          decoration: const BoxDecoration(
-            color: AppColors.primaryContainer,
-            border: Border(
-              top: BorderSide(
-                color: AppColors.onSurface,
-                width: AppSpacing.borderThick,
-              ),
+    return Scaffold(
+      body: widget.child,
+      bottomNavigationBar: Container(
+        height: AppSpacing.bottomNavHeight,
+        decoration: const BoxDecoration(
+          color: AppColors.primaryContainer,
+          border: Border(
+            top: BorderSide(
+              color: AppColors.onSurface,
+              width: AppSpacing.borderThick,
             ),
           ),
-          child: Row(
-            children: List<Widget>.generate(items.length, (int index) {
-              final _NavItem item = items[index];
-              final bool isActive =
-                  currentIndex == _getOriginalIndex(item.route);
+        ),
+        child: Row(
+          children: List<Widget>.generate(items.length, (int index) {
+            final _NavItem item = items[index];
+            final bool isActive = currentIndex == _getOriginalIndex(item.route);
 
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => _onBottomNavTapped(item.route),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? AppColors.secondary
-                          : Colors.transparent,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          item.icon,
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => _onBottomNavTapped(item.route),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  decoration: BoxDecoration(
+                    color: isActive ? AppColors.secondary : Colors.transparent,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        item.icon,
+                        color: isActive
+                            ? AppColors.secondaryFixed
+                            : AppColors.surfaceContainerHighest,
+                        size: 28,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        item.label,
+                        style: AppTypography.labelLg.copyWith(
                           color: isActive
                               ? AppColors.secondaryFixed
                               : AppColors.surfaceContainerHighest,
-                          size: 28,
                         ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          item.label,
-                          style: AppTypography.labelLg.copyWith(
-                            color: isActive
-                                ? AppColors.secondaryFixed
-                                : AppColors.surfaceContainerHighest,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            }),
-          ),
+              ),
+            );
+          }),
         ),
       ),
     );

@@ -46,6 +46,7 @@ dependencies:
   flutter_animate: ^4.5.2
   confetti: ^0.8.0
   firebase_crashlytics: ^4.3.10
+  back_button_interceptor: ^8.0.4
 
 dev_dependencies:
   flutter_test:
