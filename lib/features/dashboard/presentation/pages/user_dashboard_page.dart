@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,13 +38,6 @@ class _UserDashboardPageState extends State<UserDashboardPage>
   late final AnimationController _floatController;
   late final Animation<double> _floatAnimation;
 
-  /// Stateful timer for the 2000ms exit window.
-  /// Cancelled in [dispose] to guarantee async safety.
-  Timer? _exitTimer;
-
-  /// True while the first back-press has been received and the timer is live.
-  bool _exitPending = false;
-
   @override
   void initState() {
     super.initState();
@@ -61,212 +52,170 @@ class _UserDashboardPageState extends State<UserDashboardPage>
 
   @override
   void dispose() {
-    // Cancel the exit timer to prevent setState-after-dispose crashes.
-    _exitTimer?.cancel();
     _floatController.dispose();
     super.dispose();
   }
 
-  /// Handles back-press events strictly on the Start Destination.
-  ///
-  /// - First press: shows a Snackbar and starts a 2000ms [Timer].
-  /// - Second press within the window: exits the app gracefully.
-  /// - The timer resets [_exitPending] on expiry, so a slow double-tap
-  ///   never triggers an unintended exit.
-  void _handleBackPress(BuildContext context) {
-    if (_exitPending) {
-      _exitTimer?.cancel();
-      SystemNavigator.pop();
-    } else {
-      setState(() => _exitPending = true);
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(
-              'Press back again to exit',
-              style: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
-            ),
-            backgroundColor: AppColors.surfaceContainerLow,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(milliseconds: 2000),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-          ),
-        );
-      _exitTimer = Timer(const Duration(milliseconds: 2000), () {
-        if (mounted) setState(() => _exitPending = false);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // PopScope is restricted to this Start Destination ('/') only.
-    // canPop: false intercepts the back gesture per SKILL.md spec;
-    // onPopInvokedWithResult uses the modern (non-deprecated) API.
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, _) {
-        if (!didPop) _handleBackPress(context);
-      },
-      child: BlocBuilder<DashboardCubit, DashboardState>(
-        builder: (BuildContext context, DashboardState dashState) {
-          if (dashState is DashboardLoading || dashState is DashboardInitial) {
-            return const Scaffold(
-              backgroundColor: AppColors.surface,
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
+    // The Double-Tap-to-Exit safeguard is handled by ShellScaffold
+    // (the parent) since context.go() tab switching replaces routes,
+    // making this the effective root for the back stack.
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (BuildContext context, DashboardState dashState) {
+        if (dashState is DashboardLoading || dashState is DashboardInitial) {
+          return const Scaffold(
+            backgroundColor: AppColors.surface,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-          if (dashState is DashboardError) {
-            return Scaffold(
-              backgroundColor: AppColors.surface,
-              body: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'FAILED TO LOAD DASHBOARD',
-                      style: AppTypography.headlineXs.copyWith(
-                        color: AppColors.error,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      dashState.message,
-                      style: AppTypography.bodyLg.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          final loaded = dashState as DashboardLoaded;
-          final user = loaded.user;
-
-          return BlocListener<AttemptBloc, AttemptState>(
-            listener: (context, state) {
-              if (state is AttemptInProgress &&
-                  state.exam.id.startsWith('random_mock_')) {
-                context.go('/exams/${state.exam.id}/take');
-              } else if (state is AttemptFailure) {
-                showDialog<void>(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    backgroundColor: Colors.transparent,
-                    contentPadding: EdgeInsets.zero,
-                    content: PixelCard(
-                      showShadow: true,
-                      badge: 'NO DATA',
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.search_off,
-                            color: AppColors.error,
-                            size: 48,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          Text(
-                            'NO QUESTIONS FOUND',
-                            style: AppTypography.headlineSm.copyWith(
-                              color: AppColors.error,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(
-                            state.message,
-                            style: AppTypography.bodyLg.copyWith(
-                              color: AppColors.onSurface,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          PixelButton(
-                            label: 'BACK TO BASE',
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            isPrimary: false,
-                            width: double.infinity,
-                          ),
-                        ],
-                      ),
+        if (dashState is DashboardError) {
+          return Scaffold(
+            backgroundColor: AppColors.surface,
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'FAILED TO LOAD DASHBOARD',
+                    style: AppTypography.headlineXs.copyWith(
+                      color: AppColors.error,
                     ),
                   ),
-                );
-              }
-            },
-            child: Scaffold(
-              backgroundColor: AppColors.surface,
-              appBar: _buildAppBar(context, user.xp, isAdmin: user.isAdmin),
-              body: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  children: [
-                    // ── Hero Section ──
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutCubic,
-                      builder: (context, val, child) => Transform.translate(
-                        offset: Offset(0, 30 * (1 - val)),
-                        child: Opacity(opacity: val, child: child),
-                      ),
-                      child: _buildHeroSection(
-                        context,
-                        userName: user.displayName,
-                        level: user.level,
-                        streakDays: user.streakDays,
-                        user: user,
-                      ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    dashState.message,
+                    style: AppTypography.bodyLg.copyWith(
+                      color: AppColors.onSurfaceVariant,
                     ),
-                    const SizedBox(height: AppSpacing.xl),
-
-                    // ── Stats HP Bars ──
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutCubic,
-                      builder: (context, val, child) => Transform.translate(
-                        offset: Offset(0, 40 * (1 - val)),
-                        child: Opacity(opacity: val, child: child),
-                      ),
-                      child: _buildStatsGrid(
-                        user.xp,
-                        user.level,
-                        loaded.testsCompleted,
-                        loaded.averageScore,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-
-                    // ── Subject Grid + Active Quests ──
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutCubic,
-                      builder: (context, val, child) => Transform.translate(
-                        offset: Offset(0, 50 * (1 - val)),
-                        child: Opacity(opacity: val, child: child),
-                      ),
-                      child: _buildBottomSection(context),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           );
-        },
-      ), // end BlocBuilder
-    ); // end PopScope
+        }
+
+        final loaded = dashState as DashboardLoaded;
+        final user = loaded.user;
+
+        return BlocListener<AttemptBloc, AttemptState>(
+          listener: (context, state) {
+            if (state is AttemptInProgress &&
+                state.exam.id.startsWith('random_mock_')) {
+              context.go('/exams/${state.exam.id}/take');
+            } else if (state is AttemptFailure) {
+              showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  backgroundColor: Colors.transparent,
+                  contentPadding: EdgeInsets.zero,
+                  content: PixelCard(
+                    showShadow: true,
+                    badge: 'NO DATA',
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.search_off,
+                          color: AppColors.error,
+                          size: 48,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          'NO QUESTIONS FOUND',
+                          style: AppTypography.headlineSm.copyWith(
+                            color: AppColors.error,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          state.message,
+                          style: AppTypography.bodyLg.copyWith(
+                            color: AppColors.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        PixelButton(
+                          label: 'BACK TO BASE',
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          isPrimary: false,
+                          width: double.infinity,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.surface,
+            appBar: _buildAppBar(context, user.xp, isAdmin: user.isAdmin),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                children: [
+                  // ── Hero Section ──
+                  TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0.0, end: 1.0),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, val, child) => Transform.translate(
+                      offset: Offset(0, 30 * (1 - val)),
+                      child: Opacity(opacity: val, child: child),
+                    ),
+                    child: _buildHeroSection(
+                      context,
+                      userName: user.displayName,
+                      level: user.level,
+                      streakDays: user.streakDays,
+                      user: user,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // ── Stats HP Bars ──
+                  TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0.0, end: 1.0),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, val, child) => Transform.translate(
+                      offset: Offset(0, 40 * (1 - val)),
+                      child: Opacity(opacity: val, child: child),
+                    ),
+                    child: _buildStatsGrid(
+                      user.xp,
+                      user.level,
+                      loaded.testsCompleted,
+                      loaded.averageScore,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // ── Subject Grid + Active Quests ──
+                  TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0.0, end: 1.0),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, val, child) => Transform.translate(
+                      offset: Offset(0, 50 * (1 - val)),
+                      child: Opacity(opacity: val, child: child),
+                    ),
+                    child: _buildBottomSection(context),
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ); // end BlocBuilder
   }
 
   PreferredSizeWidget _buildAppBar(
