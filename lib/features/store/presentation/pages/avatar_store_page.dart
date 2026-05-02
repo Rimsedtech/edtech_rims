@@ -238,15 +238,9 @@ class _AvatarStorePageState extends State<AvatarStorePage> {
                                             return;
                                           }
                                           if (isUnlocked) {
-                                            _handleEquip(
-                                              user.uid,
-                                              skin,
-                                            );
+                                            _handleEquip(user.uid, skin);
                                           } else {
-                                            _handlePurchase(
-                                              user.uid,
-                                              skin,
-                                            );
+                                            _handlePurchase(user.uid, skin);
                                           }
                                         },
                                       );
@@ -274,10 +268,7 @@ class _AvatarStorePageState extends State<AvatarStorePage> {
     );
   }
 
-  Future<void> _handlePurchase(
-    String uid,
-    SkinModel skin,
-  ) async {
+  Future<void> _handlePurchase(String uid, SkinModel skin) async {
     final storeCubit = context.read<StoreCubit>();
     final authBloc = context.read<AuthBloc>();
     final messenger = ScaffoldMessenger.of(context);
@@ -303,10 +294,7 @@ class _AvatarStorePageState extends State<AvatarStorePage> {
     }
   }
 
-  Future<void> _handleEquip(
-    String uid,
-    SkinModel skin,
-  ) async {
+  Future<void> _handleEquip(String uid, SkinModel skin) async {
     final storeCubit = context.read<StoreCubit>();
     final authBloc = context.read<AuthBloc>();
     final messenger = ScaffoldMessenger.of(context);
