@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:bitwise_academy/core/constants/app_typography.dart';
 
 /// Reusable widget that renders mixed text+LaTeX strings.
 ///
@@ -73,7 +74,7 @@ class LatexText extends StatelessWidget {
                   segments.first.content,
                   style:
                       style?.copyWith(color: Colors.red) ??
-                      const TextStyle(color: Colors.red),
+                      AppTypography.bodyMd.copyWith(color: Colors.red),
                 ),
               ),
             ),
@@ -110,7 +111,7 @@ class LatexText extends StatelessWidget {
                             color: Colors.red,
                             fontStyle: FontStyle.italic,
                           ) ??
-                          const TextStyle(
+                          AppTypography.bodyMd.copyWith(
                             color: Colors.red,
                             fontStyle: FontStyle.italic,
                           ),

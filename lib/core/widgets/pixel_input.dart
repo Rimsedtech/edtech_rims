@@ -51,14 +51,12 @@ class PixelInput extends StatelessWidget {
           validator: validator,
           keyboardType: keyboardType,
           onChanged: onChanged,
-          style: AppTypography.bodyLg.copyWith(
-            fontSize: 24,
+          style: AppTypography.bodyXl.copyWith(
             color: AppColors.onSurface,
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: AppTypography.bodyLg.copyWith(
-              fontSize: 24,
+            hintStyle: AppTypography.bodyXl.copyWith(
               color: AppColors.surfaceDim,
             ),
             filled: true,

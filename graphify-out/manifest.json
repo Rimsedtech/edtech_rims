@@ -1,0 +1,282 @@
+{
+  "/Users/rimsedtech/Development/gamify/app/lib/firebase_options.dart": {
+    "mtime": 1777733699.1949642,
+    "hash": "9a3a77f8765081e0b9b637cd285ae756"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/main.dart": {
+    "mtime": 1777300776.257231,
+    "hash": "3651ce34c30e672fcb46ff42758be278"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/app.dart": {
+    "mtime": 1777453150.1947265,
+    "hash": "f4a9f18c0a413165016f4954c93ee21c"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/di/injection.dart": {
+    "mtime": 1778665832.573951,
+    "hash": "f8842bc96c00bfd6044c70c49b1b81c2"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/constants/app_constants.dart": {
+    "mtime": 1777370060.311649,
+    "hash": "21a01b6ea7873c0308249177ee984b83"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/constants/app_colors.dart": {
+    "mtime": 1777218325.6791806,
+    "hash": "44fe808d818d2cbc5565d715222ce2b9"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/constants/app_typography.dart": {
+    "mtime": 1777894790.2941587,
+    "hash": "a61be31fa0d6b923f8c4e53195924dc9"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/constants/app_spacing.dart": {
+    "mtime": 1777218325.6792514,
+    "hash": "93a0ad4418939ba6b9373a4e77167f70"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/utils/logger.dart": {
+    "mtime": 1777295221.8632598,
+    "hash": "254b4113f8323715f953ac6571e73db6"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/utils/validators.dart": {
+    "mtime": 1777218325.6808558,
+    "hash": "1090ecb34eef48a87fcf30e83a267891"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/utils/firebase_interceptor.dart": {
+    "mtime": 1777375727.9878685,
+    "hash": "12422878f19c1ba6fe1612d8e0437598"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/theme/app_theme.dart": {
+    "mtime": 1777218411.9221885,
+    "hash": "e7d22b17aa193d9b4e42f01b62acf46c"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/errors/app_exception.dart": {
+    "mtime": 1777982742.427038,
+    "hash": "07dd15b7f0be8abc06c43effb8faebc3"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/errors/result.dart": {
+    "mtime": 1778148084.2604058,
+    "hash": "ed859610244378c0248905a3b3cea73a"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/services/auth_service.dart": {
+    "mtime": 1778149135.4901192,
+    "hash": "9806135db71e8a704f05489026810d86"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/services/feature_flag_service.dart": {
+    "mtime": 1777218411.9220846,
+    "hash": "d88e0eac998ec7404cd4f8879edbff23"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/hp_bar.dart": {
+    "mtime": 1777218411.9224958,
+    "hash": "4f47a42f4320dbd492def79bd97754fb"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_progress_bar.dart": {
+    "mtime": 1777218411.9398336,
+    "hash": "9a2b557d78e81a71385369ddf94edca0"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_typography.dart": {
+    "mtime": 1777894840.1515586,
+    "hash": "235f83443ec0f022dc129ffaafc15f41"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/feature_toggle.dart": {
+    "mtime": 1777218411.9223964,
+    "hash": "85fad8027e98444e0f35c1d41c48feea"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/quest_celebration_overlay.dart": {
+    "mtime": 1777218411.9401107,
+    "hash": "8636aaabff2abfd624d54e4c4b5df007"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/latex_text.dart": {
+    "mtime": 1777974584.7648396,
+    "hash": "4e0e7a3abcb56f38063df98aac5f1f9b"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/question_view.dart": {
+    "mtime": 1777218411.9240139,
+    "hash": "f92fbd12dbe019b5eecf889779112063"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/mock_test_config_sheet.dart": {
+    "mtime": 1777732224.7641413,
+    "hash": "beea733ef36884be88d34fd8cec6ba18"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/placeholder_page.dart": {
+    "mtime": 1777218325.6814327,
+    "hash": "7b9aa49f2764bf51575e272dd8197b63"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_card.dart": {
+    "mtime": 1777894801.0529623,
+    "hash": "ef9b52e0de5fee43194343f2f59e4878"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_button.dart": {
+    "mtime": 1777894769.2537324,
+    "hash": "96f8935f32752e122ca821f89cc139f4"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_input.dart": {
+    "mtime": 1777894821.989308,
+    "hash": "afb4bb68aa6aa0303e6b94974d36c7d1"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/pixel_container.dart": {
+    "mtime": 1777218411.9233127,
+    "hash": "77e3b1a3a6149d2a4d5beffd3eebbc25"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/widgets/shell_scaffold.dart": {
+    "mtime": 1777753377.9151723,
+    "hash": "e1af315d47a35ab786765b372f0536f6"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/core/router/app_router.dart": {
+    "mtime": 1778665859.1897213,
+    "hash": "4a46d8c5ecdc011fef15c2e68fb16336"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/data/datasources/auth_remote_datasource.dart": {
+    "mtime": 1777218411.9251075,
+    "hash": "27d3e5d4d2aa9e275d2e050af502e3eb"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/data/repositories/auth_repository_impl.dart": {
+    "mtime": 1777799362.8895175,
+    "hash": "62052a827e28f2fcfe69d66f66da95bc"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/domain/repositories/auth_repository.dart": {
+    "mtime": 1777317265.299129,
+    "hash": "cc0be2317bf630e3ffbf431b6ceb0474"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/cubit/auth_form_state.dart": {
+    "mtime": 1778665606.1270525,
+    "hash": "607822b4c3581c09b059c58d005a81ea"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/cubit/auth_form_cubit.dart": {
+    "mtime": 1778665640.8081043,
+    "hash": "5c532faf0e12e0520dd17d2116013f2f"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/pages/register_page.dart": {
+    "mtime": 1778665974.528285,
+    "hash": "b54fba0b32ce9fa4d084c5c5bcf85463"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/pages/recovery_page.dart": {
+    "mtime": 1778665985.9702039,
+    "hash": "2e123f84699bf464fa9205426b8818ca"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/pages/login_page.dart": {
+    "mtime": 1778665890.5732632,
+    "hash": "1e63925a6dfcf83872010f00882d9c78"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/auth/presentation/bloc/auth_bloc.dart": {
+    "mtime": 1778666311.3695836,
+    "hash": "f60374e0cc8b11cb129848d7cf5fd887"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/data/repositories/exam_repository.dart": {
+    "mtime": 1778663077.186853,
+    "hash": "1fa209d07f4778b488545853124ae2de"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/data/repositories/attempt_repository.dart": {
+    "mtime": 1777897312.0608578,
+    "hash": "75f51c385d943dee9c17811d3e34105d"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/data/services/mock_test_service.dart": {
+    "mtime": 1778149121.967048,
+    "hash": "62bd651497db4342c7fbb97c9bdbe4e7"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/presentation/pages/exam_results_page.dart": {
+    "mtime": 1778663031.2054203,
+    "hash": "63895e4f8d46797f2c268990ec0fab61"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/presentation/pages/exam_taking_page.dart": {
+    "mtime": 1777732224.9034631,
+    "hash": "19c82b520c45eb9bc8ae8d0a853c9694"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/exam_library/presentation/bloc/attempt_bloc.dart": {
+    "mtime": 1778662933.9081216,
+    "hash": "a3e030044ebec7e02ca6311e35ec441f"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/cubit/admin_stats_cubit.dart": {
+    "mtime": 1778148308.8822393,
+    "hash": "15f37ee2284b2d0b51dfb770bbd4dd1a"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/pages/create_questions_page.dart": {
+    "mtime": 1778148160.5815184,
+    "hash": "977c93c635c1902753d44886a257053b"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/pages/create_exam_page.dart": {
+    "mtime": 1778148144.6239586,
+    "hash": "b65f66c8c7f9c2e4cc93ed71a4051089"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/pages/exam_management_page.dart": {
+    "mtime": 1778148181.5204544,
+    "hash": "b21aebc9961228745469327b059dcbd4"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/pages/admin_dashboard_page.dart": {
+    "mtime": 1777296349.1792765,
+    "hash": "9a9f1540f1d8c4e016e9dca54408a3b9"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/admin/presentation/pages/admin_upload_skin_page.dart": {
+    "mtime": 1778148329.3643668,
+    "hash": "02f612444de282e0c240dd6f48dcc7d8"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/leaderboard/presentation/pages/leaderboard_page.dart": {
+    "mtime": 1777974487.2604685,
+    "hash": "6d5267f9da078853cb382d139ba89e59"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/leaderboard/presentation/bloc/leaderboard_bloc.dart": {
+    "mtime": 1778148124.7814858,
+    "hash": "7a87f72ef741fffeab213d0fb905768e"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/dashboard/presentation/cubit/dashboard_cubit.dart": {
+    "mtime": 1778148126.7975607,
+    "hash": "c271c89e2ea21ea34ce02a91a288e84b"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/dashboard/presentation/pages/user_dashboard_page.dart": {
+    "mtime": 1777894904.9379275,
+    "hash": "74fcc9063d61f07cbb42e10a24c44c7f"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/quest/data/repositories/quest_repository.dart": {
+    "mtime": 1777897312.0604181,
+    "hash": "529b63204193d57ac20238d7b05322c1"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/quest/presentation/pages/quest_page.dart": {
+    "mtime": 1777894916.4239073,
+    "hash": "c608296551dc8bc240eb2afce8daecc5"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/quest/presentation/bloc/quest_bloc.dart": {
+    "mtime": 1778663006.0932488,
+    "hash": "c7808fb5f8ed45aee353f0c34487e7fc"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/store/data/repositories/store_repository.dart": {
+    "mtime": 1777897312.0598683,
+    "hash": "3ae9ea385d237445067c1a0ec129bc7f"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/store/data/models/skin_model.dart": {
+    "mtime": 1777324819.6107907,
+    "hash": "f8bc930b2f72cd36ad59b4e418413b39"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/store/presentation/cubit/store_cubit.dart": {
+    "mtime": 1778662982.9636612,
+    "hash": "63a323699ce6c25202e5d85e21dee8e6"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/features/store/presentation/pages/avatar_store_page.dart": {
+    "mtime": 1778148205.122185,
+    "hash": "5fe1c72de798c33fe5d79c01a2d15f47"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/models/attempt_model.dart": {
+    "mtime": 1777411166.3837793,
+    "hash": "d496d140c6113dbae13062c3c3804c31"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/models/user_entity.dart": {
+    "mtime": 1777411101.51971,
+    "hash": "53e926f04316aa5afcb56769a76a4d00"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/models/question_model.dart": {
+    "mtime": 1777457528.2797022,
+    "hash": "6aa431e6a2239db2706e57bd68b69e5a"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/models/quest_model.dart": {
+    "mtime": 1777218411.93059,
+    "hash": "341cd808a70aa8b3e94912452ad7165d"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/models/exam_model.dart": {
+    "mtime": 1777457332.582789,
+    "hash": "650529ee68876f9544c648e85a5c3662"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/services/user_progress_repository.dart": {
+    "mtime": 1778662593.101556,
+    "hash": "37cd084e8fb81f560d3ff73feca3e1df"
+  },
+  "/Users/rimsedtech/Development/gamify/app/lib/shared/services/user_repository.dart": {
+    "mtime": 1778662787.8456404,
+    "hash": "0d812661e54a864b4db898861807db96"
+  }
+}

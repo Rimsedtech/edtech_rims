@@ -20,59 +20,6 @@ final class AuthCheckRequested extends AuthEvent {
   const AuthCheckRequested();
 }
 
-/// Sign in with email/password.
-final class AuthSignInWithEmailRequested extends AuthEvent {
-  final String email;
-  final String password;
-  const AuthSignInWithEmailRequested({
-    required this.email,
-    required this.password,
-  });
-  @override
-  List<Object?> get props => [email, password];
-}
-
-/// Create account with email/password.
-final class AuthCreateAccountRequested extends AuthEvent {
-  final String email;
-  final String password;
-  final String displayName;
-  const AuthCreateAccountRequested({
-    required this.email,
-    required this.password,
-    required this.displayName,
-  });
-  @override
-  List<Object?> get props => [email, password, displayName];
-}
-
-/// Sign in with Google.
-final class AuthSignInWithGoogleRequested extends AuthEvent {
-  const AuthSignInWithGoogleRequested();
-}
-
-/// Sign in with Apple.
-final class AuthSignInWithAppleRequested extends AuthEvent {
-  const AuthSignInWithAppleRequested();
-}
-
-/// Send password reset email.
-final class AuthPasswordResetRequested extends AuthEvent {
-  final String email;
-  const AuthPasswordResetRequested({required this.email});
-  @override
-  List<Object?> get props => [email];
-}
-
-/// Send password reset email if the recovery key is valid.
-final class AuthRecoveryRequested extends AuthEvent {
-  final String email;
-  final String recoveryKey;
-  const AuthRecoveryRequested({required this.email, required this.recoveryKey});
-  @override
-  List<Object?> get props => [email, recoveryKey];
-}
-
 /// Sign out.
 final class AuthSignOutRequested extends AuthEvent {
   const AuthSignOutRequested();
@@ -90,6 +37,36 @@ final class AuthUserUpdated extends AuthEvent {
 final class AuthRecoveryKeyDismissed extends AuthEvent {
   final UserEntity user;
   const AuthRecoveryKeyDismissed({required this.user});
+  @override
+  List<Object?> get props => [user];
+}
+
+/// Signals that a form operation started, to avoid race conditions with the auth stream.
+final class AuthFormOperationStarted extends AuthEvent {
+  const AuthFormOperationStarted();
+}
+
+/// Signals that a form operation finished.
+final class AuthFormOperationCompleted extends AuthEvent {
+  const AuthFormOperationCompleted();
+}
+
+/// Emitted by the form cubit when a recovery key is generated.
+final class AuthNeedsRecoveryKeyDisplayEvent extends AuthEvent {
+  final UserEntity user;
+  final String rawRecoveryKey;
+  const AuthNeedsRecoveryKeyDisplayEvent({
+    required this.user,
+    required this.rawRecoveryKey,
+  });
+  @override
+  List<Object?> get props => [user, rawRecoveryKey];
+}
+
+/// Internal event to handle real-time auth state changes
+final class _AuthUserChanged extends AuthEvent {
+  final UserEntity? user;
+  const _AuthUserChanged({required this.user});
   @override
   List<Object?> get props => [user];
 }
@@ -128,10 +105,6 @@ final class AuthError extends AuthState {
   List<Object?> get props => [message];
 }
 
-final class AuthPasswordResetSent extends AuthState {
-  const AuthPasswordResetSent();
-}
-
 final class AuthNeedsRecoveryKeyDisplay extends AuthState {
   final UserEntity user;
 
@@ -142,46 +115,73 @@ final class AuthNeedsRecoveryKeyDisplay extends AuthState {
   List<Object?> get props => [user, rawRecoveryKey];
 }
 
-/// Internal event to handle real-time auth state changes
-final class _AuthUserChanged extends AuthEvent {
-  final UserEntity? user;
-  const _AuthUserChanged({required this.user});
-  @override
-  List<Object?> get props => [user];
-}
-
 // ── BLoC ──
 
 /// Manages the full authentication lifecycle.
 ///
 /// Listens to [AuthRepository.authStateChanges] and handles
-/// sign-in, sign-up, Google auth, password reset, and sign-out.
+/// session management and routing state.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   StreamSubscription<UserEntity?>? _authSubscription;
+  bool _isFormOperationInProgress = false;
 
   AuthBloc({required AuthRepository authRepository})
     : _authRepository = authRepository,
       super(const AuthInitial()) {
     on<AuthCheckRequested>(_onCheckRequested);
-    on<AuthSignInWithEmailRequested>(_onSignInWithEmail);
-    on<AuthCreateAccountRequested>(_onCreateAccount);
-    on<AuthSignInWithGoogleRequested>(_onSignInWithGoogle);
-    on<AuthSignInWithAppleRequested>(_onSignInWithApple);
-    on<AuthPasswordResetRequested>(_onPasswordReset);
-    on<AuthRecoveryRequested>(_onRecoveryRequested);
     on<AuthSignOutRequested>(_onSignOut);
     on<AuthUserUpdated>(_onUserUpdated);
     on<AuthRecoveryKeyDismissed>(_onRecoveryKeyDismissed);
     on<_AuthUserChanged>(_onUserChanged);
+    on<AuthFormOperationStarted>(_onFormOperationStarted);
+    on<AuthFormOperationCompleted>(_onFormOperationCompleted);
+    on<AuthNeedsRecoveryKeyDisplayEvent>(_onNeedsRecoveryKeyDisplay);
 
     _authSubscription = _authRepository.authStateChanges.listen((user) {
       add(_AuthUserChanged(user: user));
     });
   }
 
+  void _onFormOperationStarted(
+    AuthFormOperationStarted event,
+    Emitter<AuthState> emit,
+  ) {
+    _isFormOperationInProgress = true;
+  }
+
+  Future<void> _onFormOperationCompleted(
+    AuthFormOperationCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
+    _isFormOperationInProgress = false;
+    // Form finished, verify session state.
+    final result = await _authRepository.getCurrentUser();
+    if (result case Success(:final data) when data != null) {
+      emit(AuthAuthenticated(user: data));
+    } else if (state is AuthInitial || state is AuthLoading || state is AuthError) {
+      emit(const AuthUnauthenticated());
+    }
+  }
+
+  void _onNeedsRecoveryKeyDisplay(
+    AuthNeedsRecoveryKeyDisplayEvent event,
+    Emitter<AuthState> emit,
+  ) {
+    _isFormOperationInProgress = false;
+    emit(
+      AuthNeedsRecoveryKeyDisplay(
+        user: event.user,
+        rawRecoveryKey: event.rawRecoveryKey,
+      ),
+    );
+  }
+
   void _onUserChanged(_AuthUserChanged event, Emitter<AuthState> emit) {
-    if (state is AuthNeedsRecoveryKeyDisplay || state is AuthLoading) return;
+    // If a form operation is active, or we need to display the recovery key, ignore the stream.
+    if (state is AuthNeedsRecoveryKeyDisplay || _isFormOperationInProgress) {
+      return;
+    }
     if (event.user != null) {
       emit(AuthAuthenticated(user: event.user!));
     } else {
@@ -213,137 +213,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         } else {
           emit(const AuthUnauthenticated());
         }
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
-    }
-  }
-
-  Future<void> _onSignInWithEmail(
-    AuthSignInWithEmailRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<AuthResult> result = await _authRepository.signInWithEmail(
-      email: event.email,
-      password: event.password,
-    );
-    switch (result) {
-      case Success(:final data):
-        emit(AuthAuthenticated(user: data.user));
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
-    }
-  }
-
-  Future<void> _onCreateAccount(
-    AuthCreateAccountRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<AuthResult> result = await _authRepository
-        .createAccountWithEmail(
-          email: event.email,
-          password: event.password,
-          displayName: event.displayName,
-        );
-    switch (result) {
-      case Success(:final data):
-        // AuthNeedsRecoveryKeyDisplay carries both the user and the raw key
-        // so the UI can render the one-time reveal screen.
-        emit(
-          AuthNeedsRecoveryKeyDisplay(
-            user: data.user,
-            rawRecoveryKey: data.rawRecoveryKey,
-          ),
-        );
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
-    }
-  }
-
-  Future<void> _onSignInWithGoogle(
-    AuthSignInWithGoogleRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<AuthResult> result = await _authRepository.signInWithGoogle();
-    switch (result) {
-      case Success(:final data):
-        // First-time Google sign-in generates a recovery key;
-        // show the reveal screen. Returning users skip straight to dashboard.
-        if (data.rawRecoveryKey != null) {
-          emit(
-            AuthNeedsRecoveryKeyDisplay(
-              user: data.user,
-              rawRecoveryKey: data.rawRecoveryKey,
-            ),
-          );
-        } else {
-          emit(AuthAuthenticated(user: data.user));
-        }
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
-    }
-  }
-
-  Future<void> _onSignInWithApple(
-    AuthSignInWithAppleRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<AuthResult> result = await _authRepository.signInWithApple();
-    switch (result) {
-      case Success(:final data):
-        if (data.rawRecoveryKey != null) {
-          emit(
-            AuthNeedsRecoveryKeyDisplay(
-              user: data.user,
-              rawRecoveryKey: data.rawRecoveryKey,
-            ),
-          );
-        } else {
-          emit(AuthAuthenticated(user: data.user));
-        }
-      case Failure(:final exception):
-        // Don't show error if user cancelled
-        if (exception.message.toLowerCase().contains('cancelled')) {
-          emit(const AuthUnauthenticated());
-        } else {
-          emit(AuthError(message: exception.message));
-        }
-    }
-  }
-
-  Future<void> _onPasswordReset(
-    AuthPasswordResetRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<void> result = await _authRepository.sendPasswordResetEmail(
-      email: event.email,
-    );
-    switch (result) {
-      case Success():
-        emit(const AuthPasswordResetSent());
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
-    }
-  }
-
-  Future<void> _onRecoveryRequested(
-    AuthRecoveryRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    final Result<void> result = await _authRepository.recoverAccount(
-      email: event.email,
-      recoveryKey: event.recoveryKey,
-    );
-    switch (result) {
-      case Success():
-        emit(const AuthPasswordResetSent());
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AuthError(message: errorMessage));
     }
   }
 
@@ -356,8 +227,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     switch (result) {
       case Success():
         emit(const AuthUnauthenticated());
-      case Failure(:final exception):
-        emit(AuthError(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AuthError(message: errorMessage));
     }
   }
 

@@ -241,8 +241,8 @@ class _CreateQuestionsPageState extends State<CreateQuestionsPage> {
         case Success():
           _showSnackBar('Exam finalized successfully!');
           context.go('/admin/manage-exams');
-        case Failure(:final exception):
-          _showSnackBar('Failed to finalize: ${exception.message}');
+        case Failure(:final errorMessage):
+          _showSnackBar('Failed to finalize: $errorMessage');
       }
     }
   }

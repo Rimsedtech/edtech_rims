@@ -82,9 +82,8 @@ class _PixelCardState extends State<PixelCard> {
                     borderColor: widget.borderColor,
                     child: Text(
                       widget.badge!.toUpperCase(),
-                      style: AppTypography.headlineXs.copyWith(
+                      style: AppTypography.headlineXxs.copyWith(
                         color: AppColors.onTertiary,
-                        fontSize: 8,
                       ),
                     ),
                   ),

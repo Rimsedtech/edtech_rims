@@ -112,9 +112,8 @@ class _PixelButtonState extends State<PixelButton> {
         Text(
           widget.isLoading ? 'LOADING...' : widget.label.toUpperCase(),
           textAlign: TextAlign.center,
-          style: AppTypography.labelLg.copyWith(
+          style: AppTypography.labelMd.copyWith(
             color: _effectiveTextColor,
-            fontSize: 12,
             letterSpacing: 1.0,
           ),
         ),

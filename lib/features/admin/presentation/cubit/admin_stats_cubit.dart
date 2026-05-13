@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bitwise_academy/core/errors/result.dart';
+
 import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/services/user_repository.dart';
@@ -68,15 +69,20 @@ class AdminStatsCubit extends Cubit<AdminStatsState> {
 
     int activeExams = 0;
     int totalUsers = 0;
+    String? firstError;
 
-    if (examResult is Success<List<ExamModel>>) {
-      activeExams = examResult.data
-          .where((e) => e.status == ExamStatus.published)
-          .length;
+    switch (examResult) {
+      case Success(:final data):
+        activeExams = data.where((e) => e.status == ExamStatus.published).length;
+      case Failure(:final errorMessage):
+        firstError = errorMessage;
     }
 
-    if (userCountResult is Success<int>) {
-      totalUsers = userCountResult.data;
+    switch (userCountResult) {
+      case Success(:final data):
+        totalUsers = data;
+      case Failure(:final errorMessage):
+        firstError ??= errorMessage;
     }
 
     emit(
@@ -84,6 +90,7 @@ class AdminStatsCubit extends Cubit<AdminStatsState> {
         isLoading: false,
         totalUsers: totalUsers,
         activeExams: activeExams,
+        error: firstError,
       ),
     );
   }

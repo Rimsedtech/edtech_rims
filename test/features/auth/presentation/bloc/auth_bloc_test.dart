@@ -87,50 +87,6 @@ void main() {
       ],
     );
 
-    blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthAuthenticated] when AuthSignInWithEmailRequested succeeds',
-      build: () {
-        when(
-          () => mockAuthRepository.signInWithEmail(
-            email: 'test@gmail.com',
-            password: 'password123',
-          ),
-        ).thenAnswer((_) async => Success(AuthResult(user: tUser)));
-        return authBloc;
-      },
-      act: (bloc) => bloc.add(
-        const AuthSignInWithEmailRequested(
-          email: 'test@gmail.com',
-          password: 'password123',
-        ),
-      ),
-      expect: () => [const AuthLoading(), AuthAuthenticated(user: tUser)],
-    );
 
-    blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthError] when AuthSignInWithEmailRequested fails',
-      build: () {
-        when(
-          () => mockAuthRepository.signInWithEmail(
-            email: 'test@gmail.com',
-            password: 'password123',
-          ),
-        ).thenAnswer(
-          (_) async =>
-              const Failure(AuthException(message: 'Invalid credentials')),
-        );
-        return authBloc;
-      },
-      act: (bloc) => bloc.add(
-        const AuthSignInWithEmailRequested(
-          email: 'test@gmail.com',
-          password: 'password123',
-        ),
-      ),
-      expect: () => const [
-        AuthLoading(),
-        AuthError(message: 'Invalid credentials'),
-      ],
-    );
   });
 }

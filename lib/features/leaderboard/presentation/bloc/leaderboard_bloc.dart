@@ -100,8 +100,8 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
     switch (result) {
       case Success(:final data):
         emit(LeaderboardLoadSuccess(topUsers: data));
-      case Failure(:final exception):
-        emit(LeaderboardLoadFailure(error: exception.message));
+      case Failure(:final errorMessage):
+        emit(LeaderboardLoadFailure(error: errorMessage));
     }
   }
 }

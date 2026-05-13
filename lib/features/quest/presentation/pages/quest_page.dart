@@ -471,9 +471,8 @@ class _QuestPageState extends State<QuestPage> {
                     color: AppColors.secondaryContainer,
                     child: Text(
                       '+${quest.xpReward} XP',
-                      style: AppTypography.headlineXs.copyWith(
+                      style: AppTypography.headlineXxs.copyWith(
                         color: AppColors.onSecondaryContainer,
-                        fontSize: 8,
                       ),
                     ),
                   ),

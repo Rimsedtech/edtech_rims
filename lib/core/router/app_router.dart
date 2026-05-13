@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_cubit.dart';
 import 'package:bitwise_academy/features/auth/presentation/pages/login_page.dart';
 import 'package:bitwise_academy/features/auth/presentation/pages/register_page.dart';
 import 'package:bitwise_academy/features/auth/presentation/pages/recovery_page.dart';
@@ -126,19 +127,28 @@ GoRouter buildRouter(AuthBloc authBloc) {
         path: RoutePaths.login,
         name: 'login',
         builder: (BuildContext context, GoRouterState state) =>
-            const LoginPage(),
+            BlocProvider(
+              create: (_) => getIt<AuthFormCubit>(),
+              child: const LoginPage(),
+            ),
       ),
       GoRoute(
         path: RoutePaths.register,
         name: 'register',
         builder: (BuildContext context, GoRouterState state) =>
-            const RegisterPage(),
+            BlocProvider(
+              create: (_) => getIt<AuthFormCubit>(),
+              child: const RegisterPage(),
+            ),
       ),
       GoRoute(
         path: RoutePaths.recovery,
         name: 'recovery',
         builder: (BuildContext context, GoRouterState state) =>
-            const RecoveryPage(),
+            BlocProvider(
+              create: (_) => getIt<AuthFormCubit>(),
+              child: const RecoveryPage(),
+            ),
       ),
 
       // ── Avatar Selection (gated by AppConstants.isAvatarSystemEnabled) ──────

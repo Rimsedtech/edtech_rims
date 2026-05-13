@@ -287,9 +287,9 @@ class _AvatarStorePageState extends State<AvatarStorePage> {
         messenger.showSnackBar(
           const SnackBar(content: Text('Skin purchased successfully!')),
         );
-      case Failure(:final exception):
+      case Failure(:final errorMessage):
         messenger.showSnackBar(
-          SnackBar(content: Text('Purchase failed: ${exception.message}')),
+          SnackBar(content: Text('Purchase failed: $errorMessage')),
         );
     }
   }
@@ -313,9 +313,9 @@ class _AvatarStorePageState extends State<AvatarStorePage> {
           final updatedUser = authState.user.copyWith(avatarUrl: skin.imageUrl);
           authBloc.add(AuthUserUpdated(user: updatedUser));
         }
-      case Failure(:final exception):
+      case Failure(:final errorMessage):
         messenger.showSnackBar(
-          SnackBar(content: Text('Equip failed: ${exception.message}')),
+          SnackBar(content: Text('Equip failed: $errorMessage')),
         );
     }
   }

@@ -60,9 +60,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     const SizedBox(height: AppSpacing.lg),
                     Text(
                       'FAILED TO LOAD',
-                      style: AppTypography.headlineXs.copyWith(
-                        color: AppColors.error,
-                      ),
+                      style: AppTypography.headlineXxs.copyWith(color: AppColors.error),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
@@ -197,7 +195,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   '#$rank',
                   style: AppTypography.headlineXs.copyWith(
                     color: Colors.white,
-                    fontSize: 10,
                   ),
                 ),
               ),
@@ -235,9 +232,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           ),
                           child: Text(
                             'YOU',
-                            style: AppTypography.labelSm.copyWith(
-                              color: Colors.black,
-                              fontSize: 8,
+                            style: AppTypography.headlineXxs.copyWith(
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -266,11 +262,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 Text(
                   'ANSWERS',
-                  style: AppTypography.labelSm.copyWith(
+                  style: AppTypography.headlineXxs.copyWith(
                     color: isCurrentUser
                         ? Colors.white
                         : AppColors.onSurfaceVariant,
-                    fontSize: 8,
                   ),
                 ),
               ],

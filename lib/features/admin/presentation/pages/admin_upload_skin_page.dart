@@ -82,9 +82,9 @@ class _AdminUploadSkinPageState extends State<AdminUploadSkinPage> {
             const SnackBar(content: Text('Skin uploaded successfully!')),
           );
           context.go('/admin'); // Return to admin dashboard
-        case Failure(:final exception):
+        case Failure(:final errorMessage):
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload: ${exception.message}')),
+            SnackBar(content: Text('Failed to upload: $errorMessage')),
           );
       }
     }

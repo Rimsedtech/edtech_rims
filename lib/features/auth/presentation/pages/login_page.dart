@@ -10,6 +10,8 @@ import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_input.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_cubit.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_state.dart';
 import 'package:bitwise_academy/core/router/app_router.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 
@@ -44,42 +46,41 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onSignIn() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        AuthSignInWithEmailRequested(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
-      );
+      context.read<AuthFormCubit>().signInWithEmail(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
     }
   }
 
   void _onGoogleSignIn() {
-    context.read<AuthBloc>().add(const AuthSignInWithGoogleRequested());
+    context.read<AuthFormCubit>().signInWithGoogle();
   }
 
   void _onAppleSignIn() {
-    context.read<AuthBloc>().add(const AuthSignInWithAppleRequested());
+    context.read<AuthFormCubit>().signInWithApple();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (BuildContext context, AuthState state) {
-        if (state is AuthAuthenticated) {
-          if (context.mounted) {
-            context.go('/');
+    return BlocConsumer<AuthFormCubit, AuthFormState>(
+      listener: (BuildContext context, AuthFormState state) {
+        if (state is AuthFormSuccess) {
+          if (state.rawRecoveryKey != null) {
+            if (context.mounted) {
+              _showRecoveryKeyDialog(
+                context,
+                state.user,
+                state.rawRecoveryKey!,
+              );
+            }
+          } else {
+            if (context.mounted) {
+              context.go('/');
+            }
           }
         }
-        if (state is AuthNeedsRecoveryKeyDisplay) {
-          if (context.mounted) {
-            _showRecoveryKeyDialog(
-              context,
-              state.user,
-              state.rawRecoveryKey ?? 'KEY-UNAVAILABLE',
-            );
-          }
-        }
-        if (state is AuthError) {
+        if (state is AuthFormError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -93,8 +94,8 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       },
-      builder: (BuildContext context, AuthState state) {
-        final bool isLoading = state is AuthLoading;
+      builder: (BuildContext context, AuthFormState state) {
+        final bool isLoading = state is AuthFormLoading;
 
         return Scaffold(
           backgroundColor: AppColors.primary,
@@ -159,10 +160,9 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           'RIMS',
           textAlign: TextAlign.center,
-          style: AppTypography.headlineMd.copyWith(
+          style: AppTypography.headlineLg.copyWith(
             color: AppColors.secondaryFixed,
             height: 1.6,
-            fontSize: 48,
             shadows: const [
               Shadow(offset: Offset(4, 4), color: AppColors.primary),
             ],
@@ -172,10 +172,9 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           'ROOT INSTITUTE OF MATHEMATICS',
           textAlign: TextAlign.center,
-          style: AppTypography.bodyXl.copyWith(
+          style: AppTypography.bodyXs.copyWith(
             color: AppColors.secondaryFixed,
             letterSpacing: 2,
-            fontSize: 10,
           ),
         ),
         const SizedBox(height: AppSpacing.md),

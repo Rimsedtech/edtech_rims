@@ -1,3 +1,5 @@
+import 'package:bitwise_academy/core/errors/result.dart';
+
 /// Base exception hierarchy for all app-level errors.
 ///
 /// All exceptions thrown by repositories and services must extend
@@ -12,6 +14,17 @@ sealed class AppException implements Exception {
 
   @override
   String toString() => 'AppException($code): $message';
+}
+
+/// Extension on [Failure] to safely extract user-facing messages.
+///
+/// Decouples UI mapping from raw Exception types.
+extension FailureMessageExtension<T> on Failure<T> {
+  String get errorMessage {
+    final e = exception;
+    if (e is AppException) return e.message;
+    return e.toString();
+  }
 }
 
 /// Thrown when a network request fails (timeout, no connectivity, etc.)

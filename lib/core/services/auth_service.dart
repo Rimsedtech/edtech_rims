@@ -27,14 +27,14 @@ class AuthService {
           'Google Sign-In successful for user: ${data.user.email}',
         );
         return Success(data);
-      case Failure(:final exception):
+      case Failure(:final errorMessage, :final exception):
         // If it's a cancellation, log as info rather than error
-        if (exception.message.toLowerCase().contains('cancelled')) {
+        if (errorMessage.toLowerCase().contains('cancelled')) {
           AppLogger.instance.i('Google Sign-In was cancelled by the user.');
         } else {
           AppLogger.instance.e(
             'Google Sign-In failed',
-            error: exception.message,
+            error: errorMessage,
           );
         }
         return Failure(exception);

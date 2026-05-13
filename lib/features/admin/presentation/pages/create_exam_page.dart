@@ -115,8 +115,8 @@ class _CreateExamPageState extends State<CreateExamPage> {
         case Success(:final data):
           _showSnackBar('Exam created! Now add questions.');
           context.go('/admin/exams/${data.id}/questions');
-        case Failure(:final exception):
-          _showSnackBar('Failed: ${exception.message}');
+        case Failure(:final errorMessage):
+          _showSnackBar('Failed: $errorMessage');
       }
     }
   }
@@ -244,9 +244,8 @@ class _CreateExamPageState extends State<CreateExamPage> {
                       child: Center(
                         child: Text(
                           tier.name.toUpperCase(),
-                          style: AppTypography.headlineXs.copyWith(
+                          style: AppTypography.headlineXxs.copyWith(
                             color: isActive ? Colors.white : color,
-                            fontSize: 8,
                           ),
                         ),
                       ),

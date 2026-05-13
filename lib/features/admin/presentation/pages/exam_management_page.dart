@@ -45,9 +45,9 @@ class _ExamManagementPageState extends State<ExamManagementPage> {
             _exams = data;
             _isLoading = false;
           });
-        case Failure(:final exception):
+        case Failure(:final errorMessage):
           setState(() {
-            _errorMessage = exception.message;
+            _errorMessage = errorMessage;
             _isLoading = false;
           });
       }
@@ -69,8 +69,8 @@ class _ExamManagementPageState extends State<ExamManagementPage> {
         case Success():
           _showSnackBar('${exam.title} published!');
           await _loadExams();
-        case Failure(:final exception):
-          _showSnackBar('Error: ${exception.message}');
+        case Failure(:final errorMessage):
+          _showSnackBar('Error: $errorMessage');
       }
     }
   }
@@ -83,8 +83,8 @@ class _ExamManagementPageState extends State<ExamManagementPage> {
         case Success():
           _showSnackBar('${exam.title} archived.');
           await _loadExams();
-        case Failure(:final exception):
-          _showSnackBar('Error: ${exception.message}');
+        case Failure(:final errorMessage):
+          _showSnackBar('Error: $errorMessage');
       }
     }
   }
@@ -131,8 +131,8 @@ class _ExamManagementPageState extends State<ExamManagementPage> {
           case Success():
             _showSnackBar('${exam.title} deleted.');
             await _loadExams();
-          case Failure(:final exception):
-            _showSnackBar('Error: ${exception.message}');
+          case Failure(:final errorMessage):
+            _showSnackBar('Error: $errorMessage');
         }
       }
     }

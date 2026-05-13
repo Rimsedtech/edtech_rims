@@ -8,6 +8,8 @@ import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_input.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_cubit.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_state.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 
 /// Registration page — "Create Your Character" flow.
@@ -39,35 +41,34 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onRegister() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        AuthCreateAccountRequested(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          displayName: _nameController.text.trim(),
-        ),
-      );
+      context.read<AuthFormCubit>().createAccountWithEmail(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            displayName: _nameController.text.trim(),
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (BuildContext context, AuthState state) {
-        if (state is AuthAuthenticated) {
-          if (context.mounted) {
-            context.go('/');
+    return BlocConsumer<AuthFormCubit, AuthFormState>(
+      listener: (BuildContext context, AuthFormState state) {
+        if (state is AuthFormSuccess) {
+          if (state.rawRecoveryKey != null) {
+            if (context.mounted) {
+              _showRecoveryKeyDialog(
+                context,
+                state.user,
+                state.rawRecoveryKey!,
+              );
+            }
+          } else {
+            if (context.mounted) {
+              context.go('/');
+            }
           }
         }
-        if (state is AuthNeedsRecoveryKeyDisplay) {
-          if (context.mounted) {
-            _showRecoveryKeyDialog(
-              context,
-              state.user,
-              state.rawRecoveryKey ?? 'KEY-UNAVAILABLE',
-            );
-          }
-        }
-        if (state is AuthError) {
+        if (state is AuthFormError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -81,8 +82,8 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
       },
-      builder: (BuildContext context, AuthState state) {
-        final bool isLoading = state is AuthLoading;
+      builder: (BuildContext context, AuthFormState state) {
+        final bool isLoading = state is AuthFormLoading;
 
         return Scaffold(
           backgroundColor: AppColors.primary,
@@ -112,10 +113,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           Text(
                             'RIMS',
                             textAlign: TextAlign.center,
-                            style: AppTypography.headlineMd.copyWith(
+                            style: AppTypography.headlineMdLg.copyWith(
                               color: AppColors.secondaryFixed,
                               height: 1.6,
-                              fontSize: 32,
                               shadows: const [
                                 Shadow(
                                   offset: Offset(4, 4),

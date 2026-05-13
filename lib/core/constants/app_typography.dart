@@ -10,12 +10,36 @@ import 'package:google_fonts/google_fonts.dart';
 abstract final class AppTypography {
   // ── Press Start 2P — Display & Headlines ──
 
+  /// 4.5rem / 72px — Score displays, victory screens
+  static TextStyle get displayXl => GoogleFonts.pressStart2p(
+    fontSize: 72,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -2.0,
+    height: 1.2,
+  );
+
   /// 3.5rem / 56px — Hero banners, splash screens
   static TextStyle get displayLg => GoogleFonts.pressStart2p(
     fontSize: 56,
     fontWeight: FontWeight.w400,
     letterSpacing: -1.5,
     height: 1.3,
+  );
+
+  /// 3rem / 48px — Reward values, XP numbers, animated counters
+  static TextStyle get headlineLg => GoogleFonts.pressStart2p(
+    fontSize: 48,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -1.0,
+    height: 1.3,
+  );
+
+  /// 2rem / 32px — Page titles in compact contexts (register, admin)
+  static TextStyle get headlineMdLg => GoogleFonts.pressStart2p(
+    fontSize: 32,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.5,
+    height: 1.4,
   );
 
   /// 1.75rem / 28px — Section headers, level titles
@@ -36,6 +60,13 @@ abstract final class AppTypography {
   /// 0.625rem / 10px — Tiny arcade labels, badges
   static TextStyle get headlineXs => GoogleFonts.pressStart2p(
     fontSize: 10,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+  );
+
+  /// 0.5rem / 8px — Micro badges, chip labels, leaderboard ranks
+  static TextStyle get headlineXxs => GoogleFonts.pressStart2p(
+    fontSize: 8,
     fontWeight: FontWeight.w400,
     height: 1.6,
   );
@@ -61,6 +92,10 @@ abstract final class AppTypography {
     letterSpacing: 2.0,
     height: 1.3,
   );
+
+  /// 0.625rem / 10px — VT323 sub-labels, taglines (bodyXl-family but small)
+  static TextStyle get bodyXs =>
+      GoogleFonts.vt323(fontSize: 10, fontWeight: FontWeight.w400, height: 1.5);
 
   /// 0.875rem / 14px — Metadata, timestamps
   static TextStyle get labelMd =>

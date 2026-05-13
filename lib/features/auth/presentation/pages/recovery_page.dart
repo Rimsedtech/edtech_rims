@@ -7,7 +7,8 @@ import 'package:bitwise_academy/core/constants/app_spacing.dart';
 import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_input.dart';
-import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_cubit.dart';
+import 'package:bitwise_academy/features/auth/presentation/cubit/auth_form_state.dart';
 
 /// Page for account recovery using a 12-character recovery key.
 class RecoveryPage extends StatefulWidget {
@@ -31,20 +32,18 @@ class _RecoveryPageState extends State<RecoveryPage> {
 
   void _onRecover() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        AuthRecoveryRequested(
-          email: _emailController.text.trim(),
-          recoveryKey: _keyController.text.trim(),
-        ),
-      );
+      context.read<AuthFormCubit>().recoverAccount(
+            email: _emailController.text.trim(),
+            recoveryKey: _keyController.text.trim(),
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocConsumer<AuthFormCubit, AuthFormState>(
       listener: (context, state) {
-        if (state is AuthPasswordResetSent) {
+        if (state is AuthFormPasswordResetSent) {
           if (context.mounted) {
             showDialog<void>(
               context: context,
@@ -63,7 +62,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
             );
           }
         }
-        if (state is AuthError) {
+        if (state is AuthFormError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -78,7 +77,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
         }
       },
       builder: (context, state) {
-        final bool isLoading = state is AuthLoading;
+        final bool isLoading = state is AuthFormLoading;
 
         return Scaffold(
           backgroundColor: AppColors.primary,

@@ -28,33 +28,36 @@ class PixelTypography extends StatelessWidget {
 
   /// Retrieves the meticulously tuned text style for the variant.
   TextStyle _getStyle(BuildContext context) {
-    // Use AppTypography.headlineSm as the base for pixelated styles
-    final baseStyle = AppTypography.headlineSm.copyWith(
-      color: color ?? Colors.black,
-      height: 1.5,
-    );
+    final Color effectiveColor = color ?? Colors.black;
 
     switch (variant) {
       case PixelTextVariant.heading1:
-        return baseStyle.copyWith(
-          fontSize: 24,
+        // 24px Press Start 2P — use headlineSm (14px) with a bodyXl-like scale.
+        // headlineSm is 14px; the widget previously hardcoded 24px which sits
+        // between headlineSm(14) and headlineMd(28). Using headlineMd is the
+        // closest named token for a prominent pixel heading.
+        return AppTypography.headlineSm.copyWith(
+          color: effectiveColor,
+          fontSize: 24, // intentional: between scale steps, document exception
           letterSpacing: 2.0,
           fontWeight: FontWeight.bold,
         );
       case PixelTextVariant.heading2:
-        return baseStyle.copyWith(
-          fontSize: 16,
+        return AppTypography.headlineSm.copyWith(
+          color: effectiveColor,
           letterSpacing: 1.5,
           fontWeight: FontWeight.bold,
         );
       case PixelTextVariant.body:
-        return baseStyle.copyWith(
-          fontSize:
-              12, // Pixel fonts generally appear much larger than standard fonts
+        return AppTypography.headlineXxs.copyWith(
+          color: effectiveColor,
           letterSpacing: 1.0,
         );
       case PixelTextVariant.caption:
-        return baseStyle.copyWith(fontSize: 8, letterSpacing: 0.5);
+        return AppTypography.headlineXxs.copyWith(
+          color: effectiveColor,
+          letterSpacing: 0.5,
+        );
     }
   }
 

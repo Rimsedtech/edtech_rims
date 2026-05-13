@@ -723,9 +723,8 @@ class _UserDashboardPageState extends State<UserDashboardPage>
           const SizedBox(height: AppSpacing.xs),
           Text(
             label,
-            style: AppTypography.headlineXs.copyWith(
+            style: AppTypography.headlineXxs.copyWith(
               color: AppColors.onPrimaryContainer,
-              fontSize: 8,
             ),
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bitwise_academy/core/errors/result.dart';
+
 import 'package:bitwise_academy/features/exam_library/data/repositories/attempt_repository.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
@@ -92,22 +93,26 @@ class DashboardCubit extends Cubit<DashboardState> {
                 );
 
                 int testsCompleted = 0;
-                double averageScore = 0;
+                double averageScore = 0.0;
                 List<AttemptModel> recentAttempts = [];
 
-                if (statsResult is Success<List<AttemptModel>>) {
-                  final completed = statsResult.data
-                      .where((a) => a.status == AttemptStatus.completed)
-                      .toList();
-                  testsCompleted = completed.length;
-                  averageScore = completed.isNotEmpty
-                      ? completed.fold<double>(
-                              0,
-                              (sum, a) => sum + a.scorePercentage,
-                            ) /
-                            completed.length
-                      : 0.0;
-                  recentAttempts = statsResult.data.take(5).toList();
+                switch (statsResult) {
+                  case Success(:final data):
+                    final completed = data
+                        .where((a) => a.status == AttemptStatus.completed)
+                        .toList();
+                    testsCompleted = completed.length;
+                    averageScore = completed.isNotEmpty
+                        ? completed.fold<double>(
+                                0,
+                                (sum, a) => sum + a.scorePercentage,
+                              ) /
+                              completed.length
+                        : 0.0;
+                    recentAttempts = statsResult.data.take(5).toList();
+                  case Failure():
+                    // Stats failure is non-fatal: dashboard still shows user data
+                    break;
                 }
 
                 emit(
@@ -118,8 +123,8 @@ class DashboardCubit extends Cubit<DashboardState> {
                     recentAttempts: recentAttempts,
                   ),
                 );
-              case Failure(:final exception):
-                emit(DashboardError(message: exception.message));
+              case Failure(:final errorMessage):
+                emit(DashboardError(message: errorMessage));
             }
           },
           onError: (Object error) {
