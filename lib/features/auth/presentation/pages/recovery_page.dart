@@ -33,9 +33,9 @@ class _RecoveryPageState extends State<RecoveryPage> {
   void _onRecover() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthFormCubit>().recoverAccount(
-            email: _emailController.text.trim(),
-            recoveryKey: _keyController.text.trim(),
-          );
+        email: _emailController.text.trim(),
+        recoveryKey: _keyController.text.trim(),
+      );
     }
   }
 

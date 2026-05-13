@@ -47,9 +47,9 @@ class _LoginPageState extends State<LoginPage> {
   void _onSignIn() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthFormCubit>().signInWithEmail(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          );
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
     }
   }
 

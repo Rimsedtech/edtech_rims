@@ -126,29 +126,26 @@ GoRouter buildRouter(AuthBloc authBloc) {
       GoRoute(
         path: RoutePaths.login,
         name: 'login',
-        builder: (BuildContext context, GoRouterState state) =>
-            BlocProvider(
-              create: (_) => getIt<AuthFormCubit>(),
-              child: const LoginPage(),
-            ),
+        builder: (BuildContext context, GoRouterState state) => BlocProvider(
+          create: (_) => getIt<AuthFormCubit>(),
+          child: const LoginPage(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.register,
         name: 'register',
-        builder: (BuildContext context, GoRouterState state) =>
-            BlocProvider(
-              create: (_) => getIt<AuthFormCubit>(),
-              child: const RegisterPage(),
-            ),
+        builder: (BuildContext context, GoRouterState state) => BlocProvider(
+          create: (_) => getIt<AuthFormCubit>(),
+          child: const RegisterPage(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.recovery,
         name: 'recovery',
-        builder: (BuildContext context, GoRouterState state) =>
-            BlocProvider(
-              create: (_) => getIt<AuthFormCubit>(),
-              child: const RecoveryPage(),
-            ),
+        builder: (BuildContext context, GoRouterState state) => BlocProvider(
+          create: (_) => getIt<AuthFormCubit>(),
+          child: const RecoveryPage(),
+        ),
       ),
 
       // ── Avatar Selection (gated by AppConstants.isAvatarSystemEnabled) ──────

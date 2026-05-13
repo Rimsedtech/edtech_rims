@@ -100,8 +100,8 @@ class MockTestService with FirebaseGuardedExecution {
       // Only retry if it was a timeout and we have attempts left
       final failure = result as Failure<List<QuestionModel>>;
       final exception = failure.exception;
-      if (attempts < maxAttempts && 
-          exception is AppException && 
+      if (attempts < maxAttempts &&
+          exception is AppException &&
           exception.code == 'timeout') {
         continue;
       }

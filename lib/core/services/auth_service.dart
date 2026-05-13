@@ -32,10 +32,7 @@ class AuthService {
         if (errorMessage.toLowerCase().contains('cancelled')) {
           AppLogger.instance.i('Google Sign-In was cancelled by the user.');
         } else {
-          AppLogger.instance.e(
-            'Google Sign-In failed',
-            error: errorMessage,
-          );
+          AppLogger.instance.e('Google Sign-In failed', error: errorMessage);
         }
         return Failure(exception);
     }

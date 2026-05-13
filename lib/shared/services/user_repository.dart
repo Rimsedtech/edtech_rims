@@ -133,8 +133,6 @@ class UserRepository {
     }
   }
 
-
-
   /// Update user profile fields.
   Future<Result<void>> updateProfile({
     required String uid,
@@ -273,8 +271,6 @@ class UserRepository {
       );
     }
   }
-
-
 
   UserEntity _mapDocToUser(DocumentSnapshot<Map<String, dynamic>> doc) {
     final Map<String, dynamic> data = doc.data() ?? {};

@@ -60,7 +60,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     const SizedBox(height: AppSpacing.lg),
                     Text(
                       'FAILED TO LOAD',
-                      style: AppTypography.headlineXxs.copyWith(color: AppColors.error),
+                      style: AppTypography.headlineXxs.copyWith(
+                        color: AppColors.error,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
@@ -193,9 +195,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               child: Center(
                 child: Text(
                   '#$rank',
-                  style: AppTypography.headlineXs.copyWith(
-                    color: Colors.white,
-                  ),
+                  style: AppTypography.headlineXs.copyWith(color: Colors.white),
                 ),
               ),
             ),

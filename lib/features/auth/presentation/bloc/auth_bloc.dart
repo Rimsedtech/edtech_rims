@@ -159,7 +159,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await _authRepository.getCurrentUser();
     if (result case Success(:final data) when data != null) {
       emit(AuthAuthenticated(user: data));
-    } else if (state is AuthInitial || state is AuthLoading || state is AuthError) {
+    } else if (state is AuthInitial ||
+        state is AuthLoading ||
+        state is AuthError) {
       emit(const AuthUnauthenticated());
     }
   }

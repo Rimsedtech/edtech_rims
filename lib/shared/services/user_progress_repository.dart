@@ -31,8 +31,9 @@ class UserProgressRepository {
         'xp': FieldValue.increment(xpAmount),
       });
 
-      final DocumentSnapshot<Map<String, dynamic>> doc =
-          await _usersCollection.doc(uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> doc = await _usersCollection
+          .doc(uid)
+          .get();
       final Map<String, dynamic> data = doc.data() ?? {};
 
       final int currentXp = (data['xp'] as num?)?.toInt() ?? 0;
@@ -189,14 +190,13 @@ class UserProgressRepository {
       streakDays: (data['streakDays'] as num?)?.toInt() ?? 0,
       totalCorrectAnswers: (data['totalCorrectAnswers'] as num?)?.toInt() ?? 0,
       totalExamsTaken: (data['totalExamsTaken'] as num?)?.toInt() ?? 0,
-      lastExamCompletedAt:
-          (data['lastExamCompletedAt'] as Timestamp?)?.toDate(),
+      lastExamCompletedAt: (data['lastExamCompletedAt'] as Timestamp?)
+          ?.toDate(),
       avatarUrl: data['avatarUrl'] as String? ?? '',
       unlockedAvatars: List<String>.from(
         (data['unlockedAvatars'] as List?)?.whereType<String>() ?? [],
       ),
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastLoginAt:
           (data['lastLoginAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );

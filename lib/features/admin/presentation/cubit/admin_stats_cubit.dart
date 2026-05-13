@@ -73,7 +73,9 @@ class AdminStatsCubit extends Cubit<AdminStatsState> {
 
     switch (examResult) {
       case Success(:final data):
-        activeExams = data.where((e) => e.status == ExamStatus.published).length;
+        activeExams = data
+            .where((e) => e.status == ExamStatus.published)
+            .length;
       case Failure(:final errorMessage):
         firstError = errorMessage;
     }

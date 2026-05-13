@@ -11,9 +11,9 @@ class AuthFormCubit extends Cubit<AuthFormState> {
   AuthFormCubit({
     required AuthRepository authRepository,
     required AuthBloc authBloc,
-  })  : _authRepository = authRepository,
-        _authBloc = authBloc,
-        super(const AuthFormInitial());
+  }) : _authRepository = authRepository,
+       _authBloc = authBloc,
+       super(const AuthFormInitial());
 
   Future<void> signInWithEmail({
     required String email,
@@ -57,17 +57,18 @@ class AuthFormCubit extends Cubit<AuthFormState> {
     switch (result) {
       case Success(:final data):
         if (data.rawRecoveryKey != null) {
-          _authBloc.add(AuthNeedsRecoveryKeyDisplayEvent(
-            user: data.user,
-            rawRecoveryKey: data.rawRecoveryKey!,
-          ));
+          _authBloc.add(
+            AuthNeedsRecoveryKeyDisplayEvent(
+              user: data.user,
+              rawRecoveryKey: data.rawRecoveryKey!,
+            ),
+          );
         } else {
           _authBloc.add(const AuthFormOperationCompleted());
         }
-        emit(AuthFormSuccess(
-          user: data.user,
-          rawRecoveryKey: data.rawRecoveryKey,
-        ));
+        emit(
+          AuthFormSuccess(user: data.user, rawRecoveryKey: data.rawRecoveryKey),
+        );
       case Failure(:final errorMessage):
         _authBloc.add(const AuthFormOperationCompleted());
         if (errorMessage.toLowerCase().contains('cancelled')) {
@@ -113,17 +114,18 @@ class AuthFormCubit extends Cubit<AuthFormState> {
     switch (result) {
       case Success(:final data):
         if (data.rawRecoveryKey != null) {
-          _authBloc.add(AuthNeedsRecoveryKeyDisplayEvent(
-            user: data.user,
-            rawRecoveryKey: data.rawRecoveryKey!,
-          ));
+          _authBloc.add(
+            AuthNeedsRecoveryKeyDisplayEvent(
+              user: data.user,
+              rawRecoveryKey: data.rawRecoveryKey!,
+            ),
+          );
         } else {
           _authBloc.add(const AuthFormOperationCompleted());
         }
-        emit(AuthFormSuccess(
-          user: data.user,
-          rawRecoveryKey: data.rawRecoveryKey,
-        ));
+        emit(
+          AuthFormSuccess(user: data.user, rawRecoveryKey: data.rawRecoveryKey),
+        );
       case Failure(:final errorMessage):
         _authBloc.add(const AuthFormOperationCompleted());
         emit(AuthFormError(errorMessage));

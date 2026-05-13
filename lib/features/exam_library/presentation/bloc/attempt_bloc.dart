@@ -10,7 +10,6 @@ import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
 import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 
-
 // ── Events ──
 
 sealed class AttemptEvent extends Equatable {

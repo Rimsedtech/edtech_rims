@@ -86,7 +86,5 @@ void main() {
         AuthError(message: 'Error getting user'),
       ],
     );
-
-
   });
 }

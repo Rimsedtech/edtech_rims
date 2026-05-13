@@ -79,7 +79,10 @@ class _ExamResultsPageState extends State<ExamResultsPage>
       final userProgressRepo = getIt<UserProgressRepository>();
       final int coinsToAward = xpToAward ~/ 10;
 
-      await userProgressRepo.awardXp(uid: authState.user.uid, xpAmount: xpToAward);
+      await userProgressRepo.awardXp(
+        uid: authState.user.uid,
+        xpAmount: xpToAward,
+      );
       final updatedResult = await userProgressRepo.awardCoins(
         uid: authState.user.uid,
         coinsAmount: coinsToAward,
