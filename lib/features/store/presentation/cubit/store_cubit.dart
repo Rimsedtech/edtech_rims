@@ -8,6 +8,7 @@ import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/features/store/data/models/skin_model.dart';
 import 'package:bitwise_academy/features/store/data/repositories/store_repository.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
+import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 import 'package:bitwise_academy/shared/services/user_repository.dart';
 
 // ── States ──
@@ -57,14 +58,17 @@ final class StoreError extends StoreState {
 /// [AvatarStorePage], restoring BLoC-pattern consistency across features.
 class StoreCubit extends Cubit<StoreState> {
   final StoreRepository _storeRepository;
+  final UserProgressRepository _userProgressRepository;
   final UserRepository _userRepository;
 
   StreamSubscription<Result<List<SkinModel>>>? _skinsSubscription;
 
   StoreCubit({
     required StoreRepository storeRepository,
+    required UserProgressRepository userProgressRepository,
     required UserRepository userRepository,
   }) : _storeRepository = storeRepository,
+       _userProgressRepository = userProgressRepository,
        _userRepository = userRepository,
        super(const StoreInitial());
 
@@ -77,12 +81,12 @@ class StoreCubit extends Cubit<StoreState> {
           case Success(:final data):
             AppLogger.instance.i('StoreCubit: received ${data.length} skins');
             emit(StoreLoaded(skins: data));
-          case Failure(:final exception):
+          case Failure(:final errorMessage, :final exception):
             AppLogger.instance.e(
               'StoreCubit: skins stream error',
               error: exception,
             );
-            emit(StoreError(message: exception.message));
+            emit(StoreError(message: errorMessage));
         }
       },
       onError: (Object error) {
@@ -106,7 +110,7 @@ class StoreCubit extends Cubit<StoreState> {
       emit(currentState.copyWith(isPurchasing: true));
     }
 
-    final result = await _userRepository.purchaseAvatar(
+    final result = await _userProgressRepository.purchaseAvatar(
       uid: uid,
       avatarId: skinId,
       price: price,

@@ -4,10 +4,12 @@ import 'dart:async';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/features/exam_library/data/repositories/attempt_repository.dart';
 import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
+import 'package:bitwise_academy/features/exam_library/data/services/mock_test_service.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
+
 
 // ── Events ──
 
@@ -167,15 +169,18 @@ final class AttemptFailure extends AttemptState {
 class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
   final AttemptRepository _attemptRepository;
   final ExamRepository _examRepository;
-  final UserRepository _userRepository;
+  final MockTestService _mockTestService;
+  final UserProgressRepository _userProgressRepository;
 
   AttemptBloc({
     required AttemptRepository attemptRepository,
     required ExamRepository examRepository,
-    required UserRepository userRepository,
+    required MockTestService mockTestService,
+    required UserProgressRepository userProgressRepository,
   }) : _attemptRepository = attemptRepository,
        _examRepository = examRepository,
-       _userRepository = userRepository,
+       _mockTestService = mockTestService,
+       _userProgressRepository = userProgressRepository,
        super(const AttemptInitial()) {
     on<StartAttemptRequested>(_onStartAttempt);
     on<StartRandomMockTestRequested>(_onStartRandomMockTest);
@@ -210,18 +215,16 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
   ) async {
     // 1. Fetch the exam
     final examResult = await _examRepository.fetchExamById(event.examId);
-    if (examResult is Failure<ExamModel>) {
-      emit(AttemptFailure(message: (examResult as Failure).exception.message));
+    if (examResult case Failure(:final errorMessage)) {
+      emit(AttemptFailure(message: errorMessage));
       return;
     }
     final exam = (examResult as Success<ExamModel>).data;
 
     // 2. Fetch questions
     final questionsResult = await _examRepository.fetchQuestions(event.examId);
-    if (questionsResult is Failure<List<QuestionModel>>) {
-      emit(
-        AttemptFailure(message: (questionsResult as Failure).exception.message),
-      );
+    if (questionsResult case Failure(:final errorMessage)) {
+      emit(AttemptFailure(message: errorMessage));
       return;
     }
     final questions = (questionsResult as Success<List<QuestionModel>>).data;
@@ -251,8 +254,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
             selectedAnswers: const {},
           ),
         );
-      case Failure(:final exception):
-        emit(AttemptFailure(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AttemptFailure(message: errorMessage));
     }
   }
 
@@ -262,19 +265,18 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
   ) async {
     emit(const AttemptLoadInProgress());
 
-    // 1. Fetch random questions
-    final result = await _examRepository.fetchRandomQuestions(
+    // 1. Fetch random questions directly from MockTestService
+    final questionsResult = await _mockTestService.fetchRandomQuestions(
       subject: event.subject,
       difficultyTier: event.difficultyTier,
       group: event.group,
       count: 10,
     );
-
-    if (result is Failure<List<QuestionModel>>) {
-      emit(AttemptFailure(message: (result as Failure).exception.message));
+    if (questionsResult case Failure(:final errorMessage)) {
+      emit(AttemptFailure(message: errorMessage));
       return;
     }
-    final questions = (result as Success<List<QuestionModel>>).data;
+    final questions = (questionsResult as Success<List<QuestionModel>>).data;
 
     if (questions.isEmpty) {
       emit(
@@ -323,8 +325,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
             selectedAnswers: const {},
           ),
         );
-      case Failure(:final exception):
-        emit(AttemptFailure(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AttemptFailure(message: errorMessage));
     }
   }
 
@@ -393,8 +395,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       xpEarned: xpEarned,
     );
 
-    // Update user leaderboard stats
-    await _userRepository.updateUserLeaderboardStats(
+    // Update user leaderboard stats via UserProgressRepository
+    await _userProgressRepository.updateUserLeaderboardStats(
       uid: currentState.attempt.userId,
       newCorrectAnswers: correctCount,
     );
@@ -409,8 +411,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
             totalQuestions: currentState.questions.length,
           ),
         );
-      case Failure(:final exception):
-        emit(AttemptFailure(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AttemptFailure(message: errorMessage));
     }
   }
 
@@ -439,8 +441,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
             averageScore: averageScore,
           ),
         );
-      case Failure(:final exception):
-        emit(AttemptFailure(message: exception.message));
+      case Failure(:final errorMessage):
+        emit(AttemptFailure(message: errorMessage));
     }
   }
 }

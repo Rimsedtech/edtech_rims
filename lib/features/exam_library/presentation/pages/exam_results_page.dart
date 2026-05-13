@@ -10,7 +10,7 @@ import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bitwise_academy/features/exam_library/presentation/bloc/attempt_bloc.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 
 /// Exam results screen with score and animated XP reward.
 ///
@@ -76,11 +76,11 @@ class _ExamResultsPageState extends State<ExamResultsPage>
     // Handle Sandboxed client-side logic: Award XP and Coins.
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      final userRepo = getIt<UserRepository>();
+      final userProgressRepo = getIt<UserProgressRepository>();
       final int coinsToAward = xpToAward ~/ 10;
 
-      await userRepo.awardXp(uid: authState.user.uid, xpAmount: xpToAward);
-      final updatedResult = await userRepo.awardCoins(
+      await userProgressRepo.awardXp(uid: authState.user.uid, xpAmount: xpToAward);
+      final updatedResult = await userProgressRepo.awardCoins(
         uid: authState.user.uid,
         coinsAmount: coinsToAward,
       );
@@ -187,9 +187,8 @@ class _ExamResultsPageState extends State<ExamResultsPage>
                       children: [
                         Text(
                           '$_score',
-                          style: AppTypography.displayLg.copyWith(
+                          style: AppTypography.displayXl.copyWith(
                             color: AppColors.onSurface,
-                            fontSize: 72,
                           ),
                         ),
                         Text(
@@ -227,20 +226,18 @@ class _ExamResultsPageState extends State<ExamResultsPage>
                                         builder: (context, child) {
                                           return Text(
                                             '+${_xpAnimation!.value}',
-                                            style: AppTypography.headlineMd
+                                            style: AppTypography.headlineLg
                                                 .copyWith(
                                                   color: AppColors.tertiary,
-                                                  fontSize: 48,
                                                 ),
                                           );
                                         },
                                       )
                                     : Text(
                                         '+$_xpEarned',
-                                        style: AppTypography.headlineMd
+                                        style: AppTypography.headlineLg
                                             .copyWith(
                                               color: AppColors.tertiary,
-                                              fontSize: 48,
                                             ),
                                       ),
                               ),
@@ -262,9 +259,8 @@ class _ExamResultsPageState extends State<ExamResultsPage>
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   '+$coinsEarned',
-                                  style: AppTypography.headlineMd.copyWith(
+                                  style: AppTypography.headlineLg.copyWith(
                                     color: Colors.amber,
-                                    fontSize: 48,
                                   ),
                                 ),
                               ),

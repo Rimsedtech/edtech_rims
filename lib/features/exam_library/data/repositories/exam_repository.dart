@@ -8,25 +8,23 @@ import 'package:bitwise_academy/core/errors/app_exception.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/utils/firebase_interceptor.dart';
 import 'package:bitwise_academy/core/utils/logger.dart';
-import 'package:bitwise_academy/features/exam_library/data/services/mock_test_service.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
 
 /// Repository for all exam-related Firestore operations.
 ///
 /// Handles CRUD for exams and their questions sub-collection.
+/// Random-question retrieval (mock tests) is handled by [MockTestService]
+/// and should be called from the BLoC layer — not via this repository.
 class ExamRepository with FirebaseGuardedExecution {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
-  final MockTestService _mockTestService;
 
   ExamRepository({
     required FirebaseFirestore firestore,
     required FirebaseStorage storage,
-    required MockTestService mockTestService,
   }) : _firestore = firestore,
-       _storage = storage,
-       _mockTestService = mockTestService;
+       _storage = storage;
 
   CollectionReference<Map<String, dynamic>> get _examsCollection =>
       _firestore.collection('exams');
@@ -100,43 +98,7 @@ class ExamRepository with FirebaseGuardedExecution {
     }, taskName: 'fetchQuestions');
   }
 
-  /// Pull a random question matching criteria across all exams.
-  /// Delegates to [MockTestService].
-  Future<Result<QuestionModel>> getRandomQuestion({
-    required String subject,
-    required String difficultyTier,
-    required String group,
-  }) async {
-    final result = await _mockTestService.fetchRandomQuestions(
-      subject: subject,
-      difficultyTier: difficultyTier,
-      group: group,
-      count: 1,
-    );
 
-    if (result is Success<List<QuestionModel>>) {
-      return Success(result.data.first);
-    }
-    return Failure((result as Failure).exception);
-  }
-
-  /// Fetches a random set of [count] questions matching the criteria.
-  /// Delegates to [MockTestService].
-  Future<Result<List<QuestionModel>>> fetchRandomQuestions({
-    required String subject,
-    required String difficultyTier,
-    required String group,
-    int count = 10,
-  }) async {
-    return _mockTestService.fetchRandomQuestions(
-      subject: subject,
-      difficultyTier: difficultyTier,
-      group: group,
-      count: count,
-    );
-  }
-
-  // ── CREATE ──
 
   /// Create a new exam (admin only).
   ///
@@ -183,9 +145,9 @@ class ExamRepository with FirebaseGuardedExecution {
         switch (attachmentResult) {
           case Success(:final data):
             await docRef.update({'attachmentUrl': data});
-          case Failure(:final exception):
+          case Failure(:final errorMessage):
             AppLogger.instance.w(
-              'Exam created but file upload failed: ${exception.message}',
+              'Exam created but file upload failed: $errorMessage',
             );
         }
       }

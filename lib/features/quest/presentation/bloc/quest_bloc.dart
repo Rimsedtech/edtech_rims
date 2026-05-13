@@ -8,7 +8,7 @@ import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/features/quest/data/repositories/quest_repository.dart';
 import 'package:bitwise_academy/shared/models/quest_model.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 
 // ── Events ──
 
@@ -173,14 +173,14 @@ final class QuestXpAwardFailure extends QuestState {
 
 class QuestBloc extends Bloc<QuestEvent, QuestState> {
   final QuestRepository _questRepository;
-  final UserRepository _userRepository;
+  final UserProgressRepository _userProgressRepository;
   StreamSubscription<Result<List<QuestModel>>>? _questSubscription;
 
   QuestBloc({
     required QuestRepository questRepository,
-    required UserRepository userRepository,
+    required UserProgressRepository userProgressRepository,
   }) : _questRepository = questRepository,
-       _userRepository = userRepository,
+       _userProgressRepository = userProgressRepository,
        super(const QuestInitial()) {
     on<LoadActiveQuestsRequested>(_onLoadActiveQuests);
     on<_ActiveQuestsUpdated>(_onActiveQuestsUpdated);
@@ -209,8 +209,8 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
       switch (result) {
         case Success(:final data):
           add(_ActiveQuestsUpdated(quests: data));
-        case Failure(:final exception):
-          add(_ActiveQuestsError(message: exception.message));
+        case Failure(:final errorMessage):
+          add(_ActiveQuestsError(message: errorMessage));
       }
     });
   }
@@ -274,7 +274,7 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
     emit(QuestXpAwarding(quest: quest, previousState: prevState));
 
     try {
-      final result = await _userRepository.awardXp(
+      final result = await _userProgressRepository.awardXp(
         uid: event.uid,
         xpAmount: event.xpAmount,
       );
@@ -291,11 +291,11 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
               previousState: prevState,
             ),
           );
-        case Failure<UserEntity>(:final exception):
+        case Failure<UserEntity>(:final errorMessage):
           emit(
             QuestXpAwardFailure(
               quest: quest,
-              error: exception.message,
+              error: errorMessage,
               previousState: prevState,
             ),
           );

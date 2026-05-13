@@ -16,6 +16,7 @@ import 'package:bitwise_academy/features/exam_library/data/services/mock_test_se
 import 'package:bitwise_academy/features/admin/presentation/cubit/admin_stats_cubit.dart';
 import 'package:bitwise_academy/features/quest/presentation/bloc/quest_bloc.dart';
 import 'package:bitwise_academy/features/quest/data/repositories/quest_repository.dart';
+import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 import 'package:bitwise_academy/shared/services/user_repository.dart';
 import 'package:bitwise_academy/features/store/data/repositories/store_repository.dart';
 import 'package:bitwise_academy/features/store/presentation/cubit/store_cubit.dart';
@@ -63,7 +64,6 @@ Future<void> configureDependencies() async {
     () => ExamRepository(
       firestore: getIt<FirebaseFirestore>(),
       storage: getIt<FirebaseStorage>(),
-      mockTestService: getIt<MockTestService>(),
     ),
   );
   getIt.registerLazySingleton<AttemptRepository>(
@@ -74,6 +74,9 @@ Future<void> configureDependencies() async {
   );
   getIt.registerLazySingleton<UserRepository>(
     () => UserRepository(firestore: getIt<FirebaseFirestore>()),
+  );
+  getIt.registerLazySingleton<UserProgressRepository>(
+    () => UserProgressRepository(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<StoreRepository>(
     () => StoreRepository(
@@ -94,7 +97,8 @@ Future<void> configureDependencies() async {
     () => AttemptBloc(
       attemptRepository: getIt<AttemptRepository>(),
       examRepository: getIt<ExamRepository>(),
-      userRepository: getIt<UserRepository>(),
+      mockTestService: getIt<MockTestService>(),
+      userProgressRepository: getIt<UserProgressRepository>(),
     ),
   );
   getIt.registerFactory<AdminStatsCubit>(
@@ -106,12 +110,13 @@ Future<void> configureDependencies() async {
   getIt.registerFactory<QuestBloc>(
     () => QuestBloc(
       questRepository: getIt<QuestRepository>(),
-      userRepository: getIt<UserRepository>(),
+      userProgressRepository: getIt<UserProgressRepository>(),
     ),
   );
   getIt.registerFactory<StoreCubit>(
     () => StoreCubit(
       storeRepository: getIt<StoreRepository>(),
+      userProgressRepository: getIt<UserProgressRepository>(),
       userRepository: getIt<UserRepository>(),
     ),
   );
