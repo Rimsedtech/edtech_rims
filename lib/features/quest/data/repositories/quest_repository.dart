@@ -8,7 +8,9 @@ import 'package:bitwise_academy/shared/models/quest_model.dart';
 import 'package:bitwise_academy/features/quest/domain/repositories/quest_repository.dart';
 
 /// Firestore-backed implementation of [QuestRepository].
-class QuestRepositoryImpl with FirebaseGuardedExecution implements QuestRepository {
+class QuestRepositoryImpl
+    with FirebaseGuardedExecution
+    implements QuestRepository {
   final FirebaseFirestore _firestore;
 
   QuestRepositoryImpl({required FirebaseFirestore firestore})

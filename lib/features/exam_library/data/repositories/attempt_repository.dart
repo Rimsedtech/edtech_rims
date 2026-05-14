@@ -8,7 +8,9 @@ import 'package:bitwise_academy/features/exam_library/domain/repositories/attemp
 /// Firestore-backed implementation of [AttemptRepository].
 ///
 /// Attempts are immutable once completed per security rules.
-class AttemptRepositoryImpl with FirebaseGuardedExecution implements AttemptRepository {
+class AttemptRepositoryImpl
+    with FirebaseGuardedExecution
+    implements AttemptRepository {
   final FirebaseFirestore _firestore;
 
   AttemptRepositoryImpl({required FirebaseFirestore firestore})

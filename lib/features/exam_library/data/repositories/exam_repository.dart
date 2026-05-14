@@ -18,7 +18,9 @@ import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_r
 /// Handles CRUD for exams and their questions sub-collection.
 /// Random-question retrieval (mock tests) is handled by [MockTestService]
 /// and should be called from the BLoC layer — not via this repository.
-class ExamRepositoryImpl with FirebaseGuardedExecution implements ExamRepository {
+class ExamRepositoryImpl
+    with FirebaseGuardedExecution
+    implements ExamRepository {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
 
