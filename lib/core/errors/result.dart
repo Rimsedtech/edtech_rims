@@ -1,3 +1,11 @@
+/// Marker interface for exceptions that carry a user-readable [message].
+///
+/// Implement this on any [Exception] subtype to ensure [Failure.errorMessage]
+/// can extract a clean string without resorting to dynamic dispatch.
+abstract interface class HasMessage {
+  String get message;
+}
+
 /// A sealed Result type for handling fallible operations.
 ///
 /// All repository and service methods that can fail MUST return
@@ -41,17 +49,9 @@ final class Failure<T> extends Result<T> {
 /// Internal helper — resolves a message from any [Exception] without
 /// requiring a direct import of [AppException] here.
 ///
-/// Mirrors the logic in [FailureMessageExtension] so the two are
-/// always in sync.
+/// Uses the [HasMessage] interface so all [AppException] subtypes are
+/// handled without dynamic dispatch.
 String _resolveMessage(Exception e) {
-  // Delegated: AppException carries a first-class `message` field.
-  // We access it via the interface rather than importing the type.
-  // If the exception has a `message` getter (all AppExceptions do),
-  // we use it; otherwise we fall back to toString().
-  try {
-    // ignore: avoid_dynamic_calls
-    return (e as dynamic).message as String;
-  } catch (_) {
-    return e.toString();
-  }
+  if (e case final HasMessage h) return h.message;
+  return e.toString();
 }

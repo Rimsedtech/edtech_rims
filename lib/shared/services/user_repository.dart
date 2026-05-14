@@ -5,22 +5,25 @@ import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 
-/// Repository for user *profile* read operations.
+import 'package:bitwise_academy/shared/domain/repositories/user_repository.dart';
+
+/// Firestore-backed implementation of [UserRepository].
 ///
 /// Covers: fetch, watch, update display name/avatar, role management,
 /// leaderboard fetch, and admin queries.
 /// Progress mutations (XP, coins, streaks, avatar purchase) are in
 /// [UserProgressRepository].
-class UserRepository {
+class UserRepositoryImpl implements UserRepository {
   final FirebaseFirestore _firestore;
 
-  UserRepository({required FirebaseFirestore firestore})
+  UserRepositoryImpl({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
   CollectionReference<Map<String, dynamic>> get _usersCollection =>
       _firestore.collection('users');
 
   /// Fetch a user profile by UID.
+  @override
   Future<Result<UserEntity>> fetchUser(String uid) async {
     try {
       final DocumentSnapshot<Map<String, dynamic>> doc = await _usersCollection
@@ -50,6 +53,7 @@ class UserRepository {
   /// Real-time stream of a single user profile document.
   /// Retries up to [_maxRetries] times on transient permission-denied errors
   /// (caused by the Firebase Auth token not yet propagating to Firestore).
+  @override
   Stream<Result<UserEntity>> watchUser(String uid) {
     return _watchUserWithRetry(uid, attempt: 0);
   }
@@ -134,6 +138,7 @@ class UserRepository {
   }
 
   /// Update user profile fields.
+  @override
   Future<Result<void>> updateProfile({
     required String uid,
     String? displayName,
@@ -160,6 +165,7 @@ class UserRepository {
   }
 
   /// Admin: change a user's role.
+  @override
   Future<Result<void>> setUserRole({
     required String uid,
     required UserRole role,
@@ -190,6 +196,7 @@ class UserRepository {
   /// [limit] is intentionally generous (default 200).
   ///
   /// A 10-second hard timeout is applied.
+  @override
   Future<Result<List<UserEntity>>> fetchLeaderboard({int limit = 200}) async {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -235,6 +242,7 @@ class UserRepository {
   }
 
   /// Fetch all users (admin).
+  @override
   Future<Result<List<UserEntity>>> fetchAllUsers() async {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -254,6 +262,7 @@ class UserRepository {
   }
 
   /// Fetch total user count (admin).
+  @override
   Future<Result<int>> fetchUserCount() async {
     try {
       final AggregateQuerySnapshot snapshot = await _usersCollection

@@ -2,13 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:bitwise_academy/core/errors/result.dart';
-import 'package:bitwise_academy/features/exam_library/data/repositories/attempt_repository.dart';
-import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/features/exam_library/data/services/mock_test_service.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
-import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_progress_repository.dart';
 
 // ── Events ──
 

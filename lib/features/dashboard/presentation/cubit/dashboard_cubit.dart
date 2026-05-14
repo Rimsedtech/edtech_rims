@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bitwise_academy/core/errors/result.dart';
 
-import 'package:bitwise_academy/features/exam_library/data/repositories/attempt_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_repository.dart';
 
 // ── State ──
 

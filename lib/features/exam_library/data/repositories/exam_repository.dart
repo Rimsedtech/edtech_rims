@@ -11,16 +11,18 @@ import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
 
-/// Repository for all exam-related Firestore operations.
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
+
+/// Firestore-backed implementation of [ExamRepository].
 ///
 /// Handles CRUD for exams and their questions sub-collection.
 /// Random-question retrieval (mock tests) is handled by [MockTestService]
 /// and should be called from the BLoC layer — not via this repository.
-class ExamRepository with FirebaseGuardedExecution {
+class ExamRepositoryImpl with FirebaseGuardedExecution implements ExamRepository {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
 
-  ExamRepository({
+  ExamRepositoryImpl({
     required FirebaseFirestore firestore,
     required FirebaseStorage storage,
   }) : _firestore = firestore,
@@ -32,6 +34,7 @@ class ExamRepository with FirebaseGuardedExecution {
   // ── READ ──
 
   /// Fetch all published exams (for students).
+  @override
   Future<Result<List<ExamModel>>> fetchPublishedExams() async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -45,6 +48,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Watch all published exams (for students).
+  @override
   Stream<Result<List<ExamModel>>> watchPublishedExams() {
     return guardedStream(
       () => _examsCollection
@@ -59,6 +63,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch ALL exams regardless of status (for admins).
+  @override
   Future<Result<List<ExamModel>>> fetchAllExams() async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -69,6 +74,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch a single exam by ID.
+  @override
   Future<Result<ExamModel>> fetchExamById(String examId) async {
     return guardedTask(() async {
       final DocumentSnapshot<Map<String, dynamic>> doc = await _examsCollection
@@ -85,6 +91,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch all questions for an exam.
+  @override
   Future<Result<List<QuestionModel>>> fetchQuestions(String examId) async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -102,6 +109,7 @@ class ExamRepository with FirebaseGuardedExecution {
   ///
   /// If [attachmentFile] is provided, it will be uploaded to Firebase Storage
   /// and its download URL stored in the exam document as `attachmentUrl`.
+  @override
   Future<Result<ExamModel>> createExam({
     required String title,
     required String description,
@@ -158,6 +166,7 @@ class ExamRepository with FirebaseGuardedExecution {
   /// Uploads a file to Firebase Storage under `exam_assets/{examId}/`.
   ///
   /// Returns the download URL of the uploaded file on success.
+  @override
   Future<Result<String>> uploadExamFile({
     required String examId,
     required File file,
@@ -179,6 +188,7 @@ class ExamRepository with FirebaseGuardedExecution {
   ///
   /// Handles the Firestore 500-operation limit by automatically splitting
   /// into multiple batches if necessary.
+  @override
   Future<Result<void>> addQuestionsBatch({
     required String examId,
     required List<QuestionModel> questions,
@@ -255,6 +265,7 @@ class ExamRepository with FirebaseGuardedExecution {
   // ── UPDATE ──
 
   /// Update exam metadata (admin only).
+  @override
   Future<Result<void>> updateExam({
     required String examId,
     Map<String, dynamic>? updates,
@@ -270,6 +281,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Publish an exam (change status to published).
+  @override
   Future<Result<void>> publishExam(String examId) async {
     return updateExam(
       examId: examId,
@@ -278,6 +290,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Archive an exam.
+  @override
   Future<Result<void>> archiveExam(String examId) async {
     return updateExam(
       examId: examId,
@@ -287,6 +300,7 @@ class ExamRepository with FirebaseGuardedExecution {
   // ── DELETE ──
 
   /// Delete an exam and all its questions (admin only).
+  @override
   Future<Result<void>> deleteExam(String examId) async {
     return guardedTask(() async {
       // Delete questions sub-collection first
@@ -304,6 +318,7 @@ class ExamRepository with FirebaseGuardedExecution {
   }
 
   /// Delete a question from an exam (admin only).
+  @override
   Future<Result<void>> deleteQuestion({
     required String examId,
     required String questionId,

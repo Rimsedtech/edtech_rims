@@ -3,19 +3,22 @@ import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/utils/firebase_interceptor.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
 
-/// Repository for exam attempt operations.
+import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
+
+/// Firestore-backed implementation of [AttemptRepository].
 ///
 /// Attempts are immutable once completed per security rules.
-class AttemptRepository with FirebaseGuardedExecution {
+class AttemptRepositoryImpl with FirebaseGuardedExecution implements AttemptRepository {
   final FirebaseFirestore _firestore;
 
-  AttemptRepository({required FirebaseFirestore firestore})
+  AttemptRepositoryImpl({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
   CollectionReference<Map<String, dynamic>> get _attemptsCollection =>
       _firestore.collection('attempts');
 
   /// Start a new exam attempt.
+  @override
   Future<Result<AttemptModel>> startAttempt({
     required String userId,
     required String examId,
@@ -42,6 +45,7 @@ class AttemptRepository with FirebaseGuardedExecution {
   }
 
   /// Submit an answer for a question during an attempt.
+  @override
   Future<Result<void>> submitAnswer({
     required String attemptId,
     required String questionId,
@@ -55,6 +59,7 @@ class AttemptRepository with FirebaseGuardedExecution {
   }
 
   /// Complete an attempt with final score.
+  @override
   Future<Result<AttemptModel>> completeAttempt({
     required String attemptId,
     required int score,
@@ -77,6 +82,7 @@ class AttemptRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch all attempts for a specific user.
+  @override
   Future<Result<List<AttemptModel>>> fetchUserAttempts(String userId) async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -90,6 +96,7 @@ class AttemptRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch all attempts for a specific exam (admin).
+  @override
   Future<Result<List<AttemptModel>>> fetchExamAttempts(String examId) async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -103,6 +110,7 @@ class AttemptRepository with FirebaseGuardedExecution {
   }
 
   /// Get stats for a user: total attempts, average score, etc.
+  @override
   Future<Result<Map<String, dynamic>>> fetchUserStats(String userId) async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =

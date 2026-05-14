@@ -5,15 +5,17 @@ import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 
-/// Repository for user *progress* mutations: XP, coins, streaks,
-/// avatar purchases, and leaderboard stat updates.
+import 'package:bitwise_academy/shared/domain/repositories/user_progress_repository.dart';
+
+/// Firestore-backed implementation of [UserProgressRepository].
 ///
+/// Handles XP, coins, streaks, avatar purchases, and leaderboard stat updates.
 /// Read-only profile operations (watch, fetch, update display name /
 /// avatar URL, role management) live in [UserRepository].
-class UserProgressRepository {
+class UserProgressRepositoryImpl implements UserProgressRepository {
   final FirebaseFirestore _firestore;
 
-  UserProgressRepository({required FirebaseFirestore firestore})
+  UserProgressRepositoryImpl({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
   CollectionReference<Map<String, dynamic>> get _usersCollection =>
@@ -22,6 +24,7 @@ class UserProgressRepository {
   // ── XP & Level ────────────────────────────────────────────────────────────
 
   /// Award XP to a user and check for level-up (every 500 XP = 1 level).
+  @override
   Future<Result<UserEntity>> awardXp({
     required String uid,
     required int xpAmount,
@@ -63,6 +66,7 @@ class UserProgressRepository {
   // ── Streak ────────────────────────────────────────────────────────────────
 
   /// Update the daily streak counter.
+  @override
   Future<Result<void>> updateStreak({
     required String uid,
     required int streakDays,
@@ -85,6 +89,7 @@ class UserProgressRepository {
   // ── Coins & Avatar Purchase ────────────────────────────────────────────────
 
   /// Award coins to a user.
+  @override
   Future<Result<UserEntity>> awardCoins({
     required String uid,
     required int coinsAmount,
@@ -110,6 +115,7 @@ class UserProgressRepository {
   }
 
   /// Purchase / unlock an avatar and deduct coins atomically.
+  @override
   Future<Result<UserEntity>> purchaseAvatar({
     required String uid,
     required String avatarId,
@@ -152,6 +158,7 @@ class UserProgressRepository {
   // ── Leaderboard Stats ─────────────────────────────────────────────────────
 
   /// Increment leaderboard counters after an exam is completed.
+  @override
   Future<Result<void>> updateUserLeaderboardStats({
     required String uid,
     required int newCorrectAnswers,

@@ -14,9 +14,14 @@ import 'package:bitwise_academy/features/exam_library/presentation/bloc/attempt_
 import 'package:bitwise_academy/features/exam_library/data/repositories/attempt_repository.dart';
 import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
 import 'package:bitwise_academy/features/exam_library/data/services/mock_test_service.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/features/admin/presentation/cubit/admin_stats_cubit.dart';
 import 'package:bitwise_academy/features/quest/presentation/bloc/quest_bloc.dart';
 import 'package:bitwise_academy/features/quest/data/repositories/quest_repository.dart';
+import 'package:bitwise_academy/features/quest/domain/repositories/quest_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_progress_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_repository.dart';
 import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
 import 'package:bitwise_academy/shared/services/user_repository.dart';
 import 'package:bitwise_academy/features/store/data/repositories/store_repository.dart';
@@ -62,22 +67,22 @@ Future<void> configureDependencies() async {
     () => MockTestService(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<ExamRepository>(
-    () => ExamRepository(
+    () => ExamRepositoryImpl(
       firestore: getIt<FirebaseFirestore>(),
       storage: getIt<FirebaseStorage>(),
     ),
   );
   getIt.registerLazySingleton<AttemptRepository>(
-    () => AttemptRepository(firestore: getIt<FirebaseFirestore>()),
+    () => AttemptRepositoryImpl(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<QuestRepository>(
-    () => QuestRepository(firestore: getIt<FirebaseFirestore>()),
+    () => QuestRepositoryImpl(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<UserRepository>(
-    () => UserRepository(firestore: getIt<FirebaseFirestore>()),
+    () => UserRepositoryImpl(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<UserProgressRepository>(
-    () => UserProgressRepository(firestore: getIt<FirebaseFirestore>()),
+    () => UserProgressRepositoryImpl(firestore: getIt<FirebaseFirestore>()),
   );
   getIt.registerLazySingleton<StoreRepository>(
     () => StoreRepository(

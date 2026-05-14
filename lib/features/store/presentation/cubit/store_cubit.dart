@@ -8,8 +8,8 @@ import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/features/store/data/models/skin_model.dart';
 import 'package:bitwise_academy/features/store/data/repositories/store_repository.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
-import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_progress_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_repository.dart';
 
 // ── States ──
 

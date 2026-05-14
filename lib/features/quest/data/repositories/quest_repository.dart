@@ -5,17 +5,20 @@ import 'package:bitwise_academy/core/utils/firebase_interceptor.dart';
 import 'package:bitwise_academy/core/utils/logger.dart';
 import 'package:bitwise_academy/shared/models/quest_model.dart';
 
-/// Repository for quest/achievement operations.
-class QuestRepository with FirebaseGuardedExecution {
+import 'package:bitwise_academy/features/quest/domain/repositories/quest_repository.dart';
+
+/// Firestore-backed implementation of [QuestRepository].
+class QuestRepositoryImpl with FirebaseGuardedExecution implements QuestRepository {
   final FirebaseFirestore _firestore;
 
-  QuestRepository({required FirebaseFirestore firestore})
+  QuestRepositoryImpl({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
   CollectionReference<Map<String, dynamic>> get _questsCollection =>
       _firestore.collection('quests');
 
   /// Watch all active quests.
+  @override
   Stream<Result<List<QuestModel>>> watchActiveQuests() {
     return guardedStream(
       () => _questsCollection
@@ -29,6 +32,7 @@ class QuestRepository with FirebaseGuardedExecution {
   }
 
   /// Fetch all quests (admin).
+  @override
   Future<Result<List<QuestModel>>> fetchAllQuests() async {
     return guardedTask(() async {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -39,6 +43,7 @@ class QuestRepository with FirebaseGuardedExecution {
   }
 
   /// Create a new quest (admin only).
+  @override
   Future<Result<QuestModel>> createQuest({
     required String title,
     required String description,
@@ -68,6 +73,7 @@ class QuestRepository with FirebaseGuardedExecution {
   }
 
   /// Update a quest (admin only).
+  @override
   Future<Result<void>> updateQuest({
     required String questId,
     required Map<String, dynamic> updates,
@@ -79,6 +85,7 @@ class QuestRepository with FirebaseGuardedExecution {
   }
 
   /// Delete a quest (admin only).
+  @override
   Future<Result<void>> deleteQuest(String questId) async {
     return guardedTask(() async {
       await _questsCollection.doc(questId).delete();

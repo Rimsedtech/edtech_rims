@@ -12,7 +12,7 @@ import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/widgets/latex_text.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_input.dart';
-import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/shared/models/question_model.dart';
 
 /// Admin page for creating MCQ questions with LaTeX support.

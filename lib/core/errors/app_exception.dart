@@ -5,7 +5,8 @@ import 'package:bitwise_academy/core/errors/result.dart';
 /// All exceptions thrown by repositories and services must extend
 /// [AppException]. Raw Firebase/network exceptions should be caught
 /// and mapped to one of these subtypes.
-sealed class AppException implements Exception {
+sealed class AppException implements Exception, HasMessage {
+  @override
   final String message;
   final String? code;
   final StackTrace? stackTrace;
@@ -14,17 +15,6 @@ sealed class AppException implements Exception {
 
   @override
   String toString() => 'AppException($code): $message';
-}
-
-/// Extension on [Failure] to safely extract user-facing messages.
-///
-/// Decouples UI mapping from raw Exception types.
-extension FailureMessageExtension<T> on Failure<T> {
-  String get errorMessage {
-    final e = exception;
-    if (e is AppException) return e.message;
-    return e.toString();
-  }
 }
 
 /// Thrown when a network request fails (timeout, no connectivity, etc.)

@@ -10,7 +10,7 @@ import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bitwise_academy/features/exam_library/presentation/bloc/attempt_bloc.dart';
-import 'package:bitwise_academy/shared/services/user_progress_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_progress_repository.dart';
 
 /// Exam results screen with score and animated XP reward.
 ///

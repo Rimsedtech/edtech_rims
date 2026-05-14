@@ -6,7 +6,7 @@ import 'package:bitwise_academy/core/constants/app_spacing.dart';
 import 'package:bitwise_academy/core/constants/app_typography.dart';
 import 'package:bitwise_academy/core/di/injection.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
-import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
 
 /// Admin: Exam management list with live Firestore data and actions.

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bitwise_academy/core/errors/result.dart';
 
-import 'package:bitwise_academy/features/exam_library/data/repositories/exam_repository.dart';
+import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/shared/models/exam_model.dart';
-import 'package:bitwise_academy/shared/services/user_repository.dart';
+import 'package:bitwise_academy/shared/domain/repositories/user_repository.dart';
 
 // ── State ──
 
