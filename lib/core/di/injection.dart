@@ -17,6 +17,7 @@ import 'package:bitwise_academy/features/exam_library/data/services/mock_test_se
 import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
 import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
 import 'package:bitwise_academy/features/admin/presentation/cubit/admin_stats_cubit.dart';
+import 'package:bitwise_academy/features/admin/presentation/cubit/admin_activity_cubit.dart';
 import 'package:bitwise_academy/features/quest/presentation/bloc/quest_bloc.dart';
 import 'package:bitwise_academy/features/quest/data/repositories/quest_repository.dart';
 import 'package:bitwise_academy/features/quest/domain/repositories/quest_repository.dart';
@@ -28,6 +29,9 @@ import 'package:bitwise_academy/features/store/data/repositories/store_repositor
 import 'package:bitwise_academy/features/store/presentation/cubit/store_cubit.dart';
 import 'package:bitwise_academy/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:bitwise_academy/features/leaderboard/presentation/bloc/leaderboard_bloc.dart';
+import 'package:bitwise_academy/features/jobs/data/repositories/job_repository.dart';
+import 'package:bitwise_academy/features/jobs/presentation/cubit/jobs_cubit.dart';
+import 'package:bitwise_academy/features/auth/presentation/bloc/session_recovery_bloc.dart';
 
 /// Global [GetIt] service locator instance.
 final GetIt getIt = GetIt.instance;
@@ -90,13 +94,29 @@ Future<void> configureDependencies() async {
       storage: getIt<FirebaseStorage>(),
     ),
   );
+  getIt.registerLazySingleton<JobRepository>(
+    () => JobRepository(firestore: getIt<FirebaseFirestore>()),
+  );
 
   getIt.registerLazySingleton<AuthService>(
     () => AuthService(authRepository: getIt<AuthRepository>()),
   );
 
   // ── 4. BLoCs / Cubits ──
-  getIt.registerFactory<AuthBloc>(
+  //
+  // AuthBloc is a SINGLETON: the same instance is shared by AppRoot,
+  // AuthFormCubit, and any other consumer. This is required so that:
+  //   • The authStateChanges stream subscription is set up exactly once.
+  //   • _isFormOperationInProgress flag is consistent across all callers.
+  //   • SessionRecoveryBloc receives CheckRecoveryRequested from the correct
+  //     bloc instance (not a different factory-created one).
+  //
+  // ⚠️ Singleton risks mitigated:
+  //   1. AuthFormCubit.close() now sends AuthFormOperationCompleted to reset
+  //      _isFormOperationInProgress if the cubit is disposed mid-operation.
+  //   2. AuthBloc.close() is NOT called in RimsApp.dispose() — GetIt owns
+  //      the singleton lifecycle for the entire app session.
+  getIt.registerLazySingleton<AuthBloc>(
     () => AuthBloc(authRepository: getIt<AuthRepository>()),
   );
   getIt.registerFactory<AuthFormCubit>(
@@ -115,6 +135,14 @@ Future<void> configureDependencies() async {
   );
   getIt.registerFactory<AdminStatsCubit>(
     () => AdminStatsCubit(
+      examRepository: getIt<ExamRepository>(),
+      userRepository: getIt<UserRepository>(),
+      attemptRepository: getIt<AttemptRepository>(),
+    ),
+  );
+  getIt.registerFactory<AdminActivityCubit>(
+    () => AdminActivityCubit(
+      attemptRepository: getIt<AttemptRepository>(),
       examRepository: getIt<ExamRepository>(),
       userRepository: getIt<UserRepository>(),
     ),
@@ -140,5 +168,17 @@ Future<void> configureDependencies() async {
   );
   getIt.registerFactory<LeaderboardBloc>(
     () => LeaderboardBloc(userRepository: getIt<UserRepository>()),
+  );
+  getIt.registerFactory<SessionRecoveryBloc>(
+    () => SessionRecoveryBloc(
+      attemptRepository: getIt<AttemptRepository>(),
+      examRepository: getIt<ExamRepository>(),
+      userProgressRepository: getIt<UserProgressRepository>(),
+    ),
+  );
+  // registerFactory: each Dashboard instance needs its own stream subscription
+  // that gets cancelled when the cubit is closed via JobsCubit.close().
+  getIt.registerFactory<JobsCubit>(
+    () => JobsCubit(repo: getIt<JobRepository>()),
   );
 }

@@ -65,7 +65,7 @@ void main() async {
 
     final Set<String> uniqueSubjects = {};
     final Set<String> uniqueGroups = {};
-    final Set<String> uniqueDifficulties = {};
+    final Map<String, Set<String>> subjectGroupsMap = {};
 
     for (int i = 0; i < exams.length; i++) {
       final Map<String, dynamic> examData = Map<String, dynamic>.from(
@@ -80,7 +80,6 @@ void main() async {
         'title',
         'subject',
         'group',
-        'difficultyTier',
         'durationMinutes',
         'questions',
       ];
@@ -104,27 +103,57 @@ void main() async {
       // Ensure numeric types
       examDoc['durationMinutes'] = (examDoc['durationMinutes'] as num).toInt();
       examDoc['xpReward'] = (examDoc['xpReward'] as num?)?.toInt() ?? 100;
-      examDoc['questionCount'] = questions.length;
+      examDoc['questionCount'] = (examDoc['questionCount'] as num?)?.toInt() ?? questions.length;
       examDoc['status'] = (examDoc['status'] as String?) ?? 'published';
 
       // Convert timestamps to DateTime (Firestore SDK converts to Timestamps)
       examDoc['createdAt'] = _parseDate(examDoc['createdAt']);
       examDoc['updatedAt'] = DateTime.now().toUtc();
 
-      // 3. Batched Upload (Atomic)
-      final batch = firestore.batch();
+      // 3. Check for existing exam (Upsert) to prevent duplicates
+      final allExamsSnapshot = await firestore.collection('exams').get();
+      final duplicateDocs = allExamsSnapshot.docs.where((d) {
+        final data = d.data();
+        return data['title'] == title;
+      }).toList();
 
-      // Create exam doc reference
-      final examRef = firestore.collection('exams').doc();
+      final batch = firestore.batch();
+      dynamic examRef;
+
+      if (duplicateDocs.isNotEmpty) {
+        examRef = firestore.collection('exams').doc(duplicateDocs.first.id);
+        print('   ♻️  Found existing exam. Updating ${duplicateDocs.first.id}...');
+        
+        // Delete old questions to replace them
+        final oldQuestions = await examRef.collection('questions').get();
+        for (final doc in oldQuestions.docs) {
+          batch.delete(examRef.collection('questions').doc(doc.id));
+        }
+        
+        // Cleanup any duplicates
+        for (int j = 1; j < duplicateDocs.length; j++) {
+           final duplicateRef = firestore.collection('exams').doc(duplicateDocs[j].id);
+           final dupQuestions = await duplicateRef.collection('questions').get();
+           for (final qDoc in dupQuestions.docs) {
+             batch.delete(duplicateRef.collection('questions').doc(qDoc.id));
+           }
+           batch.delete(duplicateRef);
+           print('   🗑️  Deleted duplicate exam: ${duplicateDocs[j].id}');
+        }
+      } else {
+        examRef = firestore.collection('exams').doc();
+      }
+
       batch.set(examRef, examDoc);
 
       // Update unique lists
-      uniqueSubjects.add((examDoc['subject'] as String?) ?? 'General');
-      uniqueGroups.add((examDoc['group'] as String?) ?? '');
-      // We also add the exam's default difficulty
-      uniqueDifficulties.add(
-        (examDoc['difficultyTier'] as String?) ?? 'medium',
-      );
+      final subj = (examDoc['subject'] as String?) ?? 'General';
+      final grp = (examDoc['group'] as String?) ?? '';
+      uniqueSubjects.add(subj);
+      if (grp.isNotEmpty) {
+        uniqueGroups.add(grp);
+        subjectGroupsMap.putIfAbsent(subj, () => {}).add(grp);
+      }
 
       // Add questions to batch
       for (final dynamic q in questions) {
@@ -132,18 +161,17 @@ void main() async {
           q as Map<dynamic, dynamic>,
         );
 
-        // Collect granular difficulty for metadata config
-        if (qData.containsKey('difficultyTier')) {
-          uniqueDifficulties.add(qData['difficultyTier'] as String);
-        }
 
         qData['points'] = (qData['points'] as num?)?.toInt() ?? 1;
         qData['order'] = (qData['order'] as num?)?.toInt() ?? 0;
+        qData['xpReward'] = (qData['xpReward'] as num?)?.toInt() ?? qData['points'];
 
         // Inject parent metadata for global random queries
         qData['subject'] = examDoc['subject'];
-        qData['difficultyTier'] ??= examDoc['difficultyTier'];
         qData['group'] = examDoc['group'];
+
+        // Remove difficultyTier if present (no longer used in queries)
+        qData.remove('difficultyTier');
 
         // Add random seed for selection
         qData['random'] = Random().nextDouble();
@@ -206,20 +234,27 @@ void main() async {
         uniqueGroups.addAll(
           List<String>.from((existingData['groups'] as List<dynamic>?) ?? []),
         );
-        uniqueDifficulties.addAll(
-          List<String>.from(
-            (existingData['difficulties'] as List<dynamic>?) ?? [],
-          ),
-        );
+        
+        final existingSubjectGroups = existingData['subjectGroups'] as Map<String, dynamic>? ?? {};
+        existingSubjectGroups.forEach((k, v) {
+          subjectGroupsMap.putIfAbsent(k, () => {}).addAll(
+            List<String>.from(v as List<dynamic>).where((g) => g.isNotEmpty),
+          );
+        });
       }
     } catch (e) {
       print('   ℹ️ Creating new mock_test_metadata document.');
     }
 
+    final Map<String, List<String>> finalSubjectGroups = {};
+    subjectGroupsMap.forEach((k, v) {
+      finalSubjectGroups[k] = v.toList()..sort();
+    });
+
     await configRef.set({
       'subjects': uniqueSubjects.toList()..sort(),
       'groups': uniqueGroups.toList()..sort(),
-      'difficultyTiers': uniqueDifficulties.toList()..sort(),
+      'subjectGroups': finalSubjectGroups,
       'lastUpdated': DateTime.now().toIso8601String(),
     });
     print('✅ Metadata updated successfully.');

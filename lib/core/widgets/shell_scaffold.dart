@@ -43,12 +43,20 @@ class _ShellScaffoldState extends State<ShellScaffold> {
   @override
   void initState() {
     super.initState();
-    BackButtonInterceptor.add(_myInterceptor, context: context);
+    // zIndex: 1 so this shell interceptor always YIELDS to the ExamTakingPage
+    // interceptor (registered at zIndex: 2) when a mission is active.
+    // Higher zIndex = fires first; exam lock must win unconditionally.
+    BackButtonInterceptor.add(
+      _myInterceptor,
+      context: context,
+      zIndex: 1,
+      name: 'shell',
+    );
   }
 
   @override
   void dispose() {
-    BackButtonInterceptor.remove(_myInterceptor);
+    BackButtonInterceptor.removeByName('shell');
     _exitTimer?.cancel();
     super.dispose();
   }

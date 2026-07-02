@@ -13,7 +13,9 @@ class QuestionModel extends Equatable {
   final String explanation;
   final int points;
   final int order;
-  final String difficultyTier;
+  /// XP awarded when this question is answered correctly.
+  /// Defaults to [points] if not explicitly set.
+  final int xpReward;
   final String? diagramUrl;
 
   const QuestionModel({
@@ -25,15 +27,16 @@ class QuestionModel extends Equatable {
     required this.explanation,
     required this.points,
     required this.order,
-    required this.difficultyTier,
+    int? xpReward,
     this.diagramUrl,
-  });
+  }) : xpReward = xpReward ?? points;
 
   /// Creates a [QuestionModel] from a JSON map.
   ///
   /// Compatible with both the Obsidian parser output (`database_seed.json`)
   /// and the Firestore document data format.
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
+    final points = (json['points'] as num?)?.toInt() ?? 1;
     return QuestionModel(
       id: json['id'] as String? ?? '',
       questionText: json['questionText'] as String? ?? '',
@@ -43,9 +46,9 @@ class QuestionModel extends Equatable {
       options: List<String>.from(json['options'] as List<dynamic>? ?? []),
       correctAnswer: json['correctAnswer'] as String? ?? '',
       explanation: json['explanation'] as String? ?? '',
-      points: (json['points'] as num?)?.toInt() ?? 1,
+      points: points,
       order: (json['order'] as num?)?.toInt() ?? 0,
-      difficultyTier: json['difficultyTier'] as String? ?? 'medium',
+      xpReward: (json['xpReward'] as num?)?.toInt() ?? points,
       diagramUrl: json['diagramUrl'] as String?,
     );
   }
@@ -72,7 +75,7 @@ class QuestionModel extends Equatable {
       'explanation': explanation,
       'points': points,
       'order': order,
-      'difficultyTier': difficultyTier,
+      'xpReward': xpReward,
       if (diagramUrl != null) 'diagramUrl': diagramUrl,
     };
   }
@@ -86,7 +89,7 @@ class QuestionModel extends Equatable {
     String? explanation,
     int? points,
     int? order,
-    String? difficultyTier,
+    int? xpReward,
     String? diagramUrl,
   }) {
     return QuestionModel(
@@ -98,7 +101,7 @@ class QuestionModel extends Equatable {
       explanation: explanation ?? this.explanation,
       points: points ?? this.points,
       order: order ?? this.order,
-      difficultyTier: difficultyTier ?? this.difficultyTier,
+      xpReward: xpReward ?? this.xpReward,
       diagramUrl: diagramUrl ?? this.diagramUrl,
     );
   }
@@ -113,7 +116,7 @@ class QuestionModel extends Equatable {
     explanation,
     points,
     order,
-    difficultyTier,
+    xpReward,
     diagramUrl,
   ];
 }

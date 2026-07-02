@@ -39,33 +39,20 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void _onRegister() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthFormCubit>().createAccountWithEmail(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        displayName: _nameController.text.trim(),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthFormCubit, AuthFormState>(
       listener: (BuildContext context, AuthFormState state) {
-        if (state is AuthFormSuccess) {
-          if (state.rawRecoveryKey != null) {
-            if (context.mounted) {
-              _showRecoveryKeyDialog(
-                context,
-                state.user,
-                state.rawRecoveryKey!,
-              );
-            }
-          } else {
-            if (context.mounted) {
-              context.go('/');
-            }
+        // Only handle the recovery key dialog here.
+        // All navigation is handled by the router redirect reacting to AuthBloc.
+        // Calling context.go() here at the same time as the redirect causes a GlobalKey collision.
+        if (state is AuthFormSuccess && state.rawRecoveryKey != null) {
+          if (context.mounted) {
+            _showRecoveryKeyDialog(
+              context,
+              state.user,
+              state.rawRecoveryKey!,
+            );
           }
         }
         if (state is AuthFormError) {
@@ -161,131 +148,141 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                   ],
                                 ),
-                                child: Form(
-                                  key: _formKey,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Header
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: AppSpacing.md,
-                                        ),
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: AppColors.surfaceDim,
-                                              width: 4,
+                                child: Builder(
+                                  builder: (formContext) => Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Header
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                            bottom: AppSpacing.md,
+                                          ),
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: AppColors.surfaceDim,
+                                                width: 4,
+                                              ),
                                             ),
                                           ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.person_add,
+                                                size: 40,
+                                                color: AppColors.primary,
+                                              ),
+                                              const SizedBox(
+                                                width: AppSpacing.md,
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'NEW RECRUIT',
+                                                    style: AppTypography
+                                                        .headlineSm
+                                                        .copyWith(
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
+                                                  ),
+                                                  Text(
+                                                    'CLASS SELECTION',
+                                                    style: AppTypography.bodyLg
+                                                        .copyWith(
+                                                          color: AppColors
+                                                              .onSurfaceVariant,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        child: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.person_add,
-                                              size: 40,
-                                              color: AppColors.primary,
-                                            ),
-                                            const SizedBox(
-                                              width: AppSpacing.md,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'NEW RECRUIT',
-                                                  style: AppTypography
-                                                      .headlineSm
-                                                      .copyWith(
-                                                        color:
-                                                            AppColors.primary,
-                                                      ),
-                                                ),
-                                                Text(
-                                                  'CLASS SELECTION',
-                                                  style: AppTypography.bodyLg
-                                                      .copyWith(
-                                                        color: AppColors
-                                                            .onSurfaceVariant,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                        const SizedBox(height: AppSpacing.xl),
+
+                                        PixelInput(
+                                          label: 'HERO_NAME',
+                                          hintText: 'ENTER_HERO_NAME',
+                                          suffixIcon: Icons.badge_outlined,
+                                          controller: _nameController,
+                                          validator: (String? v) =>
+                                              (v?.isEmpty ?? true)
+                                              ? 'Hero name required'
+                                              : null,
                                         ),
-                                      ),
-                                      const SizedBox(height: AppSpacing.xl),
+                                        const SizedBox(height: AppSpacing.lg),
 
-                                      PixelInput(
-                                        label: 'HERO_NAME',
-                                        hintText: 'ENTER_HERO_NAME',
-                                        suffixIcon: Icons.badge_outlined,
-                                        controller: _nameController,
-                                        validator: (String? v) =>
-                                            (v?.isEmpty ?? true)
-                                            ? 'Hero name required'
-                                            : null,
-                                      ),
-                                      const SizedBox(height: AppSpacing.lg),
+                                        PixelInput(
+                                          label: 'EMAIL_ADDRESS',
+                                          hintText: 'ENTER_EMAIL_HERE',
+                                          suffixIcon: Icons.mail_outline,
+                                          controller: _emailController,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: (String? v) =>
+                                              (v?.isEmpty ?? true)
+                                              ? 'Email required'
+                                              : null,
+                                        ),
+                                        const SizedBox(height: AppSpacing.lg),
 
-                                      PixelInput(
-                                        label: 'EMAIL_ADDRESS',
-                                        hintText: 'ENTER_EMAIL_HERE',
-                                        suffixIcon: Icons.mail_outline,
-                                        controller: _emailController,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        validator: (String? v) =>
-                                            (v?.isEmpty ?? true)
-                                            ? 'Email required'
-                                            : null,
-                                      ),
-                                      const SizedBox(height: AppSpacing.lg),
+                                        PixelInput(
+                                          label: 'SECRET_KEY',
+                                          hintText: 'MIN 6 CHARACTERS',
+                                          obscureText: true,
+                                          suffixIcon: Icons.lock_outline,
+                                          controller: _passwordController,
+                                          validator: (String? v) {
+                                            if (v?.isEmpty ?? true) {
+                                              return 'Secret key required';
+                                            }
+                                            if (v!.length < 6) {
+                                              return 'Min 6 characters';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(height: AppSpacing.lg),
 
-                                      PixelInput(
-                                        label: 'SECRET_KEY',
-                                        hintText: 'MIN 6 CHARACTERS',
-                                        obscureText: true,
-                                        suffixIcon: Icons.lock_outline,
-                                        controller: _passwordController,
-                                        validator: (String? v) {
-                                          if (v?.isEmpty ?? true) {
-                                            return 'Secret key required';
-                                          }
-                                          if (v!.length < 6) {
-                                            return 'Min 6 characters';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: AppSpacing.lg),
+                                        PixelInput(
+                                          label: 'CONFIRM_KEY',
+                                          hintText: 'REPEAT SECRET KEY',
+                                          obscureText: true,
+                                          suffixIcon: Icons.lock_outline,
+                                          controller: _confirmController,
+                                          validator: (String? v) {
+                                            if (v != _passwordController.text) {
+                                              return 'Keys do not match';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(height: AppSpacing.xl),
 
-                                      PixelInput(
-                                        label: 'CONFIRM_KEY',
-                                        hintText: 'REPEAT SECRET KEY',
-                                        obscureText: true,
-                                        suffixIcon: Icons.lock_outline,
-                                        controller: _confirmController,
-                                        validator: (String? v) {
-                                          if (v != _passwordController.text) {
-                                            return 'Keys do not match';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: AppSpacing.xl),
-
-                                      PixelButton(
-                                        label: 'CREATE CHARACTER',
-                                        onPressed: isLoading
-                                            ? null
-                                            : _onRegister,
-                                        isLoading: isLoading,
-                                        width: double.infinity,
-                                      ),
-                                    ],
+                                        PixelButton(
+                                          label: 'CREATE CHARACTER',
+                                          onPressed: isLoading
+                                              ? null
+                                              : () {
+                                                  if (_formKey.currentState!.validate()) {
+                                                    context.read<AuthFormCubit>().createAccountWithEmail(
+                                                      email: _emailController.text.trim(),
+                                                      password: _passwordController.text,
+                                                      displayName: _nameController.text.trim(),
+                                                    );
+                                                  }
+                                                },
+                                          isLoading: isLoading,
+                                          width: double.infinity,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

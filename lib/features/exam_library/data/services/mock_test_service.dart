@@ -26,7 +26,6 @@ class MockTestService with FirebaseGuardedExecution {
   /// get empty results unless no questions match the filters at all.
   Future<Result<List<QuestionModel>>> fetchRandomQuestions({
     required String subject,
-    required String difficultyTier,
     required String group,
     int count = 10,
   }) async {
@@ -48,7 +47,6 @@ class MockTestService with FirebaseGuardedExecution {
           final forwardSnap = await _firestore
               .collectionGroup('questions')
               .where('subject', isEqualTo: subject)
-              .where('difficultyTier', isEqualTo: difficultyTier)
               .where('group', isEqualTo: group)
               .where('random', isGreaterThanOrEqualTo: seed)
               .orderBy('random')
@@ -65,7 +63,6 @@ class MockTestService with FirebaseGuardedExecution {
             final backwardSnap = await _firestore
                 .collectionGroup('questions')
                 .where('subject', isEqualTo: subject)
-                .where('difficultyTier', isEqualTo: difficultyTier)
                 .where('group', isEqualTo: group)
                 .where('random', isLessThan: seed)
                 .orderBy('random', descending: true)

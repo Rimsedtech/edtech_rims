@@ -16,6 +16,9 @@ abstract class ExamRepository {
   /// Watch all published exams as a real-time stream (for students).
   Stream<Result<List<ExamModel>>> watchPublishedExams();
 
+  /// Fetch the total count of all published exams (admin optimization).
+  Future<Result<int>> fetchPublishedExamCount();
+
   /// Fetch ALL exams regardless of status (for admins).
   Future<Result<List<ExamModel>>> fetchAllExams();
 
@@ -31,7 +34,6 @@ abstract class ExamRepository {
     required String description,
     required String subject,
     required String group,
-    required DifficultyTier difficultyTier,
     required int durationMinutes,
     required String createdBy,
     required int xpReward,

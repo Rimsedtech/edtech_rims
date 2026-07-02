@@ -79,6 +79,9 @@ sealed class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Kept for API compatibility but the bloc no longer starts in this state.
+/// The initial state is now [AuthLoading] so the splash screen is held
+/// until the Firebase [authStateChanges] stream fires.
 final class AuthInitial extends AuthState {
   const AuthInitial();
 }
@@ -128,7 +131,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required AuthRepository authRepository})
     : _authRepository = authRepository,
-      super(const AuthInitial()) {
+      // Start in AuthLoading so the router holds the splash screen.
+      // The authStateChanges stream will emit the real state within
+      // milliseconds, eliminating the cold-start race condition where
+      // getCurrentUser() could return null before Firebase restores the
+      // persisted token.
+      super(const AuthLoading()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthSignOutRequested>(_onSignOut);
     on<AuthUserUpdated>(_onUserUpdated);
@@ -138,6 +146,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthFormOperationCompleted>(_onFormOperationCompleted);
     on<AuthNeedsRecoveryKeyDisplayEvent>(_onNeedsRecoveryKeyDisplay);
 
+    // Single source of truth for auth state. Fires immediately on subscription
+    // with the current persisted state, making the one-shot getCurrentUser()
+    // call unnecessary and avoiding cold-start race conditions.
     _authSubscription = _authRepository.authStateChanges.listen((user) {
       add(_AuthUserChanged(user: user));
     });
@@ -154,16 +165,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthFormOperationCompleted event,
     Emitter<AuthState> emit,
   ) async {
+    // Clear the flag — the Firebase authStateChanges stream will have already
+    // queued a _AuthUserChanged event with the signed-in user, which will now
+    // be unblocked and emit AuthAuthenticated on its own.
+    //
+    // Safety fallback: if for some reason the Firebase stream's _AuthUserChanged
+    // has already been processed and we're still in a non-authenticated state
+    // (e.g. AuthInitial/AuthLoading), fetch the current user ourselves.
     _isFormOperationInProgress = false;
-    // Form finished, verify session state.
-    final result = await _authRepository.getCurrentUser();
-    if (result case Success(:final data) when data != null) {
-      emit(AuthAuthenticated(user: data));
-    } else if (state is AuthInitial ||
-        state is AuthLoading ||
-        state is AuthError) {
-      emit(const AuthUnauthenticated());
-    }
+
+    // Allow the event queue to drain any pending _AuthUserChanged first.
+    // If the state is still not AuthAuthenticated after that, fetch it now.
+    await Future<void>.microtask(() async {
+      if (state is! AuthAuthenticated && state is! AuthNeedsRecoveryKeyDisplay) {
+        final result = await _authRepository.getCurrentUser();
+        if (result case Success(:final data) when data != null) {
+          emit(AuthAuthenticated(user: data));
+        } else if (state is! AuthAuthenticated) {
+          emit(const AuthUnauthenticated());
+        }
+      }
+    });
   }
 
   void _onNeedsRecoveryKeyDisplay(
@@ -180,11 +202,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onUserChanged(_AuthUserChanged event, Emitter<AuthState> emit) {
-    // If a form operation is active, or we need to display the recovery key, ignore the stream.
+    // Ignore stream events while a form operation is in progress or while the
+    // recovery key dialog is visible.
     if (state is AuthNeedsRecoveryKeyDisplay || _isFormOperationInProgress) {
       return;
     }
     if (event.user != null) {
+      // Deduplicate: skip emission if we're already authenticated as the same user.
+      // This prevents a second GoRouter refresh when the Firebase stream fires
+      // right after AuthFormOperationCompleted already emitted AuthAuthenticated.
+      final currentState = state;
+      if (currentState is AuthAuthenticated &&
+          currentState.user.uid == event.user!.uid) {
+        return;
+      }
       emit(AuthAuthenticated(user: event.user!));
     } else {
       emit(const AuthUnauthenticated());
@@ -202,22 +233,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthAuthenticated(user: event.user));
   }
 
+  /// No-op: the [authStateChanges] stream subscription (started in the
+  /// constructor) is now the sole mechanism for resolving auth state.
+  /// Keeping this handler avoids breaking callers that still dispatch
+  /// [AuthCheckRequested], but no separate Firestore/Firebase round-trip
+  /// is performed — the stream already handles this correctly.
   Future<void> _onCheckRequested(
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthLoading());
-    final Result<UserEntity?> result = await _authRepository.getCurrentUser();
-    switch (result) {
-      case Success(:final data):
-        if (data != null) {
-          emit(AuthAuthenticated(user: data));
-        } else {
-          emit(const AuthUnauthenticated());
-        }
-      case Failure(:final errorMessage):
-        emit(AuthError(message: errorMessage));
-    }
+    // Intentionally a no-op.
+    // The authStateChanges stream handles auth resolution.
   }
 
   Future<void> _onSignOut(

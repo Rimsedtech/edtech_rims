@@ -172,10 +172,6 @@ Map<String, dynamic> _parseExamFile(
     );
   }
 
-  final difficultyTier = _normalizeDifficulty(
-    frontmatter['difficulty'] as String? ?? 'medium',
-  );
-
   for (final question in questions) {
     final qNum = question['order'] as int;
     final key = 'Q$qNum';
@@ -185,8 +181,8 @@ Map<String, dynamic> _parseExamFile(
     // Inject denormalised metadata for random search
     question['subject'] = subject;
     question['group'] = group;
-    // Use question-level difficulty if provided, otherwise fallback to exam-level
-    question['difficultyTier'] ??= difficultyTier;
+    // Add xpReward = points if not set
+    question['xpReward'] ??= question['points'] ?? 1;
     question['random'] = _generateRandomDouble();
   }
 
@@ -199,12 +195,11 @@ Map<String, dynamic> _parseExamFile(
     'description': frontmatter['description'] as String? ?? '',
     'subject': subject,
     'group': group,
-    'difficultyTier': difficultyTier,
     'durationMinutes': _parseInt(frontmatter['duration_minutes'], 30),
     'createdBy': frontmatter['created_by'] as String? ?? 'obsidian_parser',
     'status': frontmatter['status'] as String? ?? 'draft',
     'xpReward': _parseInt(frontmatter['xp_reward'], 100),
-    'questionCount': questions.length,
+    'questionCount': _parseInt(frontmatter['question_count'], questions.length),
     'createdAt': now,
     'updatedAt': now,
     'questions': questions,
@@ -357,7 +352,6 @@ Map<String, dynamic> _parseSingleQuestion(
   String questionType = 'mcq';
   int points = 1;
   String explanation = '';
-  String? difficultyTier;
   String? diagramUrl;
 
   bool inOptions = false;
@@ -390,8 +384,6 @@ Map<String, dynamic> _parseSingleQuestion(
           questionType = _normalizeQuestionType(value);
         case 'explanation':
           explanation = value;
-        case 'difficulty':
-          difficultyTier = _normalizeDifficulty(value);
         case 'diagramurl':
           diagramUrl = value;
       }
@@ -451,7 +443,6 @@ Map<String, dynamic> _parseSingleQuestion(
     'explanation': explanation,
     'points': points,
     'order': order,
-    'difficultyTier': difficultyTier,
     if (diagramUrl != null) 'diagramUrl': diagramUrl,
   };
 }

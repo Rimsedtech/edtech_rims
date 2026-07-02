@@ -131,4 +131,20 @@ class AuthFormCubit extends Cubit<AuthFormState> {
         emit(AuthFormError(errorMessage));
     }
   }
+
+  /// Singleton-safety guard.
+  ///
+  /// Because [AuthBloc] is now a singleton, its [_isFormOperationInProgress]
+  /// flag persists for the entire app lifetime. If this cubit is disposed
+  /// while a form operation is still in-flight (e.g. the user navigates
+  /// away from the login screen), the flag would be stuck at `true`,
+  /// silently dropping all future [authStateChanges] events.
+  ///
+  /// Sending [AuthFormOperationCompleted] here ensures the flag is always
+  /// reset regardless of how this cubit is discarded.
+  @override
+  Future<void> close() {
+    _authBloc.add(const AuthFormOperationCompleted());
+    return super.close();
+  }
 }

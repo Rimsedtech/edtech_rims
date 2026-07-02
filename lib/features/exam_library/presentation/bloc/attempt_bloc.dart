@@ -34,18 +34,16 @@ final class StartAttemptRequested extends AttemptEvent {
 final class StartRandomMockTestRequested extends AttemptEvent {
   final String userId;
   final String subject;
-  final String difficultyTier;
   final String group;
 
   const StartRandomMockTestRequested({
     required this.userId,
     required this.subject,
-    required this.difficultyTier,
     required this.group,
   });
 
   @override
-  List<Object?> get props => [userId, subject, difficultyTier, group];
+  List<Object?> get props => [userId, subject, group];
 }
 
 /// User selects an answer for the current question.
@@ -65,6 +63,20 @@ final class AnswerSelected extends AttemptEvent {
 /// User submits the entire exam (or timer expires).
 final class SubmitAttemptRequested extends AttemptEvent {
   const SubmitAttemptRequested();
+}
+
+/// Resume an existing in-progress attempt.
+final class ResumeAttemptRequested extends AttemptEvent {
+  final AttemptModel attempt;
+  final ExamModel exam;
+
+  const ResumeAttemptRequested({
+    required this.attempt,
+    required this.exam,
+  });
+
+  @override
+  List<Object?> get props => [attempt, exam];
 }
 
 /// Fetch user's past attempts for stats.
@@ -116,24 +128,35 @@ final class AttemptInProgress extends AttemptState {
 }
 
 /// Exam completed — results ready.
+///
+/// [questions] and [selectedAnswers] are carried forward so the review
+/// page can display correct/incorrect answers + explanations without
+/// an extra Firestore round-trip.
 final class AttemptCompleted extends AttemptState {
   final ExamModel exam;
   final AttemptModel attempt;
   final int correctCount;
   final int totalQuestions;
+  /// Full ordered list of questions shown during the exam.
+  final List<QuestionModel> questions;
+  /// Map of questionIndex → the option string the student selected.
+  final Map<int, String> selectedAnswers;
 
   const AttemptCompleted({
     required this.exam,
     required this.attempt,
     required this.correctCount,
     required this.totalQuestions,
+    required this.questions,
+    required this.selectedAnswers,
   });
 
   double get scorePercentage =>
       totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
   @override
-  List<Object?> get props => [exam, attempt, correctCount, totalQuestions];
+  List<Object?> get props =>
+      [exam, attempt, correctCount, totalQuestions, questions, selectedAnswers];
 }
 
 /// User stats loaded.
@@ -185,6 +208,7 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
     on<StartRandomMockTestRequested>(_onStartRandomMockTest);
     on<AnswerSelected>(_onAnswerSelected);
     on<SubmitAttemptRequested>(_onSubmitAttempt);
+    on<ResumeAttemptRequested>(_onResumeAttempt);
     on<LoadUserAttemptsRequested>(_onLoadUserAttempts);
   }
 
@@ -241,6 +265,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       userId: event.userId,
       examId: event.examId,
       totalPoints: totalPoints,
+      examTitle: exam.title,
+      questions: questions,
     );
 
     switch (attemptResult) {
@@ -264,12 +290,30 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
   ) async {
     emit(const AttemptLoadInProgress());
 
-    // 1. Fetch random questions directly from MockTestService
+    // 1. Fetch the source exam metadata for the selected subject and group
+    final examsResult = await _examRepository.fetchPublishedExams();
+    int targetQuestionCount = 20;
+    int targetDurationMinutes = 45;
+    int targetXpReward = 400;
+
+    if (examsResult is Success<List<ExamModel>>) {
+      try {
+        final sourceExam = examsResult.data.firstWhere(
+          (e) => e.subject == event.subject && e.group == event.group,
+        );
+        targetQuestionCount = sourceExam.questionCount > 0 ? sourceExam.questionCount : 20;
+        targetDurationMinutes = sourceExam.durationMinutes;
+        targetXpReward = sourceExam.xpReward;
+      } catch (_) {
+        // Fallback to defaults if no specific exam is found
+      }
+    }
+
+    // 2. Fetch random questions directly from MockTestService
     final questionsResult = await _mockTestService.fetchRandomQuestions(
       subject: event.subject,
-      difficultyTier: event.difficultyTier,
       group: event.group,
-      count: 10,
+      count: targetQuestionCount,
     );
     if (questionsResult case Failure(:final errorMessage)) {
       emit(AttemptFailure(message: errorMessage));
@@ -281,24 +325,23 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       emit(
         const AttemptFailure(
           message:
-              'We could not find any questions matching your selected subject, group, and difficulty. Try different settings!',
+              'We could not find any questions matching your selected test series and topic. Try different settings!',
         ),
       );
       return;
     }
 
-    // 2. Create a virtual exam model
+    // 3. Create a virtual exam model
     final virtualExam = ExamModel(
       id: 'random_mock_${DateTime.now().millisecondsSinceEpoch}',
       title: 'RANDOM MOCK TEST: ${event.subject.toUpperCase()}',
       description: 'Automatically generated mission based on your selection.',
       subject: event.subject,
       group: event.group,
-      difficultyTier: DifficultyTier.fromString(event.difficultyTier),
-      durationMinutes: 15,
+      durationMinutes: targetDurationMinutes,
       createdBy: 'system',
       status: ExamStatus.published,
-      xpReward: 200,
+      xpReward: targetXpReward,
       questionCount: questions.length,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -312,6 +355,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       userId: event.userId,
       examId: virtualExam.id,
       totalPoints: totalPoints,
+      examTitle: virtualExam.title,
+      questions: questions,
     );
 
     switch (attemptResult) {
@@ -327,6 +372,39 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       case Failure(:final errorMessage):
         emit(AttemptFailure(message: errorMessage));
     }
+  }
+
+  Future<void> _onResumeAttempt(
+    ResumeAttemptRequested event,
+    Emitter<AttemptState> emit,
+  ) async {
+    emit(const AttemptLoadInProgress());
+
+    final questionsResult = await _examRepository.fetchQuestions(event.exam.id);
+    if (questionsResult case Failure(:final errorMessage)) {
+      emit(AttemptFailure(message: errorMessage));
+      return;
+    }
+    
+    final questions = (questionsResult as Success<List<QuestionModel>>).data;
+    
+    // Map question IDs from Firestore answers back to their indexes
+    final Map<int, String> mappedAnswers = {};
+    for (int i = 0; i < questions.length; i++) {
+      final qId = questions[i].id;
+      if (event.attempt.answers.containsKey(qId)) {
+        mappedAnswers[i] = event.attempt.answers[qId] as String;
+      }
+    }
+
+    emit(
+      AttemptInProgress(
+        exam: event.exam,
+        questions: questions,
+        attempt: event.attempt,
+        selectedAnswers: mappedAnswers,
+      ),
+    );
   }
 
   void _onAnswerSelected(AnswerSelected event, Emitter<AttemptState> emit) {
@@ -376,15 +454,14 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
       }
     }
 
-    // Calculate XP earned based on score percentage & difficulty multiplier
-    final scorePercentage = currentState.questions.isNotEmpty
-        ? (correctCount / currentState.questions.length) * 100
-        : 0.0;
-    final xpEarned =
-        (currentState.exam.xpReward *
-                (scorePercentage / 100) *
-                currentState.exam.difficultyTier.xpMultiplier)
-            .round();
+    // Calculate XP earned: sum of xpReward for each correctly answered question
+    final xpEarned = currentState.questions
+        .asMap()
+        .entries
+        .where((e) =>
+            currentState.selectedAnswers[e.key] != null &&
+            currentState.selectedAnswers[e.key] == e.value.correctAnswer)
+        .fold<int>(0, (sum, e) => sum + e.value.xpReward);
 
     // Persist to Firestore
     final result = await _attemptRepository.completeAttempt(
@@ -408,6 +485,8 @@ class AttemptBloc extends Bloc<AttemptEvent, AttemptState> {
             attempt: data,
             correctCount: correctCount,
             totalQuestions: currentState.questions.length,
+            questions: currentState.questions,
+            selectedAnswers: currentState.selectedAnswers,
           ),
         );
       case Failure(:final errorMessage):

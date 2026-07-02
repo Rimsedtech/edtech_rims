@@ -9,10 +9,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bitwise_academy/core/constants/app_colors.dart';
 import 'package:bitwise_academy/core/constants/app_spacing.dart';
 import 'package:bitwise_academy/core/constants/app_typography.dart';
+import 'package:bitwise_academy/core/di/injection.dart';
 import 'package:bitwise_academy/core/widgets/hp_bar.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_card.dart';
+import 'package:bitwise_academy/features/jobs/presentation/cubit/jobs_cubit.dart';
+import 'package:bitwise_academy/features/jobs/presentation/cubit/jobs_state.dart';
+import 'package:bitwise_academy/features/jobs/presentation/widgets/job_advertisement_card.dart';
 import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/bloc/session_recovery_bloc.dart';
 import 'package:bitwise_academy/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:bitwise_academy/shared/models/user_entity.dart';
 import 'package:bitwise_academy/core/widgets/mock_test_config_sheet.dart';
@@ -100,7 +105,57 @@ class _UserDashboardPageState extends State<UserDashboardPage>
         final loaded = dashState as DashboardLoaded;
         final user = loaded.user;
 
-        return BlocListener<AttemptBloc, AttemptState>(
+        return BlocListener<SessionRecoveryBloc, SessionRecoveryState>(
+          // Only trigger once per transition into Complete / Error.
+          listenWhen: (previous, current) =>
+              current is RecoveryComplete || current is RecoveryError,
+          listener: (context, recoveryState) {
+            if (recoveryState is RecoveryComplete &&
+                recoveryState.wasAutoSubmitted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.primary,
+                  duration: const Duration(seconds: 4),
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle_outline,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          'Your previous session was auto-submitted.',
+                          style: AppTypography.bodyMd
+                              .copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else if (recoveryState is RecoveryError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.error,
+                  duration: const Duration(seconds: 6),
+                  content: Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          recoveryState.message,
+                          style: AppTypography.bodyMd
+                              .copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+          child: BlocListener<AttemptBloc, AttemptState>(
           listener: (context, state) {
             if (state is AttemptInProgress &&
                 state.exam.id.startsWith('random_mock_')) {
@@ -212,8 +267,9 @@ class _UserDashboardPageState extends State<UserDashboardPage>
                 ],
               ),
             ),
-          ),
-        );
+          ), // end Scaffold
+        ), // end BlocListener<AttemptBloc>
+      ); // end BlocListener<SessionRecoveryBloc> (return value)
       },
     ); // end BlocBuilder
   }
@@ -527,7 +583,6 @@ class _UserDashboardPageState extends State<UserDashboardPage>
                                 StartRandomMockTestRequested(
                                   userId: user.uid,
                                   subject: config.subject,
-                                  difficultyTier: config.difficulty,
                                   group: config.group,
                                 ),
                               );
@@ -576,7 +631,7 @@ class _UserDashboardPageState extends State<UserDashboardPage>
                 value: '$testsCompleted',
                 progress: testsCompleted > 0
                     ? (testsCompleted / 10).clamp(0.0, 1.0)
-                    : 0,
+                    : 0.0,
                 variant: HpBarVariant.secondary,
               ),
             ),
@@ -649,61 +704,102 @@ class _UserDashboardPageState extends State<UserDashboardPage>
 
         const SizedBox(height: AppSpacing.md),
 
-        // ── Active Quests ──
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          decoration: BoxDecoration(
-            color: AppColors.surface.withValues(alpha: 0.7),
-            border: Border.all(color: AppColors.outlineVariant, width: 2),
-            boxShadow: const [
-              BoxShadow(offset: Offset(4, 4), color: AppColors.shadowTinted),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: AppColors.surfaceContainerHighest,
-                      width: 2,
+        // ── MPSC Advertisements (replaces Active Quests) ──
+        BlocProvider(
+          create: (_) => getIt<JobsCubit>(),
+          child: Builder(
+            builder: (context) {
+              return Container(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.surface.withValues(alpha: 0.7),
+                  border: Border.all(color: AppColors.outlineVariant, width: 2),
+                  boxShadow: const [
+                    BoxShadow(
+                      offset: Offset(4, 4),
+                      color: AppColors.shadowTinted,
                     ),
-                  ),
+                  ],
                 ),
-                child: Text(
-                  'ACTIVE QUESTS',
-                  style: AppTypography.headlineXs.copyWith(
-                    color: AppColors.primary,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Section header ──
+                    Container(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: AppColors.surfaceContainerHighest,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'LATEST ADVERTISEMENTS',
+                            style: AppTypography.headlineXs.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              border: Border.all(
+                                color: AppColors.secondary,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              'MPSC',
+                              style: AppTypography.headlineXxs.copyWith(
+                                color: AppColors.secondary,
+                                fontSize: 8,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.md),
+
+                    // ── Live content from Firestore ──
+                    BlocBuilder<JobsCubit, JobsState>(
+                      builder: (context, state) {
+                        if (state is JobsLoading) {
+                          return const JobsSkeleton();
+                        }
+                        if (state is JobsError) {
+                          return JobsErrorState(
+                            message: state.message,
+                            onRetry: () => context.read<JobsCubit>().retry(),
+                          );
+                        }
+                        if (state is JobsLoaded) {
+                          if (state.jobs.isEmpty) {
+                            return const JobsEmptyState();
+                          }
+                          return Column(
+                            children: state.jobs
+                                .map((job) => JobAdvertisementCard(job: job))
+                                .toList(),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              _buildQuestItem(
-                icon: Icons.workspace_premium,
-                title: 'FIRST STEPS',
-                desc: 'Complete your first exam',
-                iconColor: AppColors.secondary,
-                bgColor: AppColors.secondaryContainer,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _buildQuestItem(
-                icon: Icons.history_edu,
-                title: 'STREAK STARTER',
-                desc: 'Login 3 days in a row',
-                iconColor: AppColors.tertiary,
-                bgColor: AppColors.tertiaryFixed,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _buildQuestItem(
-                icon: Icons.star,
-                title: 'PERFECTIONIST',
-                desc: 'Score 100% on any exam',
-                iconColor: AppColors.primary,
-                bgColor: AppColors.primaryFixed,
-              ),
-            ],
+              );
+            },
           ),
         ),
       ],
@@ -716,61 +812,42 @@ class _UserDashboardPageState extends State<UserDashboardPage>
         color: AppColors.primaryContainer,
         border: Border.all(color: AppColors.onPrimaryContainer, width: 2),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Icon(icon, size: 28, color: AppColors.onPrimaryContainer),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            label,
-            style: AppTypography.headlineXxs.copyWith(
-              color: AppColors.onPrimaryContainer,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuestItem({
-    required IconData icon,
-    required String title,
-    required String desc,
-    required Color iconColor,
-    required Color bgColor,
-  }) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: bgColor,
-            border: Border.all(color: iconColor, width: 2),
-          ),
-          child: Icon(icon, color: iconColor, size: 20),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(icon, size: 28, color: AppColors.onPrimaryContainer),
+              const SizedBox(height: AppSpacing.xs),
               Text(
-                title,
-                style: AppTypography.headlineXs.copyWith(
-                  color: AppColors.onSurface,
-                ),
-              ),
-              Text(
-                desc,
-                style: AppTypography.labelMd.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                label,
+                style: AppTypography.headlineXxs.copyWith(
+                  color: AppColors.onPrimaryContainer,
                 ),
               ),
             ],
           ),
-        ),
-      ],
+          // ── Coming Soon badge ──
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: AppColors.surface.withValues(alpha: 0.85),
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              child: Text(
+                'COMING SOON',
+                textAlign: TextAlign.center,
+                style: AppTypography.headlineXxs.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 7,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

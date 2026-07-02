@@ -10,12 +10,10 @@ import 'package:bitwise_academy/core/widgets/pixel_card.dart';
 /// Configuration result returned when the user confirms their mock test setup.
 class MockTestConfig {
   final String subject;
-  final String difficulty;
   final String group;
 
   const MockTestConfig({
     required this.subject,
-    required this.difficulty,
     required this.group,
   });
 }
@@ -41,7 +39,6 @@ class _MockTestConfigSheet extends StatefulWidget {
 
 class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
   String? _selectedSubject;
-  String? _selectedDifficulty;
   String? _selectedGroup;
 
   late final Stream<DocumentSnapshot<Map<String, dynamic>>> _metadataStream;
@@ -55,24 +52,7 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
         .snapshots();
   }
 
-  static const Map<String, String> _difficultyLabels = {
-    'easy': 'EASY',
-    'medium': 'MEDIUM',
-    'hard': 'HARD',
-    'ultra_hard': 'ULTRA-HARD',
-  };
-
-  static const Map<String, Color> _difficultyColors = {
-    'easy': AppColors.secondary,
-    'medium': AppColors.primary,
-    'hard': AppColors.tertiary,
-    'ultra_hard': AppColors.tertiaryContainer,
-  };
-
-  bool get _isValid =>
-      _selectedSubject != null &&
-      _selectedDifficulty != null &&
-      _selectedGroup != null;
+  bool get _isValid => _selectedSubject != null && _selectedGroup != null;
 
   @override
   Widget build(BuildContext context) {
@@ -132,19 +112,11 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
         final List<String> subjects = List<String>.from(
           (data['subjects'] as List<dynamic>?) ?? [],
         );
-        final List<String> groups = List<String>.from(
-          (data['groups'] as List<dynamic>?) ?? [],
-        );
-        final List<String> difficulties = List<String>.from(
-          (data['difficultyTiers'] as List<dynamic>?) ?? [],
-        );
         final Map<String, dynamic> subjectGroupsMap =
             data['subjectGroups'] as Map<String, dynamic>? ?? {};
 
         // Filter out empty options
         subjects.removeWhere((s) => s.isEmpty);
-        groups.removeWhere((s) => s.isEmpty);
-        difficulties.removeWhere((s) => s.isEmpty);
 
         return Container(
           padding: EdgeInsets.only(bottom: bottomPadding),
@@ -199,12 +171,12 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // ── Subject selector ──
-                  _buildSectionLabel('SUBJECT'),
+                  // ── Test Series selector ──
+                  _buildSectionLabel('TEST SERIES'),
                   const SizedBox(height: AppSpacing.sm),
                   _buildPixelDropdown<String>(
                     value: _selectedSubject,
-                    hint: 'Select subject...',
+                    hint: 'Select test series...',
                     items: subjects,
                     labelBuilder: (s) => s.toUpperCase(),
                     onChanged: (v) {
@@ -216,12 +188,12 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // ── Group selector ──
-                  _buildSectionLabel('GROUP'),
+                  // ── Topic selector ──
+                  _buildSectionLabel('TOPIC'),
                   const SizedBox(height: AppSpacing.sm),
                   _buildPixelDropdown<String>(
                     value: _selectedGroup,
-                    hint: 'Select group...',
+                    hint: 'Select topic...',
                     items: _selectedSubject != null
                         ? List<String>.from(
                             subjectGroupsMap[_selectedSubject!]
@@ -232,73 +204,7 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
                     labelBuilder: (s) => s.toUpperCase(),
                     onChanged: _selectedSubject != null
                         ? (v) => setState(() => _selectedGroup = v)
-                        : (v) {}, // 👈 CHANGE 'null' to an empty function
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // ── Difficulty selector (chip-style) ──
-                  _buildSectionLabel('DIFFICULTY'),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
-                    children: difficulties.map((d) {
-                      final isSelected = _selectedDifficulty == d;
-                      final color =
-                          _difficultyColors[d] ?? AppColors.onSurfaceVariant;
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedDifficulty = d),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? color.withValues(alpha: 0.15)
-                                : AppColors.surfaceContainerLowest,
-                            border: Border.all(
-                              color: isSelected
-                                  ? color
-                                  : AppColors.outlineVariant,
-                              width: isSelected ? 3 : 2,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 16,
-                                height: 16,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? color
-                                      : Colors.transparent,
-                                  border: Border.all(color: color, width: 2),
-                                ),
-                                child: isSelected
-                                    ? const Icon(
-                                        Icons.check,
-                                        size: 10,
-                                        color: Colors.white,
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: AppSpacing.sm),
-                              Text(
-                                _difficultyLabels[d] ?? d.toUpperCase(),
-                                style: AppTypography.headlineXs.copyWith(
-                                  color: isSelected
-                                      ? color
-                                      : AppColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                        : (v) {},
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
@@ -315,7 +221,6 @@ class _MockTestConfigSheetState extends State<_MockTestConfigSheet> {
                               Navigator.of(context).pop(
                                 MockTestConfig(
                                   subject: _selectedSubject!,
-                                  difficulty: _selectedDifficulty!,
                                   group: _selectedGroup!,
                                 ),
                               );

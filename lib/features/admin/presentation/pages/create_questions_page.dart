@@ -116,7 +116,6 @@ class _CreateQuestionsPageState extends State<CreateQuestionsPage> {
     setState(() {
       final newQuestion = QuestionModel(
         id: '', // Temporary ID
-        difficultyTier: 'medium',
         questionText: questionText,
         questionType: QuestionType.mcq,
         options: options,

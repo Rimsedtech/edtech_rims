@@ -100,23 +100,24 @@ class AuthRepositoryImpl
         .collection('private')
         .doc('secrets')
         .get();
-    return _mapDocToUser(doc, privateDoc);
+    return _mapDocToUser(doc, privateDoc.data()?['email'] as String?);
   }
 
   /// Maps Firestore documents → [UserEntity].
   UserEntity _mapDocToUser(
-    DocumentSnapshot<Map<String, dynamic>> publicDoc,
-    DocumentSnapshot<Map<String, dynamic>> privateDoc,
-  ) {
+    DocumentSnapshot<Map<String, dynamic>> publicDoc, [
+    String? email,
+  ]) {
     final data = publicDoc.data()!;
-    final privateData = privateDoc.data() ?? {};
     return UserEntity(
-      uid: data['uid'] as String,
-      email: privateData['email'] as String? ?? '',
-      displayName: data['displayName'] as String,
-      role: UserRole.fromString(data['role'] as String),
-      xp: (data['xp'] as num).toInt(),
-      level: (data['level'] as num).toInt(),
+      // Safe casts: older accounts or Firestore schema migrations may be
+      // missing fields. Fall back to safe sentinel values rather than crash.
+      uid: data['uid'] as String? ?? publicDoc.id,
+      email: email ?? '',
+      displayName: data['displayName'] as String? ?? 'HERO',
+      role: UserRole.fromString(data['role'] as String? ?? 'student'),
+      xp: (data['xp'] as num?)?.toInt() ?? 0,
+      level: (data['level'] as num?)?.toInt() ?? 1,
       coins: (data['coins'] as num?)?.toInt() ?? 0,
       streakDays: (data['streakDays'] as num?)?.toInt() ?? 0,
       avatarUrl: data['avatarUrl'] as String?,
@@ -144,37 +145,42 @@ class AuthRepositoryImpl
           if (firebaseUser == null) {
             controller.add(null);
           } else {
-            firestoreSub = _usersCollection
-                .doc(firebaseUser.uid)
-                .snapshots()
-                .listen(
-                  (doc) async {
-                    if (!doc.exists || doc.data() == null) {
-                      controller.add(null);
-                    } else {
-                      try {
-                        final privateDoc = await _usersCollection
-                            .doc(firebaseUser.uid)
-                            .collection('private')
-                            .doc('secrets')
-                            .get();
-                        controller.add(_mapDocToUser(doc, privateDoc));
-                      } catch (e) {
-                        AppLogger.instance.e(
-                          'Error mapping auth state',
-                          error: e,
-                        );
+            void listenToFirestore(int attempt) {
+              firestoreSub = _usersCollection
+                  .doc(firebaseUser.uid)
+                  .snapshots()
+                  .listen(
+                    (doc) {
+                      if (!doc.exists || doc.data() == null) {
                         controller.add(null);
+                      } else {
+                        try {
+                          controller.add(_mapDocToUser(doc, firebaseUser.email));
+                        } catch (e) {
+                          AppLogger.instance.e(
+                            'Error mapping auth state',
+                            error: e,
+                          );
+                          controller.add(null);
+                        }
                       }
-                    }
-                  },
-                  onError: (Object e) {
-                    AppLogger.instance.e(
-                      'Error listening to user doc',
-                      error: e,
-                    );
-                  },
-                );
+                    },
+                    onError: (Object e) {
+                      AppLogger.instance.e(
+                        'Error listening to user doc (attempt $attempt)',
+                        error: e,
+                      );
+                      if (e is fb.FirebaseException &&
+                          e.code == 'permission-denied' &&
+                          attempt < 3) {
+                        Future.delayed(const Duration(seconds: 1), () {
+                          listenToFirestore(attempt + 1);
+                        });
+                      }
+                    },
+                  );
+            }
+            listenToFirestore(1);
           }
         });
       },

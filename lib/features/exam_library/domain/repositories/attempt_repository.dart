@@ -1,5 +1,6 @@
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
+import 'package:bitwise_academy/shared/models/question_model.dart';
 
 /// Abstract contract for exam attempt data operations.
 ///
@@ -11,6 +12,8 @@ abstract class AttemptRepository {
     required String userId,
     required String examId,
     required int totalPoints,
+    String? examTitle,
+    List<QuestionModel>? questions,
   });
 
   /// Submit an answer for a question during an active attempt.
@@ -36,4 +39,13 @@ abstract class AttemptRepository {
 
   /// Aggregate stats (totalCompleted, averageScore, totalXpEarned) for a user.
   Future<Result<Map<String, dynamic>>> fetchUserStats(String userId);
+
+  /// Fetch the most recent active ('in_progress') attempt for a user, if any.
+  Future<Result<AttemptModel?>> fetchActiveAttempt(String userId);
+
+  /// Admin: fetch the total count of all completed attempts across the entire platform.
+  Future<Result<int>> fetchTotalCompletedAttemptsCount();
+
+  /// Admin: fetch the total count of completed attempts today across the entire platform.
+  Future<Result<int>> fetchTodayCompletedAttemptsCount();
 }

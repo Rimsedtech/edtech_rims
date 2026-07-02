@@ -4,8 +4,7 @@
       "collectionGroup": "exams",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "subject", "order": "ASCENDING" },
-        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
@@ -13,7 +12,8 @@
       "collectionGroup": "exams",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "subject", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
@@ -29,8 +29,25 @@
       "collectionGroup": "attempts",
       "queryScope": "COLLECTION",
       "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "attempts",
+      "queryScope": "COLLECTION",
+      "fields": [
         { "fieldPath": "examId", "order": "ASCENDING" },
         { "fieldPath": "score", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "attempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "completedAt", "order": "ASCENDING" }
       ]
     },
     {
@@ -40,6 +57,32 @@
         { "fieldPath": "totalCorrectAnswers", "order": "DESCENDING" },
         { "fieldPath": "totalExamsTaken", "order": "ASCENDING" },
         { "fieldPath": "lastExamCompletedAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "questions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "subject", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "random", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "questions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "subject", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "random", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "mpsc_advertisements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "scrapedAt", "order": "DESCENDING" }
       ]
     }
   ],
@@ -59,23 +102,13 @@
       ]
     },
     {
-      "collectionGroup": "questions",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "subject", "order": "ASCENDING" },
-        { "fieldPath": "group", "order": "ASCENDING" },
-        { "fieldPath": "difficultyTier", "order": "ASCENDING" },
-        { "fieldPath": "random", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "questions",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "subject", "order": "ASCENDING" },
-        { "fieldPath": "group", "order": "ASCENDING" },
-        { "fieldPath": "difficultyTier", "order": "ASCENDING" },
-        { "fieldPath": "random", "order": "DESCENDING" }
+      "collectionGroup": "secrets",
+      "fieldPath": "email",
+      "indexes": [
+        {
+          "queryScope": "COLLECTION_GROUP",
+          "order": "ASCENDING"
+        }
       ]
     }
   ]

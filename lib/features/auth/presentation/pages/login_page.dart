@@ -44,15 +44,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _onSignIn() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthFormCubit>().signInWithEmail(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-    }
-  }
-
   void _onGoogleSignIn() {
     context.read<AuthFormCubit>().signInWithGoogle();
   }
@@ -65,19 +56,17 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthFormCubit, AuthFormState>(
       listener: (BuildContext context, AuthFormState state) {
-        if (state is AuthFormSuccess) {
-          if (state.rawRecoveryKey != null) {
-            if (context.mounted) {
-              _showRecoveryKeyDialog(
-                context,
-                state.user,
-                state.rawRecoveryKey!,
-              );
-            }
-          } else {
-            if (context.mounted) {
-              context.go('/');
-            }
+        // Only handle the recovery key dialog here.
+        // All navigation (to dashboard) is handled by the router redirect
+        // reacting to AuthBloc state changes. Calling context.go() here at
+        // the same time as the router redirect causes a GlobalKey collision.
+        if (state is AuthFormSuccess && state.rawRecoveryKey != null) {
+          if (context.mounted) {
+            _showRecoveryKeyDialog(
+              context,
+              state.user,
+              state.rawRecoveryKey!,
+            );
           }
         }
         if (state is AuthFormError) {
@@ -210,46 +199,56 @@ class _LoginPageState extends State<LoginPage> {
               BoxShadow(offset: Offset(4, 0), color: AppColors.onSurface),
             ],
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Card header
-                _buildCardHeader(),
-                const SizedBox(height: AppSpacing.xl),
+          child: Builder(
+            builder: (formContext) => Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Card header
+                  _buildCardHeader(),
+                  const SizedBox(height: AppSpacing.xl),
 
-                // Email field
-                PixelInput(
-                  label: 'EMAIL_ADDRESS',
-                  hintText: 'ENTER_EMAIL_HERE',
-                  suffixIcon: Icons.mail_outline,
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (String? v) =>
-                      (v?.isEmpty ?? true) ? 'Email required' : null,
-                ),
-                const SizedBox(height: AppSpacing.lg),
+                  // Email field
+                  PixelInput(
+                    label: 'EMAIL_ADDRESS',
+                    hintText: 'ENTER_EMAIL_HERE',
+                    suffixIcon: Icons.mail_outline,
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (String? v) =>
+                        (v?.isEmpty ?? true) ? 'Email required' : null,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
 
-                // Password field
-                PixelInput(
-                  label: 'SECRET_KEY',
-                  hintText: '********',
-                  obscureText: true,
-                  suffixIcon: Icons.lock_outline,
-                  controller: _passwordController,
-                  validator: (String? v) =>
-                      (v?.isEmpty ?? true) ? 'Secret key required' : null,
-                ),
-                const SizedBox(height: AppSpacing.xl),
+                  // Password field
+                  PixelInput(
+                    label: 'SECRET_KEY',
+                    hintText: '********',
+                    obscureText: true,
+                    suffixIcon: Icons.lock_outline,
+                    controller: _passwordController,
+                    validator: (String? v) =>
+                        (v?.isEmpty ?? true) ? 'Secret key required' : null,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
 
-                // Start Game button
-                PixelButton(
-                  label: 'START GAME',
-                  onPressed: isLoading ? null : _onSignIn,
-                  isLoading: isLoading,
-                  width: double.infinity,
-                ),
+                  // Start Game button
+                  PixelButton(
+                    label: 'START GAME',
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthFormCubit>().signInWithEmail(
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text,
+                                  );
+                            }
+                          },
+                    isLoading: isLoading,
+                    width: double.infinity,
+                  ),
                 const SizedBox(height: AppSpacing.lg),
 
                 // Divider
@@ -276,7 +275,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
                 const SizedBox(height: AppSpacing.lg),
-              ],
+                ],
+              ),
             ),
           ),
         ),

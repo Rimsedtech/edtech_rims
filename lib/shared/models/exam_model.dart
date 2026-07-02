@@ -10,7 +10,6 @@ class ExamModel extends Equatable {
   final String description;
   final String subject;
   final String group;
-  final DifficultyTier difficultyTier;
   final int durationMinutes;
   final String createdBy;
   final ExamStatus status;
@@ -25,7 +24,6 @@ class ExamModel extends Equatable {
     required this.description,
     required this.subject,
     required this.group,
-    required this.difficultyTier,
     required this.durationMinutes,
     required this.createdBy,
     required this.status,
@@ -37,7 +35,7 @@ class ExamModel extends Equatable {
 
   /// Creates an [ExamModel] from a Firestore document snapshot.
   factory ExamModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data = doc.data() ?? {};
 
     DateTime parseDate(dynamic value) {
       if (value is Timestamp) return value.toDate();
@@ -47,17 +45,14 @@ class ExamModel extends Equatable {
 
     return ExamModel(
       id: doc.id,
-      title: data['title'] as String,
-      description: data['description'] as String,
-      subject: data['subject'] as String,
+      title: data['title'] as String? ?? 'Untitled Exam',
+      description: data['description'] as String? ?? '',
+      subject: data['subject'] as String? ?? 'General',
       group: data['group'] as String? ?? '',
-      difficultyTier: DifficultyTier.fromString(
-        data['difficultyTier'] as String,
-      ),
-      durationMinutes: (data['durationMinutes'] as num).toInt(),
-      createdBy: data['createdBy'] as String,
-      status: ExamStatus.fromString(data['status'] as String),
-      xpReward: (data['xpReward'] as num).toInt(),
+      durationMinutes: (data['durationMinutes'] as num?)?.toInt() ?? 60,
+      createdBy: data['createdBy'] as String? ?? 'System',
+      status: ExamStatus.fromString(data['status'] as String? ?? 'draft'),
+      xpReward: (data['xpReward'] as num?)?.toInt() ?? 0,
       questionCount: (data['questionCount'] as num?)?.toInt() ?? 0,
       createdAt: parseDate(data['createdAt']),
       updatedAt: parseDate(data['updatedAt']),
@@ -71,7 +66,6 @@ class ExamModel extends Equatable {
       'description': description,
       'subject': subject,
       'group': group,
-      'difficultyTier': difficultyTier.firestoreValue,
       'durationMinutes': durationMinutes,
       'createdBy': createdBy,
       'status': status.name,
@@ -86,7 +80,6 @@ class ExamModel extends Equatable {
     String? description,
     String? subject,
     String? group,
-    DifficultyTier? difficultyTier,
     int? durationMinutes,
     String? createdBy,
     ExamStatus? status,
@@ -101,7 +94,6 @@ class ExamModel extends Equatable {
       description: description ?? this.description,
       subject: subject ?? this.subject,
       group: group ?? this.group,
-      difficultyTier: difficultyTier ?? this.difficultyTier,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       createdBy: createdBy ?? this.createdBy,
       status: status ?? this.status,
@@ -119,7 +111,6 @@ class ExamModel extends Equatable {
     description,
     subject,
     group,
-    difficultyTier,
     durationMinutes,
     createdBy,
     status,
@@ -128,48 +119,6 @@ class ExamModel extends Equatable {
     createdAt,
     updatedAt,
   ];
-}
-
-/// Difficulty tiers matching the design mockups.
-enum DifficultyTier {
-  easy,
-  medium,
-  hard,
-  ultraHard;
-
-  String get displayName {
-    return switch (this) {
-      DifficultyTier.easy => 'EASY',
-      DifficultyTier.medium => 'MEDIUM',
-      DifficultyTier.hard => 'HARD',
-      DifficultyTier.ultraHard => 'ULTRA-HARD',
-    };
-  }
-
-  String get firestoreValue {
-    return switch (this) {
-      DifficultyTier.easy => 'easy',
-      DifficultyTier.medium => 'medium',
-      DifficultyTier.hard => 'hard',
-      DifficultyTier.ultraHard => 'ultra_hard',
-    };
-  }
-
-  static DifficultyTier fromString(String value) {
-    return DifficultyTier.values.firstWhere(
-      (DifficultyTier tier) => tier.firestoreValue == value,
-      orElse: () => DifficultyTier.easy,
-    );
-  }
-
-  int get xpMultiplier {
-    return switch (this) {
-      DifficultyTier.easy => 1,
-      DifficultyTier.medium => 2,
-      DifficultyTier.hard => 4,
-      DifficultyTier.ultraHard => 8,
-    };
-  }
 }
 
 /// Exam publication status.

@@ -51,6 +51,10 @@ class _ExamResultsPageState extends State<ExamResultsPage>
         final authState = context.read<AuthBloc>().state;
         final userId = authState is AuthAuthenticated ? authState.user.uid : '';
         bloc.add(LoadUserAttemptsRequested(userId: userId));
+      } else {
+        // We are already in AttemptCompleted, trigger rewards safely outside build
+        final state = bloc.state as AttemptCompleted;
+        _awardRewardsOnce(state.attempt.xpEarned);
       }
     });
   }
@@ -101,13 +105,25 @@ class _ExamResultsPageState extends State<ExamResultsPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AttemptBloc, AttemptState>(
+    return BlocConsumer<AttemptBloc, AttemptState>(
+      listener: (context, state) {
+        if (state is AttemptCompleted) {
+          _awardRewardsOnce(state.attempt.xpEarned);
+        } else if (state is UserAttemptsLoaded) {
+          final examAttempts = state.attempts
+              .where((a) => a.examId == widget.examId)
+              .toList();
+
+          if (examAttempts.isNotEmpty) {
+            _awardRewardsOnce(examAttempts.first.xpEarned);
+          }
+        }
+      },
       builder: (context, state) {
         if (state is AttemptCompleted) {
           _score = state.correctCount;
           _total = state.totalQuestions;
           _xpEarned = state.attempt.xpEarned;
-          _awardRewardsOnce(_xpEarned);
         } else if (state is UserAttemptsLoaded) {
           // Find the most recent attempt for this exam
           final examAttempts = state.attempts
@@ -119,15 +135,14 @@ class _ExamResultsPageState extends State<ExamResultsPage>
             _score = latest.score;
             _total = latest.totalPoints;
             _xpEarned = latest.xpEarned;
-            _awardRewardsOnce(_xpEarned);
           }
         }
-        return _buildResultsUI();
+        return _buildResultsUI(state is AttemptCompleted);
       },
     );
   }
 
-  Widget _buildResultsUI() {
+  Widget _buildResultsUI(bool canReview) {
     final double percentage = _total > 0 ? _score / _total : 0;
     final bool passed = percentage >= 0.6;
     final int coinsEarned = _xpEarned ~/ 10;
@@ -278,9 +293,18 @@ class _ExamResultsPageState extends State<ExamResultsPage>
 
               const SizedBox(height: AppSpacing.xxl * 2),
 
+              if (canReview) ...[
+                PixelButton(
+                  label: 'REVIEW ANSWERS',
+                  width: double.infinity,
+                  onPressed: () => context.go('/exams/${widget.examId}/review'),
+                ),
+                const SizedBox(height: AppSpacing.md),
+              ],
               PixelButton(
                 label: 'RETURN TO BASE',
                 width: double.infinity,
+                backgroundColor: AppColors.surfaceContainerHighest,
                 onPressed: () => context.go('/'),
               ),
             ],

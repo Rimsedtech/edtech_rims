@@ -18,12 +18,13 @@ class SkinModel extends Equatable {
   });
 
   factory SkinModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data = doc.data() ?? {};
     return SkinModel(
       id: doc.id,
-      name: data['name'] as String,
-      price: (data['price'] as num).toInt(),
-      imageUrl: data['imageUrl'] as String,
+      // Safe casts: partially uploaded skin docs may be missing fields.
+      name: data['name'] as String? ?? 'Unknown Skin',
+      price: (data['price'] as num?)?.toInt() ?? 0,
+      imageUrl: data['imageUrl'] as String? ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

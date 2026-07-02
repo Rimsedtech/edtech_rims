@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,17 +14,21 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   late AuthBloc authBloc;
   late MockAuthRepository mockAuthRepository;
+  late StreamController<UserEntity?> authStateController;
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
-    // Stub authStateChanges before initializing AuthBloc
+    authStateController = StreamController<UserEntity?>.broadcast();
+    
     when(
       () => mockAuthRepository.authStateChanges,
-    ).thenAnswer((_) => const Stream.empty());
+    ).thenAnswer((_) => authStateController.stream);
+    
     authBloc = AuthBloc(authRepository: mockAuthRepository);
   });
 
   tearDown(() {
+    authStateController.close();
     authBloc.close();
   });
 
@@ -40,51 +45,22 @@ void main() {
   );
 
   group('AuthBloc', () {
-    test('initial state should be AuthInitial', () {
-      expect(authBloc.state, const AuthInitial());
+    test('initial state should be AuthLoading', () {
+      expect(authBloc.state, const AuthLoading());
     });
 
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthAuthenticated] when AuthCheckRequested succeeds',
-      build: () {
-        when(
-          () => mockAuthRepository.getCurrentUser(),
-        ).thenAnswer((_) async => Success(tUser));
-        return authBloc;
-      },
-      act: (bloc) => bloc.add(const AuthCheckRequested()),
-      expect: () => [const AuthLoading(), AuthAuthenticated(user: tUser)],
-      verify: (_) {
-        verify(() => mockAuthRepository.getCurrentUser()).called(1);
-      },
+      'emits [AuthAuthenticated] when authStateChanges emits a user',
+      build: () => authBloc,
+      act: (bloc) => authStateController.add(tUser),
+      expect: () => [AuthAuthenticated(user: tUser)],
     );
 
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthUnauthenticated] when AuthCheckRequested returns null',
-      build: () {
-        when(
-          () => mockAuthRepository.getCurrentUser(),
-        ).thenAnswer((_) async => const Success(null));
-        return authBloc;
-      },
-      act: (bloc) => bloc.add(const AuthCheckRequested()),
-      expect: () => const [AuthLoading(), AuthUnauthenticated()],
-    );
-
-    blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthError] when AuthCheckRequested fails',
-      build: () {
-        when(() => mockAuthRepository.getCurrentUser()).thenAnswer(
-          (_) async =>
-              const Failure(AuthException(message: 'Error getting user')),
-        );
-        return authBloc;
-      },
-      act: (bloc) => bloc.add(const AuthCheckRequested()),
-      expect: () => const [
-        AuthLoading(),
-        AuthError(message: 'Error getting user'),
-      ],
+      'emits [AuthUnauthenticated] when authStateChanges emits null',
+      build: () => authBloc,
+      act: (bloc) => authStateController.add(null),
+      expect: () => const [AuthUnauthenticated()],
     );
   });
 }

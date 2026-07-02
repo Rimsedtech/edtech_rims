@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/utils/firebase_interceptor.dart';
 import 'package:bitwise_academy/shared/models/attempt_model.dart';
+import 'package:bitwise_academy/shared/models/question_model.dart';
 
 import 'package:bitwise_academy/features/exam_library/domain/repositories/attempt_repository.dart';
 
@@ -25,22 +26,29 @@ class AttemptRepositoryImpl
     required String userId,
     required String examId,
     required int totalPoints,
+    String? examTitle,
+    List<QuestionModel>? questions,
   }) async {
     return guardedTask(() async {
+      final docRef = _attemptsCollection.doc();
       final Map<String, dynamic> data = {
+        'id': docRef.id,
         'userId': userId,
         'examId': examId,
-        'startedAt': FieldValue.serverTimestamp(),
+        'examTitle': examTitle,
+        'startedAt': Timestamp.now(),
         'completedAt': null,
         'score': 0,
+        'correctCount': 0,
         'totalPoints': totalPoints,
         'xpEarned': 0,
         'status': AttemptStatus.inProgress.firestoreValue,
         'answers': <String, dynamic>{},
+        if (questions != null)
+          'questions': questions.map((q) => q.toJson()).toList(),
       };
 
-      final DocumentReference<Map<String, dynamic>> docRef =
-          await _attemptsCollection.add(data);
+      await docRef.set(data);
       final DocumentSnapshot<Map<String, dynamic>> doc = await docRef.get();
       return _mapDocToAttempt(doc);
     }, taskName: 'startAttempt');
@@ -146,20 +154,82 @@ class AttemptRepositoryImpl
     }, taskName: 'fetchUserStats');
   }
 
+  /// Fetch the most recent active attempt for a user.
+  @override
+  Future<Result<AttemptModel?>> fetchActiveAttempt(String userId) async {
+    return guardedTask(() async {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _attemptsCollection
+              .where('userId', isEqualTo: userId)
+              .where('status', isEqualTo: AttemptStatus.inProgress.firestoreValue)
+              .orderBy('startedAt', descending: true)
+              .limit(1)
+              .get();
+
+      if (snapshot.docs.isEmpty) return null;
+      return _mapDocToAttempt(snapshot.docs.first);
+    }, taskName: 'fetchActiveAttempt');
+  }
+
+  /// Admin: fetch the total count of all completed attempts across the entire platform.
+  @override
+  Future<Result<int>> fetchTotalCompletedAttemptsCount() async {
+    return guardedTask(() async {
+      final AggregateQuerySnapshot snapshot = await _attemptsCollection
+          .where('status', isEqualTo: AttemptStatus.completed.firestoreValue)
+          .count()
+          .get();
+      return snapshot.count ?? 0;
+    }, taskName: 'fetchTotalCompletedAttemptsCount');
+  }
+
+  /// Admin: fetch the total count of completed attempts today across the entire platform.
+  @override
+  Future<Result<int>> fetchTodayCompletedAttemptsCount() async {
+    return guardedTask(() async {
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+
+      final AggregateQuerySnapshot snapshot = await _attemptsCollection
+          .where('status', isEqualTo: AttemptStatus.completed.firestoreValue)
+          .where('completedAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .count()
+          .get();
+      return snapshot.count ?? 0;
+    }, taskName: 'fetchTodayCompletedAttemptsCount');
+  }
+
   AttemptModel _mapDocToAttempt(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final Map<String, dynamic> data = doc.data()!;
+    final Map<String, dynamic> data = doc.data() ?? {};
+    
+    DateTime parseDate(dynamic value) {
+      if (value is Timestamp) return value.toDate();
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      return DateTime.now();
+    }
+
     return AttemptModel(
-      id: doc.id,
-      userId: data['userId'] as String,
-      examId: data['examId'] as String,
-      startedAt: (data['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
-      score: (data['score'] as num).toInt(),
+      id: data['id'] as String? ?? doc.id,
+      userId: data['userId'] as String? ?? 'unknown',
+      examId: data['examId'] as String? ?? 'unknown',
+      examTitle: data['examTitle'] as String?,
+      startedAt: data['startedAt'] != null ? parseDate(data['startedAt']) : DateTime.now(),
+      completedAt: data['completedAt'] != null ? parseDate(data['completedAt']) : null,
+      score: (data['score'] as num?)?.toInt() ?? 0,
       correctCount: (data['correctCount'] as num?)?.toInt() ?? 0,
-      totalPoints: (data['totalPoints'] as num).toInt(),
-      xpEarned: (data['xpEarned'] as num).toInt(),
-      status: AttemptStatus.fromString(data['status'] as String),
-      answers: Map<String, dynamic>.from(data['answers'] as Map? ?? {}),
+      totalPoints: (data['totalPoints'] as num?)?.toInt() ?? 0,
+      xpEarned: (data['xpEarned'] as num?)?.toInt() ?? 0,
+      status: AttemptStatus.fromString(data['status'] as String? ?? 'inProgress'),
+      // Safely cast the answers map: values are always strings (option text),
+      // but defensive toString() guards against legacy int-typed values.
+      answers: (data['answers'] as Map<String, dynamic>? ?? {}).map(
+        (k, v) => MapEntry(k, v?.toString() ?? ''),
+      ),
+      questions: data['questions'] != null
+          ? (data['questions'] as List<dynamic>)
+              .map((q) => QuestionModel.fromJson(Map<String, dynamic>.from(q as Map)))
+              .toList()
+          : null,
     );
   }
 }

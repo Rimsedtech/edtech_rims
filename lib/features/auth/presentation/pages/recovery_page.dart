@@ -19,7 +19,6 @@ class RecoveryPage extends StatefulWidget {
 }
 
 class _RecoveryPageState extends State<RecoveryPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _keyController = TextEditingController();
 
@@ -28,15 +27,6 @@ class _RecoveryPageState extends State<RecoveryPage> {
     _emailController.dispose();
     _keyController.dispose();
     super.dispose();
-  }
-
-  void _onRecover() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthFormCubit>().recoverAccount(
-        email: _emailController.text.trim(),
-        recoveryKey: _keyController.text.trim(),
-      );
-    }
   }
 
   @override
@@ -110,65 +100,74 @@ class _RecoveryPageState extends State<RecoveryPage> {
                         ),
                       ],
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'ACCOUNT RECOVERY',
-                            style: AppTypography.headlineMd.copyWith(
-                              color: AppColors.primary,
-                              letterSpacing: 2,
+                    child: Builder(
+                      builder: (formContext) => Form(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'ACCOUNT RECOVERY',
+                              style: AppTypography.headlineMd.copyWith(
+                                color: AppColors.primary,
+                                letterSpacing: 2,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(
-                            'ENTER YOUR CREDENTIALS TO REGAIN ACCESS',
-                            style: AppTypography.bodyMd.copyWith(
-                              color: AppColors.onSurface.withValues(alpha: 0.6),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'ENTER YOUR CREDENTIALS TO REGAIN ACCESS',
+                              style: AppTypography.bodyMd.copyWith(
+                                color: AppColors.onSurface.withValues(alpha: 0.6),
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
+                            const SizedBox(height: AppSpacing.xl),
 
-                          PixelInput(
-                            controller: _emailController,
-                            label: 'REGISTERED EMAIL',
-                            hintText: 'user@bitwiseacademy.com',
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'EMAIL REQUIRED';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
+                            PixelInput(
+                              controller: _emailController,
+                              label: 'REGISTERED EMAIL',
+                              hintText: 'user@bitwiseacademy.com',
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'EMAIL REQUIRED';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
 
-                          PixelInput(
-                            controller: _keyController,
-                            label: '12-CHAR RECOVERY KEY',
-                            hintText: 'XXXX-XXXX-XXXX',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'RECOVERY KEY REQUIRED';
-                              }
-                              if (value.length < 12) {
-                                return 'INVALID KEY LENGTH';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
+                            PixelInput(
+                              controller: _keyController,
+                              label: '12-CHAR RECOVERY KEY',
+                              hintText: 'XXXX-XXXX-XXXX',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'RECOVERY KEY REQUIRED';
+                                }
+                                if (value.length < 12) {
+                                  return 'INVALID KEY LENGTH';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
 
-                          PixelButton(
-                            label: isLoading ? 'PROCESSING...' : 'RECOVER DATA',
-                            onPressed: isLoading ? null : _onRecover,
-                            isPrimary: true,
-                          ),
+                            PixelButton(
+                              label: isLoading ? 'PROCESSING...' : 'RECOVER DATA',
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      if (Form.of(formContext).validate()) {
+                                        context.read<AuthFormCubit>().recoverAccount(
+                                              email: _emailController.text.trim(),
+                                              recoveryKey: _keyController.text.trim(),
+                                            );
+                                      }
+                                    },
+                              isPrimary: true,
+                            ),
                           const SizedBox(height: AppSpacing.md),
 
                           Text(
@@ -184,6 +183,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
                     ),
                   ),
                 ),
+              ),
               ),
             ],
           ),

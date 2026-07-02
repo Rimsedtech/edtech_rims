@@ -13,7 +13,6 @@ import 'package:bitwise_academy/core/errors/result.dart';
 import 'package:bitwise_academy/core/widgets/pixel_button.dart';
 import 'package:bitwise_academy/core/widgets/pixel_input.dart';
 import 'package:bitwise_academy/features/exam_library/domain/repositories/exam_repository.dart';
-import 'package:bitwise_academy/shared/models/exam_model.dart';
 
 /// Admin: Create Exam form with full Firestore integration and file upload.
 class CreateExamPage extends StatefulWidget {
@@ -31,7 +30,6 @@ class _CreateExamPageState extends State<CreateExamPage> {
   final _durationController = TextEditingController();
   final _xpController = TextEditingController();
 
-  DifficultyTier _selectedDifficulty = DifficultyTier.easy;
   File? _selectedFile;
   bool _isSubmitting = false;
 
@@ -101,7 +99,6 @@ class _CreateExamPageState extends State<CreateExamPage> {
       description: desc,
       subject: subject,
       group: group,
-      difficultyTier: _selectedDifficulty,
       durationMinutes: duration,
       createdBy: currentUser.uid,
       xpReward: xp,
@@ -174,14 +171,14 @@ class _CreateExamPageState extends State<CreateExamPage> {
             ),
             const SizedBox(height: AppSpacing.lg),
             PixelInput(
-              label: 'SUBJECT',
-              hintText: 'e.g. ALGEBRA, TRIGONOMETRY',
+              label: 'TEST SERIES',
+              hintText: 'e.g. RIMS COMPETITIVE, CIVIL SERVICES',
               controller: _subjectController,
             ),
             const SizedBox(height: AppSpacing.lg),
             PixelInput(
-              label: 'GROUP',
-              hintText: 'e.g. GROUP A, GROUP B',
+              label: 'TOPIC',
+              hintText: 'e.g. PERCENTAGE, ALGEBRA',
               controller: _groupController,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -207,52 +204,6 @@ class _CreateExamPageState extends State<CreateExamPage> {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // Difficulty selector
-            Text(
-              'DIFFICULTY_TIER',
-              style: AppTypography.headlineXs.copyWith(
-                color: AppColors.primary,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              children: DifficultyTier.values.map((tier) {
-                final isActive = tier == _selectedDifficulty;
-                final color = _colorForTier(tier);
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedDifficulty = tier),
-                    child: Container(
-                      margin: EdgeInsets.only(
-                        right: tier != DifficultyTier.values.last
-                            ? AppSpacing.sm
-                            : 0,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.md,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isActive
-                            ? color
-                            : AppColors.surfaceContainerHighest,
-                        border: Border.all(color: color, width: 3),
-                      ),
-                      child: Center(
-                        child: Text(
-                          tier.name.toUpperCase(),
-                          style: AppTypography.headlineXxs.copyWith(
-                            color: isActive ? Colors.white : color,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
             ),
             const SizedBox(height: AppSpacing.xl),
 
@@ -355,16 +306,4 @@ class _CreateExamPageState extends State<CreateExamPage> {
     );
   }
 
-  Color _colorForTier(DifficultyTier tier) {
-    switch (tier) {
-      case DifficultyTier.easy:
-        return AppColors.secondary;
-      case DifficultyTier.medium:
-        return AppColors.primary;
-      case DifficultyTier.hard:
-        return AppColors.tertiary;
-      case DifficultyTier.ultraHard:
-        return AppColors.tertiaryContainer;
-    }
-  }
 }

@@ -37,6 +37,21 @@ class LatexText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (text.contains('\n')) {
+      final lines = text.split('\n');
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: lines.map((line) => LatexText(
+          line,
+          style: style,
+          textAlign: textAlign,
+          maxLines: maxLines,
+          overflow: overflow,
+        )).toList(),
+      );
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = constraints.maxWidth;

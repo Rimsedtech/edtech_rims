@@ -1,4 +1,3 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -100,7 +99,9 @@ class AdminDashboardPage extends StatelessWidget {
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: _buildStatBox(
-                          '—',
+                          statsState.isLoading
+                              ? '...'
+                              : '${statsState.todayAttempts}',
                           'TODAY',
                           Icons.assignment,
                           AppColors.tertiary,
@@ -145,12 +146,11 @@ class AdminDashboardPage extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       PixelButton(
-                        label: 'TEST CRASH (FIREBASE)',
-                        icon: Icons.bug_report,
+                        label: 'STUDENT ACTIVITY',
+                        icon: Icons.people_alt,
                         isPrimary: false,
                         width: double.infinity,
-                        backgroundColor: AppColors.error,
-                        onPressed: () => FirebaseCrashlytics.instance.crash(),
+                        onPressed: () => context.go('/admin/students'),
                       ),
                     ],
                   ),

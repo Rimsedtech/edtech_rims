@@ -96,16 +96,18 @@ class QuestRepositoryImpl
   }
 
   QuestModel _mapDocToQuest(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final Map<String, dynamic> data = doc.data()!;
+    final Map<String, dynamic> data = doc.data() ?? {};
     return QuestModel(
       id: doc.id,
-      title: data['title'] as String,
-      description: data['description'] as String,
-      type: QuestType.fromString(data['type'] as String),
-      targetValue: (data['targetValue'] as num).toInt(),
-      xpReward: (data['xpReward'] as num).toInt(),
-      iconName: data['iconName'] as String,
-      isActive: data['isActive'] as bool,
+      // Safe casts: Firestore documents can have missing fields if they were
+      // partially written (e.g., network drop during admin save).
+      title: data['title'] as String? ?? 'Unnamed Quest',
+      description: data['description'] as String? ?? '',
+      type: QuestType.fromString(data['type'] as String? ?? 'daily'),
+      targetValue: (data['targetValue'] as num?)?.toInt() ?? 1,
+      xpReward: (data['xpReward'] as num?)?.toInt() ?? 0,
+      iconName: data['iconName'] as String? ?? 'bolt',
+      isActive: data['isActive'] as bool? ?? false,
     );
   }
 }

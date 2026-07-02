@@ -64,6 +64,18 @@ class ExamRepositoryImpl
     );
   }
 
+  /// Fetch the total count of published exams (for admins).
+  @override
+  Future<Result<int>> fetchPublishedExamCount() async {
+    return guardedTask(() async {
+      final AggregateQuerySnapshot snapshot = await _examsCollection
+          .where('status', isEqualTo: 'published')
+          .count()
+          .get();
+      return snapshot.count ?? 0;
+    }, taskName: 'fetchPublishedExamCount');
+  }
+
   /// Fetch ALL exams regardless of status (for admins).
   @override
   Future<Result<List<ExamModel>>> fetchAllExams() async {
@@ -117,7 +129,6 @@ class ExamRepositoryImpl
     required String description,
     required String subject,
     required String group,
-    required DifficultyTier difficultyTier,
     required int durationMinutes,
     required String createdBy,
     required int xpReward,
@@ -128,7 +139,6 @@ class ExamRepositoryImpl
         'title': title,
         'description': description,
         'subject': subject,
-        'difficultyTier': difficultyTier.firestoreValue,
         'durationMinutes': durationMinutes,
         'createdBy': createdBy,
         'status': ExamStatus.draft.name,
@@ -209,7 +219,6 @@ class ExamRepositoryImpl
 
       final examData = examDoc.data() ?? {};
       final subject = examData['subject'] as String? ?? '';
-      final difficultyTier = examData['difficultyTier'] as String? ?? '';
       final group = examData['group'] as String? ?? '';
 
       final collection = _examsCollection.doc(examId).collection('questions');
@@ -235,10 +244,10 @@ class ExamRepositoryImpl
             'explanation': q.explanation,
             'points': q.points,
             'order': q.order,
+            'xpReward': q.xpReward,
             if (q.diagramUrl != null) 'diagramUrl': q.diagramUrl,
             // Denormalised for collectionGroup queries
             'subject': subject,
-            'difficultyTier': difficultyTier,
             'group': group,
             'random': Random().nextDouble(),
           });

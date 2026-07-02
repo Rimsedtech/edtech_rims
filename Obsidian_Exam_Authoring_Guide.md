@@ -1,96 +1,231 @@
 # Obsidian Exam Authoring Guide
 
-Welcome to the **Bitwise Academy Exam Content Engine**. We use Obsidian to quickly author, structure, and deploy rich mock exams to the app using Markdown.
+Welcome to the **RIMS EdTech Exam Content Engine**. We use Markdown files (authored in Obsidian or any text editor) to quickly write, structure, and deploy mock exams directly to Firebase.
 
-This document details the expected structure and formatting guidelines for exams, enabling automatic parsing, uploading, and gamification setup in Firebase.
+This guide is the single source of truth for authoring exams after the latest schema update.
+
+---
+
+## What You See in the App vs. What You Write
+
+| App Label (UI) | Frontmatter Field | Example Value |
+|---|---|---|
+| **TEST SERIES** dropdown | `subject` | `"Mathematics"` |
+| **TOPIC** dropdown | `group` | `"Group B and below"` |
+| Exam Title | `title` | `"RIMS Competitive Exam — Percentage"` |
+
+> ⚠️ **Difficulty is completely removed.** Do not add a `difficulty` field — it is no longer used anywhere in the app.
+
+---
 
 ## 1. Directory Structure
-Exams should be authored inside the `app/test_exams/` directory. Each exam is a single Markdown (`.md`) file. The parser processes all `.md` files in the given directory.
+
+All exam files live in `app/test_exams/`. Each exam is **one `.md` file**. The parser will convert every `.md` file in that directory into one exam in Firestore.
+
+```
+app/
+  test_exams/
+    percentage_test_formatted.md    ← one exam = one file
+    algebra_test.md
+    reasoning_test.md
+```
+
+---
 
 ## 2. File Format
 
-A valid exam markdown file consists of two parts:
-1. **Frontmatter** (YAML metadata)
-2. **Body** (The questions)
+A valid exam file has two parts:
+1. **Frontmatter** — YAML metadata block at the very top of the file
+2. **Body** — The questions, one after another
 
-### 2.1 Frontmatter
-The file **must** begin with a YAML frontmatter block containing metadata about the exam.
+---
+
+### 2.1 Frontmatter (Required)
+
+The file **must** start with a YAML block enclosed in `---` delimiters.
 
 ```yaml
 ---
-title: "Quadratic Equations — Mid-Term Test"
+title: "RIMS Competitive Exam Series — Percentage"
 subject: "Mathematics"
-difficultyTier: "medium"
-group: "MPSC Group B"
-durationMinutes: 45
-xpReward: 200
+group: "Group B and below"
+duration_minutes: 45
+xp_reward: 200
+status: "published"
 ---
 ```
 
-**Supported Fields:**
-- `title` (String): The display name of the exam.
-- `subject` (String): The topic. (e.g., Mathematics, Reasoning, English, History).
-- `difficultyTier` (String): Use `easy`, `medium`, `hard`, or `ultra_hard`.
-- `group` (String): The category/target exam. (e.g., "MPSC Group A", "SSC CGL", "Practice").
-- `durationMinutes` (Number): Time limit in minutes.
-- `xpReward` (Number): Experience points awarded on completion.
+#### All Frontmatter Fields
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `title` | String | ✅ Yes | The exam's display name in the app |
+| `subject` | String | ✅ Yes | Maps to the **TEST SERIES** picker in the app |
+| `group` | String | ✅ Yes | Maps to the **TOPIC** picker in the app |
+| `duration_minutes` | Number | ✅ Yes | Time limit in minutes (e.g. `45`) |
+| `xp_reward` | Number | ✅ Yes | XP awarded to the exam itself (e.g. `200`) |
+| `status` | String | Optional | `"published"` or `"draft"` (default: `"draft"`) |
+| `description` | String | Optional | Short description shown in the exam library |
+| `created_by` | String | Optional | Author identifier (default: `"obsidian_parser"`) |
+
+> 🚫 **Do NOT include `difficulty`, `difficultyTier`, or any difficulty field.** These are removed from the schema.
+
+---
 
 ### 2.2 Writing Questions
 
-Questions are written in the Markdown body. Each question begins with a standard Markdown heading (`#`, `##`, etc.).
+Each question starts with a `## Q<number>` heading. The parser uses these headings to split questions — the heading text is ignored.
 
-#### Components of a Question:
-- **Heading**: Used as a delimiter. E.g., `### Question 1` or `## Q2`. The text in the heading is ignored.
-- **Question Text**: Text following the heading until the options. Supports rich markdown and LaTeX math (e.g., `$x^2 + y^2$`).
-- **Options**: Defined as an unordered list using dashes `-`. You can provide 2 to 5 options.
-- **Answer**: Highlighted by placing `**Answer:**` immediately followed by the exact text of the correct option.
-- **Explanation** *(Optional)*: Highlighted by placing `**Explanation:**` followed by the detailed reasoning.
-- **Tags/Metadata** *(Optional)*: Highlighted by placing `**Tags:**` followed by comma-separated words.
+#### Question Block Structure
 
-#### Example Question
 ```markdown
-## Question 1
-Find the roots of the quadratic equation: $2x^2 - 5x + 3 = 0$
+## Q1
+<Question text here. Supports LaTeX: $\frac{x}{y}$>
 
-- $1, 1.5$
-- $-1, -1.5$
-- $2, 3$
-- $1, 3$
+- [ ] Option A (wrong)
+- [x] Option B (correct — use [x])
+- [ ] Option C (wrong)
+- [ ] Option D (wrong)
 
-**Answer:** $1, 1.5$
-
-**Explanation:**
-Using the quadratic formula:
-$x = \frac{-(-5) \pm \sqrt{(-5)^2 - 4(2)(3)}}{2(2)}$
-$x = \frac{5 \pm \sqrt{25 - 24}}{4}$
-$x = \frac{5 \pm 1}{4}$
-So, $x = 1.5$ or $x = 1$.
-
-**Tags:** roots, quadratic-formula
+**Points:** 2
+**Explanation:** The correct answer is (b) because...
 ```
 
-## 3. How to Upload
+#### Per-Question Fields
 
-Once you have authored your markdown files in `app/test_exams/`, open a terminal and run the following commands:
+| Field | Format | Required | Description |
+|---|---|---|---|
+| Question text | Plain text / LaTeX | ✅ Yes | The question body. LaTeX supported with `$...$` or `$$...$$` |
+| Options | `- [ ]` / `- [x]` | ✅ Yes | 2–5 options. Mark the correct one with `[x]` |
+| `**Points:**` | Number | Optional | Marks for this question (default: `1`). **This also sets the `xpReward`** |
+| `**Explanation:**` | Text | Optional | Shown to student after submission |
 
-### Step 1: Parse the Markdown into JSON
-Converts the `.md` files into a unified `database_seed.json`.
+> 💡 `**Points:** 3` means this question is worth 3 marks AND earns 3 XP when answered correctly.
 
-```bash
-cd app
-dart scripts/obsidian_parser.dart test_exams database_seed.json
-```
+> 🚫 **Do NOT add `**Difficulty:**` per question.** It is ignored.
 
-### Step 2: Upload to Firestore
-Reads the JSON file and pushes the exam and question documents directly to Firebase, while automatically updating global metadata settings in the app.
+---
 
-```bash
-cd app
-dart scripts/upload_to_firestore.dart
+### 2.3 Full Example File
+
+```markdown
+---
+title: "RIMS Competitive Exam — Percentages"
+subject: "Mathematics"
+group: "Group B and below"
+duration_minutes: 45
+xp_reward: 200
+status: "published"
+---
+
+## Q1
+Convert 3/8 into percentage.
+
+- [ ] 35.5%
+- [x] 37.5%
+- [ ] 32.5%
+- [ ] 40%
+
+**Points:** 1
+**Explanation:** Correct answer is (b).
+
+## Q2
+What is 35% of 480?
+
+- [ ] 152
+- [x] 168
+- [ ] 176
+- [ ] 184
+
+**Points:** 1
+**Explanation:** Correct answer is (b).
 ```
 
 ---
-**Tips:**
-- Make sure your Firebase Emulator or Production environment is correctly set up in your `service-account.json`.
-- The `Answer:` exact match is case-sensitive and must identically match the chosen option's markdown.
-- All parsed topics and difficulties are collected dynamically and presented in the user's Mock Test Configuration screen.
+
+## 3. How the Data Connects (App Flow)
+
+```
+Frontmatter: subject = "Mathematics"
+                │
+                ▼
+    Firestore: exams/{id}.subject = "Mathematics"
+    Firestore: questions/{id}.subject = "Mathematics"   ← denormalised
+                │
+                ▼
+    App UI: TEST SERIES dropdown shows "Mathematics"
+                │
+                ▼
+    User selects → Mock Test starts (filters by subject + group)
+
+Frontmatter: group = "Group B and below"
+                │
+                ▼
+    Firestore: exams/{id}.group = "Group B and below"
+    Firestore: questions/{id}.group = "Group B and below"  ← denormalised
+                │
+                ▼
+    App UI: TOPIC dropdown shows "Group B and below"
+```
+
+---
+
+## 4. How to Upload
+
+### Step 1: Parse the Markdown files into JSON
+
+```bash
+cd app
+dart run scripts/obsidian_parser.dart test_exams database_seed.json
+```
+
+This reads every `.md` file in `test_exams/` and produces a single `database_seed.json`. Each `.md` file becomes **one exam** with all its questions.
+
+### Step 2: Set Firebase credentials
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
+```
+
+### Step 3: Upload to Firestore
+
+```bash
+dart run scripts/upload_to_firestore.dart
+```
+
+This reads `database_seed.json` and:
+- Creates one `exams/{id}` document per exam
+- Creates all question sub-documents under `exams/{id}/questions/`
+- Updates `metadata/mock_test_config` with the new subjects, groups, and their mappings (used to populate the app's TEST SERIES and TOPIC dropdowns)
+
+---
+
+## 5. Tips & Troubleshooting
+
+**Wiping all data before a fresh upload:**
+```bash
+firebase firestore:delete --all-collections --project edtech-3f6fe -f
+```
+
+**Re-deploying Firestore indexes** (if you see `FAILED_PRECONDITION` errors):
+```bash
+firebase deploy --only firestore:indexes --project edtech-3f6fe
+```
+
+**My exam was split into multiple separate exams:**
+This happened before because difficulty was used as a grouping key. Since difficulty is now fully removed, each `.md` file always produces exactly **one exam** regardless of how you write your questions.
+
+**TEST SERIES / TOPIC not showing in the app:**
+These dropdowns are populated from `metadata/mock_test_config` in Firestore. Run the upload script after adding new files to refresh them.
+
+**Converting from Word/DOCX to Markdown:**
+```bash
+brew install pandoc
+pandoc -f docx -t markdown input.docx -o app/test_exams/my_exam.md
+```
+Then format the resulting `.md` to match the structure above before running the parser.
+
+**LaTeX rendering:**
+- Inline math: `$x^2 + y^2 = z^2$`
+- Display math: `$$E = mc^2$$`
+- The app uses flutter_math_fork for rendering.

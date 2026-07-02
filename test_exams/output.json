@@ -1,88 +1,467 @@
 {
   "exams": [
     {
-      "title": "Quadratic Equations — Mid-Term Test",
-      "description": "Assessment covering factoring, quadratic formula, and graphing of quadratic functions.",
-      "subject": "Mathematics",
-      "group": "Grade 10",
-      "difficultyTier": "medium",
-      "durationMinutes": 25,
-      "createdBy": "admin",
+      "title": "RIMS Competitive Exam Series — Percentage",
+      "description": "",
+      "subject": "RIMS Competitive Exam Series",
+      "group": "Percentage 265001",
+      "durationMinutes": 45,
+      "createdBy": "obsidian_parser",
       "status": "published",
-      "xpReward": 150,
-      "questionCount": 5,
-      "createdAt": "2026-04-24T17:02:03.772751Z",
-      "updatedAt": "2026-04-24T17:02:03.772751Z",
+      "xpReward": 200,
+      "questionCount": 25,
+      "createdAt": "2026-05-28T06:28:58.191360Z",
+      "updatedAt": "2026-05-28T06:28:58.191360Z",
       "questions": [
         {
-          "questionText": "What are the roots of the equation $x^2 - 5x + 6 = 0$?",
+          "questionText": "Convert 3/8 into percentage.",
           "questionType": "mcq",
           "options": [
-            "$x = 1$ and $x = 6$",
-            "$x = 2$ and $x = 3$",
-            "$x = -2$ and $x = -3$",
-            "$x = 0$ and $x = 5$"
+            "35.5%",
+            "37.5%",
+            "32.5%",
+            "40%"
           ],
-          "correctAnswer": "$x = 2$ and $x = 3$",
-          "explanation": "Factor the equation as $(x-2)(x-3) = 0$. Setting each factor to zero: $x - 2 = 0 \\Rightarrow x = 2$ and $x - 3 = 0 \\Rightarrow x = 3$.",
-          "points": 2,
-          "order": 1
-        },
-        {
-          "questionText": "The discriminant of a quadratic equation $ax^2 + bx + c = 0$ is given by:",
-          "questionType": "mcq",
-          "options": [
-            "$\\frac{-b}{2a}$",
-            "$\\frac{b^2}{4ac}$",
-            "$b^2 - 4ac$",
-            "$\\sqrt{b^2 - 4ac}$"
-          ],
-          "correctAnswer": "$b^2 - 4ac$",
-          "explanation": "The discriminant formula is $\\Delta = b^2 - 4ac$. It determines the nature and number of roots of a quadratic equation. The other options are parts of the quadratic formula but not the discriminant itself.",
+          "correctAnswer": "37.5%",
+          "explanation": "Correct answer is (b).",
           "points": 1,
-          "order": 2
+          "order": 1,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 1,
+          "random": 0.7059882293960233
         },
         {
-          "questionText": "If $\\Delta < 0$ for a quadratic equation, the equation has:",
+          "questionText": "What is 35% of 480?",
           "questionType": "mcq",
           "options": [
-            "Two distinct real roots",
-            "One repeated real root",
-            "No real roots (two complex roots)",
-            "Infinitely many roots"
+            "152",
+            "168",
+            "176",
+            "184"
           ],
-          "correctAnswer": "No real roots (two complex roots)",
-          "explanation": "When $\\Delta < 0$, the expression under the square root in the quadratic formula is negative, meaning there are no real solutions. The roots are complex conjugates: $x = \\frac{-b \\pm i\\sqrt{|\\Delta|}}{2a}$.",
+          "correctAnswer": "168",
+          "explanation": "Correct answer is (b).",
           "points": 1,
-          "order": 3
+          "order": 2,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 1,
+          "random": 0.015161017364412444
         },
         {
-          "questionText": "The vertex of the parabola $y = 2(x - 3)^2 + 5$ is at:",
+          "questionText": "What percent of 250 is 75?",
           "questionType": "mcq",
           "options": [
-            "$(2, 5)$",
-            "$(-3, 5)$",
-            "$(3, 5)$",
-            "$(3, -5)$"
+            "25%",
+            "27%",
+            "30%",
+            "32%"
           ],
-          "correctAnswer": "$(3, 5)$",
-          "explanation": "The vertex form of a parabola is $y = a(x - h)^2 + k$, where $(h, k)$ is the vertex. Here $h = 3$ and $k = 5$, so the vertex is $(3, 5)$.",
-          "points": 2,
-          "order": 4
+          "correctAnswer": "30%",
+          "explanation": "Correct answer is (c).",
+          "points": 1,
+          "order": 3,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 1,
+          "random": 0.37780035115095434
         },
         {
-          "questionText": "The sum of the roots of $3x^2 + 12x - 7 = 0$ is:",
+          "questionText": "If 40% of a number is 96, find the number.",
           "questionType": "mcq",
           "options": [
-            "$\\frac{12}{3}$",
-            "$-4$",
-            "$\\frac{-7}{3}$",
-            "$4$"
+            "220",
+            "230",
+            "240",
+            "250"
           ],
-          "correctAnswer": "$-4$",
-          "explanation": "By Vieta's formulas, the sum of roots $= \\frac{-b}{a} = \\frac{-12}{3} = -4$. The product of roots would be $\\frac{c}{a} = \\frac{-7}{3}$.",
+          "correctAnswer": "240",
+          "explanation": "Correct answer is (c).",
+          "points": 1,
+          "order": 4,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 1,
+          "random": 0.6351277493313904
+        },
+        {
+          "questionText": "A number 150 is increased by 20%. Find the new number.",
+          "questionType": "mcq",
+          "options": [
+            "165",
+            "170",
+            "175",
+            "180"
+          ],
+          "correctAnswer": "180",
+          "explanation": "Correct answer is (d).",
+          "points": 1,
+          "order": 5,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 1,
+          "random": 0.943284765258503
+        },
+        {
+          "questionText": "In an examination, a student scored 65% marks. If the total marks are 800, find the marks scored by the student.",
+          "questionType": "mcq",
+          "options": [
+            "480",
+            "500",
+            "520",
+            "540"
+          ],
+          "correctAnswer": "520",
+          "explanation": "Correct answer is (c).",
           "points": 2,
-          "order": 5
+          "order": 6,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.40800519105107635
+        },
+        {
+          "questionText": "A mixture contains 45 litres of milk and 15 litres of water. What percentage of the mixture is water?",
+          "questionType": "mcq",
+          "options": [
+            "20%",
+            "25%",
+            "30%",
+            "33.33%"
+          ],
+          "correctAnswer": "25%",
+          "explanation": "Correct answer is (b).",
+          "points": 2,
+          "order": 7,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.6977968252029652
+        },
+        {
+          "questionText": "After deducting 15% from his salary, Mawia receives Rs.10,200. What is his actual salary?",
+          "questionType": "mcq",
+          "options": [
+            "Rs.11,500",
+            "Rs.11,800",
+            "Rs.12,000",
+            "Rs.12,500"
+          ],
+          "correctAnswer": "Rs.12,000",
+          "explanation": "Correct answer is (c).",
+          "points": 2,
+          "order": 8,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.6420019233469534
+        },
+        {
+          "questionText": "The price of sugar increased by 25%. By what percentage should a housewife reduce her consumption so that the expenditure on sugar remains unchanged?",
+          "questionType": "mcq",
+          "options": [
+            "16%",
+            "18%",
+            "20%",
+            "22%"
+          ],
+          "correctAnswer": "20%",
+          "explanation": "Correct answer is (c).",
+          "points": 2,
+          "order": 9,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.5417517677456154
+        },
+        {
+          "questionText": "A number is first increased by 20% and then decreased by 10%. Find the net percentage change.",
+          "questionType": "mcq",
+          "options": [
+            "6% increase",
+            "8% increase",
+            "10% increase",
+            "2% increase"
+          ],
+          "correctAnswer": "8% increase",
+          "explanation": "Correct answer is (b).",
+          "points": 2,
+          "order": 10,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.5405060882600345
+        },
+        {
+          "questionText": "The population of a town in the year 2025 is 64,000. It increases at 5% per annum. Find the population in the year 2026.",
+          "questionType": "mcq",
+          "options": [
+            "67,200",
+            "68,400",
+            "70,560",
+            "71,000"
+          ],
+          "correctAnswer": "70,560",
+          "explanation": "Correct answer is (c).",
+          "points": 2,
+          "order": 11,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.2858421929436257
+        },
+        {
+          "questionText": "Rama's income is 20% more than that of Liana. By what percent is Liana's income less than Rama's income?",
+          "questionType": "mcq",
+          "options": [
+            "16(2/3)%",
+            "18%",
+            "20%",
+            "15%"
+          ],
+          "correctAnswer": "16(2/3)%",
+          "explanation": "Correct answer is (a).",
+          "points": 2,
+          "order": 12,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.438637071531088
+        },
+        {
+          "questionText": "In an election, one candidate got 55% of the valid votes. 20% of the total votes were invalid. If total votes polled were 7,500, find the valid votes received by the winning candidate.",
+          "questionType": "mcq",
+          "options": [
+            "2,700",
+            "3,000",
+            "3,300",
+            "3,500"
+          ],
+          "correctAnswer": "3,300",
+          "explanation": "Correct answer is (c).",
+          "points": 2,
+          "order": 13,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.9945282292781659
+        },
+        {
+          "questionText": "A student scored 30% of the maximum marks and failed by 15 marks. Another student scored 40% of the maximum marks and passed by 35 marks. Find the maximum marks.",
+          "questionType": "mcq",
+          "options": [
+            "400",
+            "450",
+            "480",
+            "500"
+          ],
+          "correctAnswer": "500",
+          "explanation": "Correct answer is (d).",
+          "points": 2,
+          "order": 14,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.1482682665822962
+        },
+        {
+          "questionText": "The price of an article is increased by 10% and then decreased by 10%. What is the net percentage change in price?",
+          "questionType": "mcq",
+          "options": [
+            "No change",
+            "1% increase",
+            "1% decrease",
+            "2% decrease"
+          ],
+          "correctAnswer": "1% decrease",
+          "explanation": "Correct answer is (c).",
+          "points": 2,
+          "order": 15,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 2,
+          "random": 0.846332318485697
+        },
+        {
+          "questionText": "Two numbers are respectively 20% and 50% more than a third number. What percent is the first number of the second?",
+          "questionType": "mcq",
+          "options": [
+            "75%",
+            "80%",
+            "85%",
+            "90%"
+          ],
+          "correctAnswer": "80%",
+          "explanation": "Correct answer is (b).",
+          "points": 3,
+          "order": 16,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.7107843458611497
+        },
+        {
+          "questionText": "In a class, 60% of students passed in English and 70% passed in Maths. 20% failed in both. If 2,500 students passed in both subjects, find the total number of students.",
+          "questionType": "mcq",
+          "options": [
+            "4,000",
+            "4,500",
+            "5,000",
+            "5,500"
+          ],
+          "correctAnswer": "5,000",
+          "explanation": "Correct answer is (c).",
+          "points": 3,
+          "order": 17,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.2640010121972899
+        },
+        {
+          "questionText": "Rosanga's salary is increased by 30%. He increases his expenditure by 20%. If his savings were originally 25% of his salary, find the percentage increase in his savings.",
+          "questionType": "mcq",
+          "options": [
+            "50%",
+            "55%",
+            "60%",
+            "65%"
+          ],
+          "correctAnswer": "60%",
+          "explanation": "Correct answer is (c).",
+          "points": 3,
+          "order": 18,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.8439824809223649
+        },
+        {
+          "questionText": "The population of a city in 2022 was 1,00,000. It increased by 5% in 2023 and decreased by 4% in 2024. What is the population at the end of 2024?",
+          "questionType": "mcq",
+          "options": [
+            "1,00,600",
+            "1,00,800",
+            "1,01,200",
+            "99,800"
+          ],
+          "correctAnswer": "1,00,800",
+          "explanation": "Correct answer is (b).",
+          "points": 3,
+          "order": 19,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.07786556585392546
+        },
+        {
+          "questionText": "10% of voters did not vote in an election. A candidate got 60% of the votes polled and won by 14,400 votes. Find the total number of voters on the voter list.",
+          "questionType": "mcq",
+          "options": [
+            "70,000",
+            "75,000",
+            "80,000",
+            "85,000"
+          ],
+          "correctAnswer": "80,000",
+          "explanation": "Correct answer is (c).",
+          "points": 3,
+          "order": 20,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.3505758343794244
+        },
+        {
+          "questionText": "The salary of a person was Rs.50,000. It was increased by 10% in Year 1, decreased by 10% in Year 2, and increased again by 10% in Year 3. What is the salary after 3 years?",
+          "questionType": "mcq",
+          "options": [
+            "Rs.53,500",
+            "Rs.54,450",
+            "Rs.54,000",
+            "Rs.55,000"
+          ],
+          "correctAnswer": "Rs.54,450",
+          "explanation": "Correct answer is (b).",
+          "points": 3,
+          "order": 21,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.3039030925264379
+        },
+        {
+          "questionText": "A's income is 20% more than B's income. B's income is 30% less than C's income. If C's income is Rs.50,000, find by what percent A's income is less than C's income.",
+          "questionType": "mcq",
+          "options": [
+            "14% less",
+            "16% less",
+            "18% less",
+            "20% less"
+          ],
+          "correctAnswer": "16% less",
+          "explanation": "Correct answer is (b).",
+          "points": 3,
+          "order": 22,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.800560034007928
+        },
+        {
+          "questionText": "A person spends 40% of his income on food, 20% on house rent, 10% on entertainment, and 10% on clothes. He saves Rs.14,400 per year. Find his monthly income.",
+          "questionType": "mcq",
+          "options": [
+            "Rs.5,000",
+            "Rs.5,500",
+            "Rs.6,000",
+            "Rs.6,500"
+          ],
+          "correctAnswer": "Rs.6,000",
+          "explanation": "Correct answer is (c).",
+          "points": 3,
+          "order": 23,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.758758162394525
+        },
+        {
+          "questionText": "In a class, 40% of students study Science, 50% study Commerce, and 10% study both. If 90 students study neither subject, find the total number of students in the class.",
+          "questionType": "mcq",
+          "options": [
+            "400",
+            "420",
+            "450",
+            "480"
+          ],
+          "correctAnswer": "450",
+          "explanation": "Correct answer is (c).",
+          "points": 3,
+          "order": 24,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.21621188714904604
+        },
+        {
+          "questionText": "A and B's incomes are in the ratio 3:4 and their expenditures are in the ratio 5:7. If each saves Rs.2,000 per month, find A's income.",
+          "questionType": "mcq",
+          "options": [
+            "Rs.10,000",
+            "Rs.12,000",
+            "Rs.14,000",
+            "Rs.16,000"
+          ],
+          "correctAnswer": "Rs.12,000",
+          "explanation": "Correct answer is (b).",
+          "points": 3,
+          "order": 25,
+          "subject": "RIMS Competitive Exam Series",
+          "group": "Percentage 265001",
+          "xpReward": 3,
+          "random": 0.8976622873649753
         }
       ]
     }

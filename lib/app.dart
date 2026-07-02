@@ -9,6 +9,7 @@ import 'package:bitwise_academy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bitwise_academy/features/exam_library/presentation/bloc/attempt_bloc.dart';
 import 'package:bitwise_academy/features/quest/presentation/bloc/quest_bloc.dart';
 import 'package:bitwise_academy/features/leaderboard/presentation/bloc/leaderboard_bloc.dart';
+import 'package:bitwise_academy/features/auth/presentation/bloc/session_recovery_bloc.dart';
 import 'package:bitwise_academy/core/widgets/quest_celebration_overlay.dart';
 
 /// Root application widget.
@@ -21,18 +22,24 @@ class RimsApp extends StatefulWidget {
 
 class _RimsAppState extends State<RimsApp> {
   late final AuthBloc _authBloc;
+  late final SessionRecoveryBloc _sessionRecoveryBloc;
   late final GoRouter _router;
 
   @override
   void initState() {
     super.initState();
-    _authBloc = getIt<AuthBloc>()..add(const AuthCheckRequested());
-    _router = buildRouter(_authBloc);
+    // AuthBloc is a singleton — do NOT dispatch AuthCheckRequested.
+    // The bloc starts in AuthLoading and resolves automatically when the
+    // Firebase authStateChanges stream fires with the persisted auth state.
+    _authBloc = getIt<AuthBloc>();
+    _sessionRecoveryBloc = getIt<SessionRecoveryBloc>();
+    _router = buildRouter(_authBloc, _sessionRecoveryBloc);
   }
 
   @override
   void dispose() {
     _router.dispose();
+    _sessionRecoveryBloc.close();
     super.dispose();
   }
 
@@ -41,6 +48,7 @@ class _RimsAppState extends State<RimsApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>.value(value: _authBloc),
+        BlocProvider<SessionRecoveryBloc>.value(value: _sessionRecoveryBloc),
         BlocProvider<AttemptBloc>(create: (_) => getIt<AttemptBloc>()),
         BlocProvider<QuestBloc>(create: (_) => getIt<QuestBloc>()),
         BlocProvider<LeaderboardBloc>(create: (_) => getIt<LeaderboardBloc>()),
@@ -51,11 +59,29 @@ class _RimsAppState extends State<RimsApp> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, authState) {
           final questBloc = context.read<QuestBloc>();
+          final recoveryBloc = context.read<SessionRecoveryBloc>();
+          
           if (authState is AuthAuthenticated) {
-            questBloc.add(const LoadActiveQuestsRequested());
+            // Only start the quest stream subscription if not already active.
+            // AuthAuthenticated fires on EVERY user update (e.g. XP/coin award
+            // after an exam). Re-dispatching LoadActiveQuestsRequested each time
+            // cancels and re-creates the Firestore stream unnecessarily.
+            final questState = questBloc.state;
+            if (questState is! QuestLoadSuccess && questState is! QuestLoadInProgress) {
+              questBloc.add(const LoadActiveQuestsRequested());
+            }
+            // Only run the recovery check on INITIAL login — not on every
+            // AuthAuthenticated emission (e.g. AuthUserUpdated from XP/coins
+            // being awarded after an exam). Re-triggering CheckRecoveryRequested
+            // causes the router to cycle through RecoveryChecking → /splash →
+            // RecoveryNone → / which boots the user off the results page.
+            if (recoveryBloc.state is RecoveryInitial) {
+              recoveryBloc.add(CheckRecoveryRequested(authState.user.uid));
+            }
           } else if (authState is AuthUnauthenticated ||
               authState is AuthInitial) {
             questBloc.add(const StopQuestListening());
+            recoveryBloc.add(const ResetRecoveryState());
           }
         },
         child: BlocListener<QuestBloc, QuestState>(
