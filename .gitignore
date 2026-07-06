@@ -51,3 +51,6 @@ database_seed.json
 # Android keystore and secrets
 android/key.properties
 *.jks
+
+# Graphify Cache
+graphify-out/
